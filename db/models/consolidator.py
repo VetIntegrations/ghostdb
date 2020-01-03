@@ -1,4 +1,5 @@
 import enum
+import uuid
 from sqlalchemy import (
     Column, Integer, String, Boolean, ForeignKey, JSON, Enum, DateTime
 )
@@ -12,7 +13,7 @@ from .. import sqltypes
 class Consolidator(meta.Base):
     __tablename__ = 'consolidators'
 
-    id = Column(sqltypes.UUID(), primary_key=True)
+    id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
     name = Column(String(200))
 
     created_at = Column(DateTime, server_default=func.now())
