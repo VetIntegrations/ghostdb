@@ -1,0 +1,55 @@
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements/ci.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - run:
+          name: Install Requirements
+          command: |
+            python -m venv ../venv
+            . ../venv/bin/activate
+            pip install -r requirements/ci.txt
+      - save_cache:
+          paths:
+            - ../venv
+          key: v1-dependencies-{{ checksum "requirements/ci.txt" }}
+      - run:
+          name: Python Version
+          command: python -V
+      - run:
+          name: Tests
+          when: always
+          command: |
+            . ../venv/bin/activate
+            python -m pytest \
+              --pylama \
+              --ignore=./alembic \
+              --junitxml=../tests_artifacts/junit.xml \
+              --cov=. --cov-report=xml:../tests_artifacts/coverage.xml --cov-report=html:../tests_artifacts/coverage/ \
+              .
+      - store_test_results:
+          path: ../tests_artifacts/
+          destination: tests_artifacts
+      - store_artifacts:
+          path: ../tests_artifacts/
+          destination: tests_artifacts
+
+orbs:
+  jira: circleci/jira@1.0.5
+
+workflows:
+  version: 2.1
+
+  devourer:
+    jobs:
+      - test:
+          post-steps:
+            - jira/notify
