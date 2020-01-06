@@ -4,6 +4,7 @@ from sqlalchemy import (
     Column, String, Boolean, ForeignKey, JSON, Enum, DateTime, Text
 )
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.sql import func
 
 from .. import meta
@@ -30,6 +31,8 @@ class Client(meta.Base):
 
     addresses = relationship('ClientAddress', back_populates='client')
     contacts = relationship('ClientContact', back_populates='client')
+
+    pets = association_proxy('client_pets', 'patient')
 
     def __repr__(self):
         if self.bussiness_name:
