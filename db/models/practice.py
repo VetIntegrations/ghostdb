@@ -54,3 +54,10 @@ class PracticeContact(meta.Base):
     note = Column(Text)
 
     practice = relationship('Practice', backref=backref('contacts'))
+
+    def __repr__(self):
+        return '<PracticeContact provider_id={} kind={} value={}>'.format(
+            self.practice_id,
+            self.kind,
+            self.value
+        )
