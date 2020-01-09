@@ -13,7 +13,7 @@ import ghostdb
 
 # revision identifiers, used by Alembic.
 revision = '9908431eb832'
-down_revision = '24603686c811'
+down_revision = 'b2a242bf2bc0'
 branch_labels = None
 depends_on = None
 
