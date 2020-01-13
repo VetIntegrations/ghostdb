@@ -10,13 +10,13 @@ from sqlalchemy.sql import func
 from .. import meta, sqltypes
 
 
-class Practice(meta.Base):
-    __tablename__ = 'practices'
+class Business(meta.Base):
+    __tablename__ = 'businesses'
 
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
-    consolidator_id = Column(sqltypes.UUID, ForeignKey('consolidators.id'))
-    name = Column(String(200))
-    display_name = Column(String(200))
+    corporation_id = Column(sqltypes.UUID, ForeignKey('corporations.id'), nullable=False)
+    name = Column(String(200), nullable=False)
+    display_name = Column(String(200), nullable=False)
     open_date = Column(Date)
     longitude = Column(Numeric)
     latitude = Column(Numeric)
@@ -30,10 +30,10 @@ class Practice(meta.Base):
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
 
-    consolidator = relationship('Consolidator', backref=backref('practices'))
+    corporation = relationship('Corporation', backref=backref('businesses'))
 
     def __repr__(self):
-        return '<Practice {}>'.format(self.name)
+        return '<Business {}>'.format(self.name)
 
 
 class ContactKind(enum.Enum):
@@ -42,21 +42,21 @@ class ContactKind(enum.Enum):
     website = 'Website'
 
 
-class PracticeContact(meta.Base):
-    __tablename__ = 'practice_contacts'
+class BusinessContact(meta.Base):
+    __tablename__ = 'business_contacts'
 
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
-    practice_id = Column(sqltypes.UUID, ForeignKey('practices.id'))
+    business_id = Column(sqltypes.UUID, ForeignKey('businesses.id'), nullable=False)
     kind = Column(Enum(ContactKind))
     is_primary = Column(Boolean, default=False)
     name = Column(String(50))
-    value = Column(String(100))
+    value = Column(String(100), nullable=False)
     note = Column(Text)
 
-    practice = relationship('Practice', backref=backref('contacts'))
+    business = relationship('Business', backref=backref('contacts'))
 
     def __repr__(self):
-        return '<PracticeContact provider_id={} kind={} value={}>'.format(
+        return '<BusinessContact business_id={} kind={} value={}>'.format(
             self.practice_id,
             self.kind,
             self.value

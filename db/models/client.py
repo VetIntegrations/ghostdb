@@ -32,7 +32,7 @@ class Client(meta.Base):
     addresses = relationship('ClientAddress', back_populates='client')
     contacts = relationship('ClientContact', back_populates='client')
 
-    pets = association_proxy('client_pets', 'patient')
+    pets = association_proxy('client_pets', 'pet')
 
     def __repr__(self):
         if self.bussiness_name:
