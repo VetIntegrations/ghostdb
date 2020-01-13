@@ -24,7 +24,7 @@ class Provider(meta.Base):
     __tablename__ = 'providers'
 
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
-    practice_id = Column(sqltypes.UUID, ForeignKey('practices.id'))
+    business_id = Column(sqltypes.UUID, ForeignKey('businesses.id'))
     kind_id = Column(sqltypes.UUID, ForeignKey('provider_kinds.id'))
     first_name = Column(String(200))
     last_name = Column(String(200))
@@ -37,7 +37,7 @@ class Provider(meta.Base):
     updated_at = Column(DateTime, onupdate=func.now())
 
     kind = relationship('ProviderKind', backref=backref('providers'))
-    practice = relationship('Practice', backref=backref('providers'))
+    business = relationship('Business', backref=backref('providers'))
 
     def __repr__(self):
         return '<Provider fist_name={} last_name={}>'.format(

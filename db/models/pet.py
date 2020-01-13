@@ -74,8 +74,8 @@ class WeightUnit(meta.Base):
         return '<WeightUnit {}>'.format(self.name)
 
 
-class Patient(meta.Base):
-    __tablename__ = 'patients'
+class Pet(meta.Base):
+    __tablename__ = 'pets'
 
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
     name = Column(String(200), nullable=False)
@@ -110,12 +110,12 @@ class Patient(meta.Base):
     weight_unit = relationship('WeightUnit')
 
 
-class Owner(meta.Base):
-    __tablename__ = 'owners'
+class PetOwner(meta.Base):
+    __tablename__ = 'pet_owners'
 
-    client_id = Column(sqltypes.UUID, ForeignKey('clients.id'), primary_key=True)
-    patient_id = Column(sqltypes.UUID, ForeignKey('patients.id'), primary_key=True)
+    client_id = Column(sqltypes.UUID, ForeignKey('clients.id'), primary_key=True, nullable=False)
+    pet_id = Column(sqltypes.UUID, ForeignKey('pets.id'), primary_key=True, nullable=False)
     is_primary = Column(Boolean)
 
     client = relationship('Client', backref=backref('client_pets'))
-    patient = relationship('Patient', backref=backref('pet_owners'))
+    pet = relationship('Pet', backref=backref('pet_owners'))

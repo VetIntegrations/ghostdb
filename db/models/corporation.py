@@ -10,19 +10,19 @@ from .. import meta
 from .. import sqltypes
 
 
-class Consolidator(meta.Base):
-    __tablename__ = 'consolidators'
+class Corporation(meta.Base):
+    __tablename__ = 'corporations'
 
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
-    name = Column(String(200))
+    name = Column(String(200), nullable=False, unique=True)
 
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
 
-    integrations = relationship('Integration', back_populates='consolidator')
+    integrations = relationship('Integration', back_populates='corporation')
 
     def __repr__(self):
-        return '<Consolidator(id={} name={})>'.format(self.id, self.name)
+        return '<Corporation id={} name={}>'.format(self.id, self.name)
 
 
 class IntegrationModules(enum.Enum):
@@ -30,23 +30,23 @@ class IntegrationModules(enum.Enum):
 
 
 class Integration(meta.Base):
-    __tablename__ = 'consolidator_integrations'
+    __tablename__ = 'corporation_integrations'
 
     id = Column(Integer, primary_key=True)
-    consolidator_id = Column(sqltypes.UUID, ForeignKey('consolidators.id'))
-    name = Column(String(100))
-    module = Column(Enum(IntegrationModules))
+    corporation_id = Column(sqltypes.UUID, ForeignKey('corporations.id'), nullable=False)
+    name = Column(String(100), nullable=False)
+    module = Column(Enum(IntegrationModules), nullable=False)
     auth_credentials = Column(JSON)
     is_enable = Column(Boolean, default=False)
 
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
 
-    consolidator = relationship("Consolidator", back_populates="integrations")
+    corporation = relationship("Corporation", back_populates="integrations")
 
     def __repr__(self):
-        return '<Integration(id={} consolidator={} name={})>'.format(
+        return '<Integration id={} corporation={} name={}>'.format(
             self.id,
-            self.consolidator.name,
+            self.corporation.name,
             self.name
         )
