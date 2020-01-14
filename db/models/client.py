@@ -1,7 +1,8 @@
 import enum
 import uuid
 from sqlalchemy import (
-    Column, String, Boolean, ForeignKey, JSON, Enum, DateTime, Text
+    select,
+    Table, Column, String, Boolean, ForeignKey, JSON, Enum, DateTime, Text
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -9,6 +10,21 @@ from sqlalchemy.sql import func
 
 from .. import meta
 from .. import sqltypes
+
+
+class FamilyRelation(enum.Enum):
+    parent = 'Parent'
+    child = 'Child'
+
+
+Family = Table(
+    'client_family',
+    meta.Base.metadata,
+    Column('id', sqltypes.UUID, default=uuid.uuid4, primary_key=True),
+    Column('from_client_id', sqltypes.UUID, ForeignKey('clients.id'), primary_key=True),
+    Column('to_client_id', sqltypes.UUID, ForeignKey('clients.id'), primary_key=True),
+    Column('relation', Enum(FamilyRelation))
+)
 
 
 class Client(meta.Base):
@@ -43,6 +59,22 @@ class Client(meta.Base):
             value = ' '.join((self.first_name, self.last_name))
 
         return '<Client({}={})>'.format(label, value)
+
+
+family_union = (
+    select([Family.c.from_client_id, Family.c.to_client_id, ])
+    .union(select([Family.c.to_client_id, Family.c.from_client_id, ]))
+    .alias()
+)
+
+
+Client.family = relationship(
+    "Client",
+    secondary=family_union,
+    primaryjoin=Client.id == family_union.c.from_client_id,
+    secondaryjoin=Client.id == family_union.c.to_client_id,
+    viewonly=True
+)
 
 
 class AddressKind(enum.Enum):
