@@ -152,7 +152,7 @@ def data_upgrade():
             'Cover', 'Imaging', 'Drains', 'Laproscopic', 'Prescription', 'Therapy', 'CPCR',
             'Biopsy', 'Arthrodesis', 'Supply', 'Injectable', 'Limb Sparing', 'Otic', 'Tendon',
             'Euthanasia', 'Thorascopic', 'CNS', 'Joint', 'Spinal ', 'Additives', 'Laboratory',
-            'Supplements', 'Miscellaneous', 'Pulmonary', 'Thoracic', 'Procedure', 'Spinal',
+            'Supplements', 'Miscellaneous', 'Pulmonary', 'Thoracic', 'Procedure',
             'Abdominal', 'Respiratory - Upper', 'Luxation', 'Reproductive', 'Necropsy',
             'Hospitalization', 'Application', 'Transdermal', 'Disposal', 'Hepatosplenic',
             'Diagnostics', 'Monitoring', 'Surgery', 'Endodontics', 'Cremation', 'Amputation',
