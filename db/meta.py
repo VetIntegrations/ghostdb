@@ -7,6 +7,9 @@ from sqlalchemy.sql.elements import _defer_none_name
 from sqlalchemy.ext.declarative import declarative_base
 
 
+DATABASES = {}
+
+
 def ghost_constraint_name(constraint, table):
     """Boolean field doens't generate constraint name.
     """
@@ -49,6 +52,10 @@ def initialize():
 
 def create_dbsession(uri: str) -> session.Session:
     engine = create_engine(uri)
-    session = sessionmaker(bind=engine)
+    db = sessionmaker(bind=engine)
 
-    return session()
+    return db()
+
+
+def register_dbsession(name: str, db: session.Session):
+    DATABASES[name] = db
