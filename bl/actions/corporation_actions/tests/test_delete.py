@@ -4,7 +4,7 @@ from ghostdb.db.models.corporation import Corporation
 from ..delete import Delete
 
 
-class TestCorporationCreate:
+class TestCorporationDelete:
 
     @pytest.fixture(autouse=True)
     def corporation(self, default_database):
