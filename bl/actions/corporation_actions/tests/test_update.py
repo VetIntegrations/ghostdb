@@ -4,7 +4,7 @@ from ghostdb.db.models.corporation import Corporation
 from ..update import Update
 
 
-class TestCorporationCreate:
+class TestCorporationUpdate:
 
     @pytest.fixture(autouse=True)
     def corporation(self, default_database):
