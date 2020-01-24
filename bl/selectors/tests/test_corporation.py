@@ -7,7 +7,7 @@ from ghostdb.db.models.corporation import Corporation
 class TestByID:
 
     @pytest.fixture(autouse=True)
-    def corporation(self, default_database):
+    def setup_corporation(self, default_database):
         self.corp = Corporation(name='Test Corporation')
         default_database.add(self.corp)
         default_database.commit()

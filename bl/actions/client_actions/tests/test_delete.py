@@ -7,7 +7,7 @@ from ..delete import Delete
 class TestClientDelete:
 
     @pytest.fixture(autouse=True)
-    def client(self, default_database):
+    def setup_client(self, default_database):
         self.client = Client(first_name='John', last_name='Doe')
         default_database.add(self.client)
 

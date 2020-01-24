@@ -1,13 +1,16 @@
 import pytest
 
-from ghostdb.db.models.pet import Pet
-from ..create import Create
+from ghostdb.db.models.pet import Pet, Breed, Color, Gender, Species, WeightUnit
+from ..create import (
+    PetCreate, BreedCreate, ColorCreate, GenderCreate, SpeciesCreate,
+    WeightUnitCreate
+)
 
 
 class TestPetCreate:
 
     def test_ok(self, default_database):
-        create_action = Create(default_database, [], [])
+        create_action = PetCreate(default_database, [], [])
 
         pet = Pet(name='Ricky')
 
@@ -26,8 +29,153 @@ class TestPetCreate:
         def process(self, *args, **kwargs):
             raise Called()
 
-        monkeypatch.setattr(Create, 'process', process)
+        monkeypatch.setattr(PetCreate, 'process', process)
 
         pet = Pet(name='Ricky')
         with pytest.raises(Called):
             PetAction.create(pet)
+
+
+class TestBreedCreate:
+
+    def test_ok(self, default_database):
+        create_action = BreedCreate(default_database, [], [])
+
+        breed = Breed(name='Beagle')
+
+        assert default_database.query(Breed).count() == 0
+        new_breed, ok = create_action(breed)
+        assert ok
+        assert new_breed == breed
+        assert default_database.query(Breed).count() == 1
+
+    def test_action_class_use_right_action(self, default_database, monkeypatch):
+        from ghostdb.bl.actions.pet import BreedAction
+
+        class Called(Exception):
+            ...
+
+        def process(self, *args, **kwargs):
+            raise Called()
+
+        monkeypatch.setattr(BreedCreate, 'process', process)
+
+        breed = Breed(name='Beagle')
+        with pytest.raises(Called):
+            BreedAction.create(breed)
+
+
+class TestColorCreate:
+
+    def test_ok(self, default_database):
+        create_action = ColorCreate(default_database, [], [])
+
+        color = Color(name='Black')
+
+        assert default_database.query(Color).count() == 0
+        new_color, ok = create_action(color)
+        assert ok
+        assert new_color == color
+        assert default_database.query(Color).count() == 1
+
+    def test_action_class_use_right_action(self, default_database, monkeypatch):
+        from ghostdb.bl.actions.pet import ColorAction
+
+        class Called(Exception):
+            ...
+
+        def process(self, *args, **kwargs):
+            raise Called()
+
+        monkeypatch.setattr(ColorCreate, 'process', process)
+
+        color = Color(name='Red')
+        with pytest.raises(Called):
+            ColorAction.create(color)
+
+
+class TestGenderCreate:
+
+    def test_ok(self, default_database):
+        create_action = GenderCreate(default_database, [], [])
+
+        gender = Gender(name='female')
+
+        assert default_database.query(Gender).count() == 0
+        new_gender, ok = create_action(gender)
+        assert ok
+        assert new_gender == gender
+        assert default_database.query(Gender).count() == 1
+
+    def test_action_class_use_right_action(self, default_database, monkeypatch):
+        from ghostdb.bl.actions.pet import GenderAction
+
+        class Called(Exception):
+            ...
+
+        def process(self, *args, **kwargs):
+            raise Called()
+
+        monkeypatch.setattr(GenderCreate, 'process', process)
+
+        gender = Gender(name='female')
+        with pytest.raises(Called):
+            GenderAction.create(gender)
+
+
+class TestSpeciesCreate:
+
+    def test_ok(self, default_database):
+        create_action = SpeciesCreate(default_database, [], [])
+
+        species = Species(name='Canine')
+
+        assert default_database.query(Species).count() == 0
+        new_species, ok = create_action(species)
+        assert ok
+        assert new_species == species
+        assert default_database.query(Species).count() == 1
+
+    def test_action_class_use_right_action(self, default_database, monkeypatch):
+        from ghostdb.bl.actions.pet import SpeciesAction
+
+        class Called(Exception):
+            ...
+
+        def process(self, *args, **kwargs):
+            raise Called()
+
+        monkeypatch.setattr(SpeciesCreate, 'process', process)
+
+        species = Species(name='Fanine')
+        with pytest.raises(Called):
+            SpeciesAction.create(species)
+
+
+class TestWeightUnitCreate:
+
+    def test_ok(self, default_database):
+        create_action = WeightUnitCreate(default_database, [], [])
+
+        unit = WeightUnit(name='kg')
+
+        assert default_database.query(WeightUnit).count() == 0
+        new_unit, ok = create_action(unit)
+        assert ok
+        assert new_unit == unit
+        assert default_database.query(WeightUnit).count() == 1
+
+    def test_action_class_use_right_action(self, default_database, monkeypatch):
+        from ghostdb.bl.actions.pet import WeightUnitAction
+
+        class Called(Exception):
+            ...
+
+        def process(self, *args, **kwargs):
+            raise Called()
+
+        monkeypatch.setattr(WeightUnitCreate, 'process', process)
+
+        unit = WeightUnit(name='lb')
+        with pytest.raises(Called):
+            WeightUnitAction.create(unit)
