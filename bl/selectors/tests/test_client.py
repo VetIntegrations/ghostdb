@@ -7,7 +7,7 @@ from ghostdb.db.models.client import Client
 class TestByID:
 
     @pytest.fixture(autouse=True)
-    def client(self, default_database):
+    def setup_client(self, default_database):
         self.client = Client(first_name='John', last_name='Doe')
         default_database.add(self.client)
         default_database.commit()

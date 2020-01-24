@@ -7,7 +7,7 @@ from ..update import Update
 class TestCorporationUpdate:
 
     @pytest.fixture(autouse=True)
-    def corporation(self, default_database):
+    def setup_corporation(self, default_database):
         self.corp = Corporation(name='Test Corporation')
         default_database.add(self.corp)
 

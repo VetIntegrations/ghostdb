@@ -7,7 +7,7 @@ from ghostdb.db.models.pet import Pet
 class TestByID:
 
     @pytest.fixture(autouse=True)
-    def pet(self, default_database):
+    def setup_pet(self, default_database):
         self.pet = Pet(name='Ricky')
         default_database.add(self.pet)
         default_database.commit()
