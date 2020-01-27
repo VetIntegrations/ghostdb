@@ -1,7 +1,9 @@
 import pytest
 
-from ghostdb.db.models.client import Client
-from ..delete import Delete
+from ghostdb.db.models.client import (
+    Client, ClientContact, ContactKind, ClientAddress, AddressKind
+)
+from ..delete import ClientDelete, ContactDelete, AddressDelete
 
 
 class TestClientDelete:
@@ -12,7 +14,7 @@ class TestClientDelete:
         default_database.add(self.client)
 
     def test_ok(self, default_database):
-        delete_action = Delete(default_database, [], [])
+        delete_action = ClientDelete(default_database, [], [])
 
         assert default_database.query(Client).count() == 1
         _, ok = delete_action(self.client)
@@ -28,7 +30,7 @@ class TestClientDelete:
         def process(self, *args, **kwargs):
             raise Called()
 
-        monkeypatch.setattr(Delete, 'process', process)
+        monkeypatch.setattr(ClientDelete, 'process', process)
 
         with pytest.raises(Called):
             ClientAction.delete(self.client)
@@ -37,7 +39,7 @@ class TestClientDelete:
         client = Client(first_name='Jane', last_name='Doe')
         default_database.add(client)
 
-        delete_action = Delete(default_database, [], [])
+        delete_action = ClientDelete(default_database, [], [])
 
         assert default_database.query(Client).count() == 2
         _, ok = delete_action(self.client)
@@ -45,3 +47,111 @@ class TestClientDelete:
         assert default_database.query(Client).count() == 1
 
         assert default_database.query(Client)[0] == client
+
+
+class TestClientContactDelete:
+
+    @pytest.fixture(autouse=True)
+    def setup_contact(self, default_database):
+        self.client = Client(first_name='John', last_name='Doe')
+        self.contact = ClientContact(
+            client=self.client,
+            kind=ContactKind.home,
+            value='+5874923'
+        )
+        default_database.add(self.client)
+        default_database.add(self.contact)
+        default_database.commit()
+
+    def test_ok(self, default_database):
+        delete_action = ContactDelete(default_database, [], [])
+
+        assert default_database.query(ClientContact).count() == 1
+        _, ok = delete_action(self.client, self.contact)
+        assert ok
+        assert default_database.query(ClientContact).count() == 0
+
+    def test_action_class_use_right_action(self, default_database, monkeypatch):
+        from ghostdb.bl.actions.client import ClientAction
+
+        class Called(Exception):
+            ...
+
+        def process(self, *args, **kwargs):
+            raise Called()
+
+        monkeypatch.setattr(ContactDelete, 'process', process)
+
+        with pytest.raises(Called):
+            ClientAction.remove_contact(self.client, self.contact)
+
+    def test_delete_right_record(self, default_database):
+        contact2 = ClientContact(
+            client=self.client,
+            kind=ContactKind.home,
+            value='+48329482739'
+        )
+        default_database.add(contact2)
+
+        delete_action = ContactDelete(default_database, [], [])
+
+        assert default_database.query(ClientContact).count() == 2
+        _, ok = delete_action(self.client, self.contact)
+        assert ok
+        assert default_database.query(ClientContact).count() == 1
+
+        assert default_database.query(ClientContact)[0] == contact2
+
+
+class TestClientAddressDelete:
+
+    @pytest.fixture(autouse=True)
+    def setup_address(self, default_database):
+        self.client = Client(first_name='John', last_name='Doe')
+        self.address = ClientAddress(
+            client=self.client,
+            kind=AddressKind.home,
+            zip_code='00001'
+        )
+        default_database.add(self.client)
+        default_database.add(self.address)
+        default_database.commit()
+
+    def test_ok(self, default_database):
+        delete_action = ContactDelete(default_database, [], [])
+
+        assert default_database.query(ClientAddress).count() == 1
+        _, ok = delete_action(self.client, self.address)
+        assert ok
+        assert default_database.query(ClientAddress).count() == 0
+
+    def test_action_class_use_right_action(self, default_database, monkeypatch):
+        from ghostdb.bl.actions.client import ClientAction
+
+        class Called(Exception):
+            ...
+
+        def process(self, *args, **kwargs):
+            raise Called()
+
+        monkeypatch.setattr(AddressDelete, 'process', process)
+
+        with pytest.raises(Called):
+            ClientAction.remove_address(self.client, self.address)
+
+    def test_delete_right_record(self, default_database):
+        address2 = ClientAddress(
+            client=self.client,
+            kind=AddressKind.home,
+            zip_code='00005'
+        )
+        default_database.add(address2)
+
+        delete_action = AddressDelete(default_database, [], [])
+
+        assert default_database.query(ClientAddress).count() == 2
+        _, ok = delete_action(self.client, self.address)
+        assert ok
+        assert default_database.query(ClientAddress).count() == 1
+
+        assert default_database.query(ClientAddress)[0] == address2
