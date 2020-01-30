@@ -6,10 +6,10 @@ from .provider_actions import (
 
 class ProviderAction:
 
-    create = base.action_factory(create_act.ProviderCreate, tuple(), tuple())
-    update = base.action_factory(update_act.ProviderUpdate, tuple(), tuple())
-    delete = base.action_factory(delete_act.ProviderDelete, tuple(), tuple())
+    create = base.action_factory(create_act.ProviderCreate)
+    update = base.action_factory(update_act.ProviderUpdate)
+    delete = base.action_factory(delete_act.ProviderDelete)
 
-    add_contact = base.action_factory(create_act.ContactCreate, tuple(), tuple())
-    update_contact = base.action_factory(update_act.ContactUpdate, tuple(), tuple())
-    remove_contact = base.action_factory(delete_act.ContactDelete, tuple(), tuple())
+    add_contact = base.action_factory(create_act.ContactCreate)
+    update_contact = base.action_factory(update_act.ContactUpdate)
+    remove_contact = base.action_factory(delete_act.ContactDelete)

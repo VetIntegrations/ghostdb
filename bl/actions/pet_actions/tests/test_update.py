@@ -1,6 +1,7 @@
 import pytest
 
 from ghostdb.db.models.pet import Pet, Breed, Color, Gender, Species, WeightUnit
+from ghostdb.bl.actions.utils.base import action_factory
 from ..update import (
     PetUpdate, BreedUpdate, ColorUpdate, GenderUpdate, SpeciesUpdate,
     WeightUnitUpdate
@@ -15,7 +16,7 @@ class TestPetUpdate:
         default_database.add(self.pet)
 
     def test_ok(self, default_database):
-        update_action = PetUpdate(default_database, [], [])
+        update_action = action_factory(PetUpdate)
 
         new_name = 'Rocky'
         assert new_name != self.pet.name
@@ -50,7 +51,7 @@ class TestPetUpdate:
         pet2 = Pet(name='Buch')
         default_database.add(pet2)
 
-        update_action = PetUpdate(default_database, [], [])
+        update_action = action_factory(PetUpdate)
 
         new_name = 'Rocky'
         assert new_name != self.pet.name
@@ -84,7 +85,7 @@ class TestBreedUpdate:
         default_database.add(self.breed)
 
     def test_ok(self, default_database):
-        update_action = BreedUpdate(default_database, [], [])
+        update_action = action_factory(BreedUpdate)
 
         new_name = 'American Staffordshire Terrier'
         assert new_name != self.breed.name
@@ -119,7 +120,7 @@ class TestBreedUpdate:
         breed2 = Breed(name='American Staffordshire Terrier')
         default_database.add(breed2)
 
-        update_action = BreedUpdate(default_database, [], [])
+        update_action = action_factory(BreedUpdate)
 
         new_name = 'Pug'
         assert new_name != self.breed.name
@@ -152,7 +153,7 @@ class TestColorUpdate:
         default_database.add(self.color)
 
     def test_ok(self, default_database):
-        update_action = ColorUpdate(default_database, [], [])
+        update_action = action_factory(ColorUpdate)
 
         new_name = 'Red'
         assert new_name != self.color.name
@@ -187,7 +188,7 @@ class TestColorUpdate:
         color2 = Color(name='Red')
         default_database.add(color2)
 
-        update_action = ColorUpdate(default_database, [], [])
+        update_action = action_factory(ColorUpdate)
 
         new_name = 'White'
         assert new_name != self.color.name
@@ -220,7 +221,7 @@ class TestGenderUpdate:
         default_database.add(self.gender)
 
     def test_ok(self, default_database):
-        update_action = GenderUpdate(default_database, [], [])
+        update_action = action_factory(GenderUpdate)
 
         new_name = 'male'
         assert new_name != self.gender.name
@@ -255,7 +256,7 @@ class TestGenderUpdate:
         gender2 = Gender(name='male')
         default_database.add(gender2)
 
-        update_action = GenderUpdate(default_database, [], [])
+        update_action = action_factory(GenderUpdate)
 
         new_name = 'male neutered'
         assert new_name != self.gender.name
@@ -288,7 +289,7 @@ class TestSpeciesUpdate:
         default_database.add(self.species)
 
     def test_ok(self, default_database):
-        update_action = SpeciesUpdate(default_database, [], [])
+        update_action = action_factory(SpeciesUpdate)
 
         new_name = 'Fenine'
         assert new_name != self.species.name
@@ -323,7 +324,7 @@ class TestSpeciesUpdate:
         species2 = Species(name='Fenine')
         default_database.add(species2)
 
-        update_action = SpeciesUpdate(default_database, [], [])
+        update_action = action_factory(SpeciesUpdate)
 
         new_name = 'Equine'
         assert new_name != self.species.name
@@ -356,7 +357,7 @@ class TestWeightUnitUpdate:
         default_database.add(self.weight_unit)
 
     def test_ok(self, default_database):
-        update_action = WeightUnitUpdate(default_database, [], [])
+        update_action = action_factory(WeightUnitUpdate)
 
         new_name = 'lb'
         assert new_name != self.weight_unit.name
@@ -391,7 +392,7 @@ class TestWeightUnitUpdate:
         unit2 = WeightUnit(name='lb')
         default_database.add(unit2)
 
-        update_action = WeightUnitUpdate(default_database, [], [])
+        update_action = action_factory(WeightUnitUpdate)
 
         new_name = 'kilo'
         assert new_name != self.weight_unit.name

@@ -3,6 +3,7 @@ import pytest
 from ghostdb.db.models.client import (
     Client, ClientContact, ContactKind, ClientAddress, AddressKind
 )
+from ghostdb.bl.actions.utils.base import action_factory
 from ..update import ClientUpdate, ContactUpdate, AddressUpdate
 
 
@@ -14,7 +15,7 @@ class TestClientUpdate:
         default_database.add(self.client)
 
     def test_ok(self, default_database):
-        update_action = ClientUpdate(default_database, [], [])
+        update_action = action_factory(ClientUpdate)
 
         new_last_name = 'Krispi'
         assert new_last_name != self.client.last_name
@@ -49,7 +50,7 @@ class TestClientUpdate:
         client = Client(first_name='Jane', last_name='Doe')
         default_database.add(client)
 
-        update_action = ClientUpdate(default_database, [], [])
+        update_action = action_factory(ClientUpdate)
 
         new_last_name = 'Ktulhu'
         assert new_last_name != self.client.last_name
@@ -89,7 +90,7 @@ class TestClientContactUpdate:
         default_database.commit()
 
     def test_ok(self, default_database):
-        update_action = ContactUpdate(default_database, [], [])
+        update_action = action_factory(ContactUpdate)
 
         new_value = '+473829473'
         assert new_value != self.contact.value
@@ -97,7 +98,7 @@ class TestClientContactUpdate:
         self.contact.value = new_value
 
         assert default_database.query(ClientContact).count() == 1
-        contact, ok = update_action(self.client, self.contact)
+        contact, ok = update_action(self.contact, self.client)
         assert ok
         assert contact == self.contact
         assert default_database.query(ClientContact).count() == 1
@@ -118,7 +119,7 @@ class TestClientContactUpdate:
         monkeypatch.setattr(ContactUpdate, 'process', process)
 
         with pytest.raises(Called):
-            ClientAction.update_contact(self.client, self.contact)
+            ClientAction.update_contact(self.contact, self.client)
 
     def test_update_right_record(self, default_database):
         contact2 = ClientContact(
@@ -128,7 +129,7 @@ class TestClientContactUpdate:
         )
         default_database.add(contact2)
 
-        update_action = ContactUpdate(default_database, [], [])
+        update_action = action_factory(ContactUpdate)
 
         new_value = '+9685749821'
         assert new_value != self.contact.value
@@ -136,7 +137,7 @@ class TestClientContactUpdate:
         self.contact.value = new_value
 
         assert default_database.query(ClientContact).count() == 2
-        _, ok = update_action(self.client, self.contact)
+        _, ok = update_action(self.contact, self.client)
         assert ok
         assert default_database.query(ClientContact).count() == 2
 
@@ -168,7 +169,7 @@ class TestClientAddressUpdate:
         default_database.commit()
 
     def test_ok(self, default_database):
-        update_action = AddressUpdate(default_database, [], [])
+        update_action = action_factory(AddressUpdate)
 
         new_zip_code = '00002'
         assert new_zip_code != self.address.zip_code
@@ -176,7 +177,7 @@ class TestClientAddressUpdate:
         self.address.zip_code = new_zip_code
 
         assert default_database.query(ClientAddress).count() == 1
-        address, ok = update_action(self.client, self.address)
+        address, ok = update_action(self.address, self.client)
         assert ok
         assert address == self.address
         assert default_database.query(ClientAddress).count() == 1
@@ -197,7 +198,7 @@ class TestClientAddressUpdate:
         monkeypatch.setattr(AddressUpdate, 'process', process)
 
         with pytest.raises(Called):
-            ClientAction.update_address(self.client, self.address)
+            ClientAction.update_address(self.address, self.client)
 
     def test_update_right_record(self, default_database):
         address2 = ClientAddress(
@@ -207,7 +208,7 @@ class TestClientAddressUpdate:
         )
         default_database.add(address2)
 
-        update_action = AddressUpdate(default_database, [], [])
+        update_action = action_factory(AddressUpdate)
 
         new_zip_code = '00002'
         assert new_zip_code != self.address.zip_code
@@ -215,7 +216,7 @@ class TestClientAddressUpdate:
         self.address.zip_code = new_zip_code
 
         assert default_database.query(ClientAddress).count() == 2
-        _, ok = update_action(self.client, self.address)
+        _, ok = update_action(self.address, self.client)
         assert ok
         assert default_database.query(ClientAddress).count() == 2
 

@@ -2,6 +2,7 @@ import pytest
 
 from ghostdb.db.models.corporation import Corporation
 from ghostdb.db.models.business import Business, BusinessContact, ContactKind
+from ghostdb.bl.actions.utils.base import action_factory
 from ..create import BusinessCreate, ContactCreate
 
 
@@ -14,7 +15,7 @@ class TestBusinessCreate:
         default_database.commit()
 
     def test_ok(self, default_database):
-        create_action = BusinessCreate(default_database, [], [])
+        create_action = action_factory(BusinessCreate)
 
         business = Business(
             corporation_id=self.corp.id,
@@ -63,7 +64,7 @@ class TestBusinessContactCreate:
         default_database.commit()
 
     def test_ok(self, default_database):
-        create_action = ContactCreate(default_database, [], [])
+        create_action = action_factory(ContactCreate)
 
         contact = BusinessContact(
             business_id=self.business.id,
@@ -72,13 +73,13 @@ class TestBusinessContactCreate:
         )
 
         assert default_database.query(BusinessContact).count() == 0
-        new_contact, ok = create_action(self.business, contact)
+        new_contact, ok = create_action(contact, self.business)
         assert ok
         assert new_contact == contact
         assert default_database.query(BusinessContact).count() == 1
 
     def test_prefill_business(self, default_database):
-        create_action = ContactCreate(default_database, [], [])
+        create_action = action_factory(ContactCreate)
 
         contact = BusinessContact(
             kind=ContactKind.email,
@@ -86,7 +87,7 @@ class TestBusinessContactCreate:
         )
 
         assert default_database.query(BusinessContact).count() == 0
-        new_contact, ok = create_action(self.business, contact)
+        new_contact, ok = create_action(contact, self.business)
         assert ok
         assert new_contact == contact
         assert new_contact.business_id == self.business.id
@@ -115,4 +116,4 @@ class TestBusinessContactCreate:
             value='aah@tcorp.local'
         )
         with pytest.raises(Called):
-            BusinessAction.add_contact(self.business, contact)
+            BusinessAction.add_contact(contact, self.business)

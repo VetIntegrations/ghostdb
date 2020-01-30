@@ -1,13 +1,14 @@
 import pytest
 
 from ghostdb.db.models.corporation import Corporation
+from ghostdb.bl.actions.utils.base import action_factory
 from ..create import Create
 
 
 class TestCorporationCreate:
 
     def test_ok(self, default_database):
-        create_action = Create(default_database, [], [])
+        create_action = action_factory(Create)
 
         corp = Corporation(name='Test Corp 1')
 

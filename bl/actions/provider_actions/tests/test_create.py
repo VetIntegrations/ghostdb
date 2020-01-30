@@ -1,13 +1,14 @@
 import pytest
 
 from ghostdb.db.models.provider import Provider, ProviderContact, ContactKind
+from ghostdb.bl.actions.utils.base import action_factory
 from ..create import ProviderCreate, ContactCreate
 
 
 class TestProviderCreate:
 
     def test_ok(self, default_database):
-        create_action = ProviderCreate(default_database, [], [])
+        create_action = action_factory(ProviderCreate)
 
         provider = Provider(first_name='John', last_name='Doe')
 
@@ -42,7 +43,7 @@ class TestProviderContactCreate:
         default_database.commit()
 
     def test_ok(self, default_database):
-        create_action = ContactCreate(default_database, [], [])
+        create_action = action_factory(ContactCreate)
 
         contact = ProviderContact(
             provider_id=self.provider.id,
@@ -51,13 +52,13 @@ class TestProviderContactCreate:
         )
 
         assert default_database.query(ProviderContact).count() == 0
-        new_contact, ok = create_action(self.provider, contact)
+        new_contact, ok = create_action(contact, self.provider)
         assert ok
         assert new_contact == contact
         assert default_database.query(ProviderContact).count() == 1
 
-    def test_prefill_client(self, default_database):
-        create_action = ContactCreate(default_database, [], [])
+    def test_prefill_provider(self, default_database):
+        create_action = action_factory(ContactCreate)
 
         contact = ProviderContact(
             kind=ContactKind.phone,
@@ -65,7 +66,7 @@ class TestProviderContactCreate:
         )
 
         assert default_database.query(ProviderContact).count() == 0
-        new_contact, ok = create_action(self.provider, contact)
+        new_contact, ok = create_action(contact, self.provider)
         assert ok
         assert new_contact == contact
         assert new_contact.provider_id == self.provider.id
@@ -94,4 +95,4 @@ class TestProviderContactCreate:
             value='+327489327'
         )
         with pytest.raises(Called):
-            ProviderAction.add_contact(self.provider, contact)
+            ProviderAction.add_contact(contact, self.provider)

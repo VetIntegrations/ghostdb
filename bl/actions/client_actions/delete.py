@@ -17,8 +17,8 @@ class ContactDelete(base.BaseAction):
 
     def process(
         self,
-        _client: client.Client,
-        contact: client.ClientContact
+        contact: client.ClientContact,
+        _client: client.Client
     ) -> typing.Tuple[client.ClientContact, bool]:
         assert contact.client == _client
 
@@ -32,8 +32,8 @@ class AddressDelete(base.BaseAction):
 
     def process(
         self,
-        _client: client.Client,
-        address: client.ClientAddress
+        address: client.ClientAddress,
+        _client: client.Client
     ) -> typing.Tuple[client.ClientAddress, bool]:
         assert address.client == _client
 

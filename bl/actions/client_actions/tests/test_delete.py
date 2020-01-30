@@ -3,6 +3,7 @@ import pytest
 from ghostdb.db.models.client import (
     Client, ClientContact, ContactKind, ClientAddress, AddressKind
 )
+from ghostdb.bl.actions.utils.base import action_factory
 from ..delete import ClientDelete, ContactDelete, AddressDelete
 
 
@@ -14,7 +15,7 @@ class TestClientDelete:
         default_database.add(self.client)
 
     def test_ok(self, default_database):
-        delete_action = ClientDelete(default_database, [], [])
+        delete_action = action_factory(ClientDelete)
 
         assert default_database.query(Client).count() == 1
         _, ok = delete_action(self.client)
@@ -39,7 +40,7 @@ class TestClientDelete:
         client = Client(first_name='Jane', last_name='Doe')
         default_database.add(client)
 
-        delete_action = ClientDelete(default_database, [], [])
+        delete_action = action_factory(ClientDelete)
 
         assert default_database.query(Client).count() == 2
         _, ok = delete_action(self.client)
@@ -64,10 +65,10 @@ class TestClientContactDelete:
         default_database.commit()
 
     def test_ok(self, default_database):
-        delete_action = ContactDelete(default_database, [], [])
+        delete_action = action_factory(ContactDelete)
 
         assert default_database.query(ClientContact).count() == 1
-        _, ok = delete_action(self.client, self.contact)
+        _, ok = delete_action(self.contact, self.client)
         assert ok
         assert default_database.query(ClientContact).count() == 0
 
@@ -83,7 +84,7 @@ class TestClientContactDelete:
         monkeypatch.setattr(ContactDelete, 'process', process)
 
         with pytest.raises(Called):
-            ClientAction.remove_contact(self.client, self.contact)
+            ClientAction.remove_contact(self.contact, self.client)
 
     def test_delete_right_record(self, default_database):
         contact2 = ClientContact(
@@ -93,10 +94,10 @@ class TestClientContactDelete:
         )
         default_database.add(contact2)
 
-        delete_action = ContactDelete(default_database, [], [])
+        delete_action = action_factory(ContactDelete)
 
         assert default_database.query(ClientContact).count() == 2
-        _, ok = delete_action(self.client, self.contact)
+        _, ok = delete_action(self.contact, self.client)
         assert ok
         assert default_database.query(ClientContact).count() == 1
 
@@ -118,10 +119,10 @@ class TestClientAddressDelete:
         default_database.commit()
 
     def test_ok(self, default_database):
-        delete_action = ContactDelete(default_database, [], [])
+        delete_action = action_factory(ContactDelete)
 
         assert default_database.query(ClientAddress).count() == 1
-        _, ok = delete_action(self.client, self.address)
+        _, ok = delete_action(self.address, self.client)
         assert ok
         assert default_database.query(ClientAddress).count() == 0
 
@@ -137,7 +138,7 @@ class TestClientAddressDelete:
         monkeypatch.setattr(AddressDelete, 'process', process)
 
         with pytest.raises(Called):
-            ClientAction.remove_address(self.client, self.address)
+            ClientAction.remove_address(self.address, self.client)
 
     def test_delete_right_record(self, default_database):
         address2 = ClientAddress(
@@ -147,10 +148,10 @@ class TestClientAddressDelete:
         )
         default_database.add(address2)
 
-        delete_action = AddressDelete(default_database, [], [])
+        delete_action = action_factory(AddressDelete)
 
         assert default_database.query(ClientAddress).count() == 2
-        _, ok = delete_action(self.client, self.address)
+        _, ok = delete_action(self.address, self.client)
         assert ok
         assert default_database.query(ClientAddress).count() == 1
 

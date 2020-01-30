@@ -15,12 +15,14 @@ class TestActionFactory:
                 self.called = True
                 return (None, True)
 
+        validators = [lambda obj: ...]
         pre_processors = [lambda obj, act: ...]
         post_processors = [lambda obj, act: ..., lambda obj, act: ...]
 
-        action = action_factory(Action, pre_processors, post_processors)
+        action = action_factory(Action, validators, pre_processors, post_processors)
 
         assert not action.called
+        assert action._validators == validators
         assert action._pre_processors == pre_processors
         assert action._post_processors == post_processors
         action(None)
@@ -45,6 +47,9 @@ class TestBaseAction:
         obj = {'name': 'Test'}
         new_obj = {'name', 'Test 2'}
 
+        def validator(obj):
+            log.append(('validator', obj))
+
         class Action(BaseAction):
             EVENT_NAME = 'test.event'
 
@@ -57,6 +62,7 @@ class TestBaseAction:
 
         action = Action(
             None,
+            (validator, ),
             (partial(coprocessor, 'pre_1'), partial(coprocessor, 'pre_2')),
             (partial(coprocessor, 'post_1'), partial(coprocessor, 'post_2')),
         )
@@ -64,6 +70,7 @@ class TestBaseAction:
         assert len(log) == 0
         action(obj)
         assert log == [
+            ('validator', obj),
             ('pre_1', obj, action),
             ('pre_2', obj, action),
             ('Action.process', obj),

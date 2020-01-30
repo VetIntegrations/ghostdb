@@ -1,6 +1,7 @@
 import pytest
 
 from ghostdb.db.models.corporation import Corporation
+from ghostdb.bl.actions.utils.base import action_factory
 from ..delete import Delete
 
 
@@ -12,7 +13,7 @@ class TestCorporationDelete:
         default_database.add(self.corp)
 
     def test_ok(self, default_database):
-        delete_action = Delete(default_database, [], [])
+        delete_action = action_factory(Delete)
 
         assert default_database.query(Corporation).count() == 1
         _, ok = delete_action(self.corp)
@@ -37,7 +38,7 @@ class TestCorporationDelete:
         corp = Corporation(name='Test Corporation Stay')
         default_database.add(corp)
 
-        delete_action = Delete(default_database, [], [])
+        delete_action = action_factory(Delete)
 
         assert default_database.query(Corporation).count() == 2
         _, ok = delete_action(self.corp)

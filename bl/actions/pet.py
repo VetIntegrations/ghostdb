@@ -6,41 +6,41 @@ from .pet_actions import (
 
 class PetAction:
 
-    create = base.action_factory(create_act.PetCreate, tuple(), tuple())
-    update = base.action_factory(update_act.PetUpdate, tuple(), tuple())
-    delete = base.action_factory(delete_act.PetDelete, tuple(), tuple())
+    create = base.action_factory(create_act.PetCreate)
+    update = base.action_factory(update_act.PetUpdate)
+    delete = base.action_factory(delete_act.PetDelete)
 
 
 class BreedAction:
 
-    create = base.action_factory(create_act.BreedCreate, tuple(), tuple())
-    update = base.action_factory(update_act.BreedUpdate, tuple(), tuple())
-    delete = base.action_factory(delete_act.BreedDelete, tuple(), tuple())
+    create = base.action_factory(create_act.BreedCreate)
+    update = base.action_factory(update_act.BreedUpdate)
+    delete = base.action_factory(delete_act.BreedDelete)
 
 
 class ColorAction:
 
-    create = base.action_factory(create_act.ColorCreate, tuple(), tuple())
-    update = base.action_factory(update_act.ColorUpdate, tuple(), tuple())
-    delete = base.action_factory(delete_act.ColorDelete, tuple(), tuple())
+    create = base.action_factory(create_act.ColorCreate)
+    update = base.action_factory(update_act.ColorUpdate)
+    delete = base.action_factory(delete_act.ColorDelete)
 
 
 class GenderAction:
 
-    create = base.action_factory(create_act.GenderCreate, tuple(), tuple())
-    update = base.action_factory(update_act.GenderUpdate, tuple(), tuple())
-    delete = base.action_factory(delete_act.GenderDelete, tuple(), tuple())
+    create = base.action_factory(create_act.GenderCreate)
+    update = base.action_factory(update_act.GenderUpdate)
+    delete = base.action_factory(delete_act.GenderDelete)
 
 
 class SpeciesAction:
 
-    create = base.action_factory(create_act.SpeciesCreate, tuple(), tuple())
-    update = base.action_factory(update_act.SpeciesUpdate, tuple(), tuple())
-    delete = base.action_factory(delete_act.SpeciesDelete, tuple(), tuple())
+    create = base.action_factory(create_act.SpeciesCreate)
+    update = base.action_factory(update_act.SpeciesUpdate)
+    delete = base.action_factory(delete_act.SpeciesDelete)
 
 
 class WeightUnitAction:
 
-    create = base.action_factory(create_act.WeightUnitCreate, tuple(), tuple())
-    update = base.action_factory(update_act.WeightUnitUpdate, tuple(), tuple())
-    delete = base.action_factory(delete_act.WeightUnitDelete, tuple(), tuple())
+    create = base.action_factory(create_act.WeightUnitCreate)
+    update = base.action_factory(update_act.WeightUnitUpdate)
+    delete = base.action_factory(delete_act.WeightUnitDelete)

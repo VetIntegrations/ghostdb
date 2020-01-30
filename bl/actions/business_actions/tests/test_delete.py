@@ -2,6 +2,7 @@ import pytest
 
 from ghostdb.db.models.corporation import Corporation
 from ghostdb.db.models.business import Business, BusinessContact, ContactKind
+from ghostdb.bl.actions.utils.base import action_factory
 from ..delete import BusinessDelete, ContactDelete
 
 
@@ -19,7 +20,7 @@ class TestBusinessDelete:
         default_database.add(self.business)
 
     def test_ok(self, default_database):
-        delete_action = BusinessDelete(default_database, [], [])
+        delete_action = action_factory(BusinessDelete)
 
         assert default_database.query(Business).count() == 1
         _, ok = delete_action(self.business)
@@ -48,7 +49,7 @@ class TestBusinessDelete:
         )
         default_database.add(business2)
 
-        delete_action = BusinessDelete(default_database, [], [])
+        delete_action = action_factory(BusinessDelete)
 
         assert default_database.query(Business).count() == 2
         _, ok = delete_action(self.business)
@@ -78,10 +79,10 @@ class TestBusinessContactDelete:
         default_database.add(self.contact)
 
     def test_ok(self, default_database):
-        delete_action = ContactDelete(default_database, [], [])
+        delete_action = action_factory(ContactDelete)
 
         assert default_database.query(BusinessContact).count() == 1
-        _, ok = delete_action(self.business, self.contact)
+        _, ok = delete_action(self.contact, self.business)
         assert ok
         assert default_database.query(BusinessContact).count() == 0
 
@@ -97,7 +98,7 @@ class TestBusinessContactDelete:
         monkeypatch.setattr(ContactDelete, 'process', process)
 
         with pytest.raises(Called):
-            BusinessAction.remove_contact(self.business, self.contact)
+            BusinessAction.remove_contact(self.contact, self.business)
 
     def test_delete_right_record(self, default_database):
         contact2 = BusinessContact(
@@ -107,10 +108,10 @@ class TestBusinessContactDelete:
         )
         default_database.add(contact2)
 
-        delete_action = ContactDelete(default_database, [], [])
+        delete_action = action_factory(ContactDelete)
 
         assert default_database.query(BusinessContact).count() == 2
-        _, ok = delete_action(self.business, self.contact)
+        _, ok = delete_action(self.contact, self.business)
         assert ok
         assert default_database.query(BusinessContact).count() == 1
 

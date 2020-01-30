@@ -2,6 +2,7 @@ import pytest
 
 from ghostdb.db.models.corporation import Corporation
 from ghostdb.db.models.business import Business, BusinessContact, ContactKind
+from ghostdb.bl.actions.utils.base import action_factory
 from ..update import BusinessUpdate, ContactUpdate
 
 
@@ -19,7 +20,7 @@ class TestBusinessUpdate:
         default_database.add(self.business)
 
     def test_ok(self, default_database):
-        update_action = BusinessUpdate(default_database, [], [])
+        update_action = action_factory(BusinessUpdate)
 
         new_name = 'Beaver\'s tail'
         assert new_name != self.business.name
@@ -58,7 +59,7 @@ class TestBusinessUpdate:
         )
         default_database.add(business2)
 
-        update_action = BusinessUpdate(default_database, [], [])
+        update_action = action_factory(BusinessUpdate)
 
         new_name = 'Beaver\'s tail'
         assert new_name != self.business.name
@@ -103,7 +104,7 @@ class TestBusinessContactUpdate:
         default_database.add(self.contact)
 
     def test_ok(self, default_database):
-        update_action = ContactUpdate(default_database, [], [])
+        update_action = action_factory(ContactUpdate)
 
         new_value = 'hello@aah.local'
         assert new_value != self.contact.value
@@ -111,7 +112,7 @@ class TestBusinessContactUpdate:
         self.contact.value = new_value
 
         assert default_database.query(BusinessContact).count() == 1
-        contact, ok = update_action(self.business, self.contact)
+        contact, ok = update_action(self.contact, self.business)
         assert ok
         assert contact == self.contact
         assert default_database.query(BusinessContact).count() == 1
@@ -132,7 +133,7 @@ class TestBusinessContactUpdate:
         monkeypatch.setattr(ContactUpdate, 'process', process)
 
         with pytest.raises(Called):
-            BusinessAction.update_contact(self.business, self.contact)
+            BusinessAction.update_contact(self.contact, self.business)
 
     def test_update_right_record(self, default_database):
         contact2 = BusinessContact(
@@ -142,7 +143,7 @@ class TestBusinessContactUpdate:
         )
         default_database.add(contact2)
 
-        update_action = ContactUpdate(default_database, [], [])
+        update_action = action_factory(ContactUpdate)
 
         new_value = 'ping@aah.local'
         assert new_value != self.contact.value
@@ -150,7 +151,7 @@ class TestBusinessContactUpdate:
         self.contact.value = new_value
 
         assert default_database.query(BusinessContact).count() == 2
-        _, ok = update_action(self.business, self.contact)
+        _, ok = update_action(self.contact, self.business)
         assert ok
         assert default_database.query(BusinessContact).count() == 2
 
