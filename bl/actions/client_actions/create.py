@@ -17,8 +17,8 @@ class ContactCreate(base.BaseAction):
 
     def process(
         self,
-        _client: client.Client,
-        contact: client.ClientContact
+        contact: client.ClientContact,
+        _client: client.Client
     ) -> typing.Tuple[client.ClientContact, bool]:
         if contact.client != _client or contact.client_id != _client.id:
             contact.client_id = _client.id
@@ -33,8 +33,8 @@ class AddressCreate(base.BaseAction):
 
     def process(
         self,
-        _client: client.Client,
-        address: client.ClientAddress
+        address: client.ClientAddress,
+        _client: client.Client
     ) -> typing.Tuple[client.ClientAddress, bool]:
         if address.client != _client or address.client_id != _client.id:
             address.client_id = _client.id

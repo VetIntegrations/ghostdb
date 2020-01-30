@@ -1,6 +1,7 @@
 import pytest
 
 from ghostdb.db.models.pet import Pet, Breed, Color, Gender, Species, WeightUnit
+from ghostdb.bl.actions.utils.base import action_factory
 from ..create import (
     PetCreate, BreedCreate, ColorCreate, GenderCreate, SpeciesCreate,
     WeightUnitCreate
@@ -10,7 +11,7 @@ from ..create import (
 class TestPetCreate:
 
     def test_ok(self, default_database):
-        create_action = PetCreate(default_database, [], [])
+        create_action = action_factory(PetCreate)
 
         pet = Pet(name='Ricky')
 
@@ -39,7 +40,7 @@ class TestPetCreate:
 class TestBreedCreate:
 
     def test_ok(self, default_database):
-        create_action = BreedCreate(default_database, [], [])
+        create_action = action_factory(BreedCreate)
 
         breed = Breed(name='Beagle')
 
@@ -68,7 +69,7 @@ class TestBreedCreate:
 class TestColorCreate:
 
     def test_ok(self, default_database):
-        create_action = ColorCreate(default_database, [], [])
+        create_action = action_factory(ColorCreate)
 
         color = Color(name='Black')
 
@@ -97,7 +98,7 @@ class TestColorCreate:
 class TestGenderCreate:
 
     def test_ok(self, default_database):
-        create_action = GenderCreate(default_database, [], [])
+        create_action = action_factory(GenderCreate)
 
         gender = Gender(name='female')
 
@@ -126,7 +127,7 @@ class TestGenderCreate:
 class TestSpeciesCreate:
 
     def test_ok(self, default_database):
-        create_action = SpeciesCreate(default_database, [], [])
+        create_action = action_factory(SpeciesCreate)
 
         species = Species(name='Canine')
 
@@ -155,7 +156,7 @@ class TestSpeciesCreate:
 class TestWeightUnitCreate:
 
     def test_ok(self, default_database):
-        create_action = WeightUnitCreate(default_database, [], [])
+        create_action = action_factory(WeightUnitCreate)
 
         unit = WeightUnit(name='kg')
 

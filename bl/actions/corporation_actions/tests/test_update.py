@@ -1,6 +1,7 @@
 import pytest
 
 from ghostdb.db.models.corporation import Corporation
+from ghostdb.bl.actions.utils.base import action_factory
 from ..update import Update
 
 
@@ -12,7 +13,7 @@ class TestCorporationUpdate:
         default_database.add(self.corp)
 
     def test_ok(self, default_database):
-        update_action = Update(default_database, [], [])
+        update_action = action_factory(Update)
 
         new_name = 'John Doe Inc.'
         assert new_name != self.corp.name
@@ -47,7 +48,7 @@ class TestCorporationUpdate:
         corp = Corporation(name='Stay Corp.')
         default_database.add(corp)
 
-        update_action = Update(default_database, [], [])
+        update_action = action_factory(Update)
 
         new_name = 'John Doe Inc.'
         assert new_name != self.corp.name

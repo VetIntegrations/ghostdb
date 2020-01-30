@@ -3,13 +3,14 @@ import pytest
 from ghostdb.db.models.client import (
     Client, ClientContact, ContactKind, ClientAddress, AddressKind
 )
+from ghostdb.bl.actions.utils.base import action_factory
 from ..create import ClientCreate, ContactCreate, AddressCreate
 
 
 class TestClientCreate:
 
     def test_ok(self, default_database):
-        create_action = ClientCreate(default_database, [], [])
+        create_action = action_factory(ClientCreate)
 
         client = Client(first_name='John', last_name='Doe')
 
@@ -44,7 +45,7 @@ class TestClientContactCreate:
         default_database.commit()
 
     def test_ok(self, default_database):
-        create_action = ContactCreate(default_database, [], [])
+        create_action = action_factory(ContactCreate)
 
         contact = ClientContact(
             client_id=self.client.id,
@@ -53,13 +54,13 @@ class TestClientContactCreate:
         )
 
         assert default_database.query(ClientContact).count() == 0
-        new_contact, ok = create_action(self.client, contact)
+        new_contact, ok = create_action(contact, self.client)
         assert ok
         assert new_contact == contact
         assert default_database.query(ClientContact).count() == 1
 
     def test_prefill_client(self, default_database):
-        create_action = ContactCreate(default_database, [], [])
+        create_action = action_factory(ContactCreate)
 
         contact = ClientContact(
             kind=ContactKind.home,
@@ -67,7 +68,7 @@ class TestClientContactCreate:
         )
 
         assert default_database.query(ClientContact).count() == 0
-        new_contact, ok = create_action(self.client, contact)
+        new_contact, ok = create_action(contact, self.client)
         assert ok
         assert new_contact == contact
         assert new_contact.client_id == self.client.id
@@ -96,7 +97,7 @@ class TestClientContactCreate:
             value='+327489327'
         )
         with pytest.raises(Called):
-            ClientAction.add_contact(self.client, contact)
+            ClientAction.add_contact(contact, self.client)
 
 
 class TestClientAddressCreate:
@@ -108,7 +109,7 @@ class TestClientAddressCreate:
         default_database.commit()
 
     def test_ok(self, default_database):
-        create_action = AddressCreate(default_database, [], [])
+        create_action = action_factory(AddressCreate)
 
         address = ClientAddress(
             client_id=self.client.id,
@@ -117,13 +118,13 @@ class TestClientAddressCreate:
         )
 
         assert default_database.query(ClientAddress).count() == 0
-        new_address, ok = create_action(self.client, address)
+        new_address, ok = create_action(address, self.client)
         assert ok
         assert new_address == address
         assert default_database.query(ClientAddress).count() == 1
 
     def test_prefill_client(self, default_database):
-        create_action = ContactCreate(default_database, [], [])
+        create_action = action_factory(ContactCreate)
 
         address = ClientAddress(
             kind=AddressKind.home,
@@ -131,7 +132,7 @@ class TestClientAddressCreate:
         )
 
         assert default_database.query(ClientAddress).count() == 0
-        new_address, ok = create_action(self.client, address)
+        new_address, ok = create_action(address, self.client)
         assert ok
         assert new_address == address
         assert new_address.client_id == self.client.id
@@ -160,4 +161,4 @@ class TestClientAddressCreate:
             zip_code='00001'
         )
         with pytest.raises(Called):
-            ClientAction.add_address(self.client, address)
+            ClientAction.add_address(address, self.client)

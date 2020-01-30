@@ -1,6 +1,7 @@
 import pytest
 
 from ghostdb.db.models.provider import Provider, ProviderContact, ContactKind
+from ghostdb.bl.actions.utils.base import action_factory
 from ..delete import ProviderDelete, ContactDelete
 
 
@@ -12,7 +13,7 @@ class TestProviderDelete:
         default_database.add(self.provider)
 
     def test_ok(self, default_database):
-        delete_action = ProviderDelete(default_database, [], [])
+        delete_action = action_factory(ProviderDelete)
 
         assert default_database.query(Provider).count() == 1
         _, ok = delete_action(self.provider)
@@ -37,7 +38,7 @@ class TestProviderDelete:
         provider2 = Provider(first_name='Jane', last_name='Doe')
         default_database.add(provider2)
 
-        delete_action = ProviderDelete(default_database, [], [])
+        delete_action = action_factory(ProviderDelete)
 
         assert default_database.query(Provider).count() == 2
         _, ok = delete_action(self.provider)
@@ -62,7 +63,7 @@ class TestProviderContactDelete:
         default_database.commit()
 
     def test_ok(self, default_database):
-        delete_action = ContactDelete(default_database, [], [])
+        delete_action = action_factory(ContactDelete)
 
         assert default_database.query(ProviderContact).count() == 1
         _, ok = delete_action(self.provider, self.contact)
@@ -91,7 +92,7 @@ class TestProviderContactDelete:
         )
         default_database.add(contact2)
 
-        delete_action = ContactDelete(default_database, [], [])
+        delete_action = action_factory(ContactDelete)
 
         assert default_database.query(ProviderContact).count() == 2
         _, ok = delete_action(self.provider, self.contact)

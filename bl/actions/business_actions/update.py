@@ -17,8 +17,8 @@ class ContactUpdate(base.BaseAction):
 
     def process(
         self,
-        _business: business.Business,
-        contact: business.BusinessContact
+        contact: business.BusinessContact,
+        _business: business.Business
     ) -> typing.Tuple[business.BusinessContact, bool]:
         assert contact.business == _business
 

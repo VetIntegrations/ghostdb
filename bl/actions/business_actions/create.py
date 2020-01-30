@@ -17,8 +17,8 @@ class ContactCreate(base.BaseAction):
 
     def process(
         self,
-        _business: business.Business,
-        contact: business.BusinessContact
+        contact: business.BusinessContact,
+        _business: business.Business
     ) -> typing.Tuple[business.BusinessContact, bool]:
         if contact.business != _business or contact.bussiness_id != _business.id:
             contact.business_id = _business.id

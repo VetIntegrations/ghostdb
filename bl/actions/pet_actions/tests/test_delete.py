@@ -1,6 +1,7 @@
 import pytest
 
 from ghostdb.db.models.pet import Pet, Breed, Color, Gender, Species, WeightUnit
+from ghostdb.bl.actions.utils.base import action_factory
 from ..delete import (
     PetDelete, BreedDelete, ColorDelete, GenderDelete, SpeciesDelete,
     WeightUnitDelete
@@ -15,7 +16,7 @@ class TestPetDelete:
         default_database.add(self.pet)
 
     def test_ok(self, default_database):
-        delete_action = PetDelete(default_database, [], [])
+        delete_action = action_factory(PetDelete)
 
         assert default_database.query(Pet).count() == 1
         _, ok = delete_action(self.pet)
@@ -40,7 +41,7 @@ class TestPetDelete:
         pet = Pet(name='Buch')
         default_database.add(pet)
 
-        delete_action = PetDelete(default_database, [], [])
+        delete_action = action_factory(PetDelete)
 
         assert default_database.query(Pet).count() == 2
         _, ok = delete_action(self.pet)
@@ -58,7 +59,7 @@ class TestBreedDelete:
         default_database.add(self.breed)
 
     def test_ok(self, default_database):
-        delete_action = BreedDelete(default_database, [], [])
+        delete_action = action_factory(BreedDelete)
 
         assert default_database.query(Breed).count() == 1
         _, ok = delete_action(self.breed)
@@ -83,7 +84,7 @@ class TestBreedDelete:
         breed = Breed(name='American Staffordshire Terrier')
         default_database.add(breed)
 
-        delete_action = BreedDelete(default_database, [], [])
+        delete_action = action_factory(BreedDelete)
 
         assert default_database.query(Breed).count() == 2
         _, ok = delete_action(self.breed)
@@ -101,7 +102,7 @@ class TestColorDelete:
         default_database.add(self.color)
 
     def test_ok(self, default_database):
-        delete_action = ColorDelete(default_database, [], [])
+        delete_action = action_factory(ColorDelete)
 
         assert default_database.query(Color).count() == 1
         _, ok = delete_action(self.color)
@@ -126,7 +127,7 @@ class TestColorDelete:
         color = Color(name='Red')
         default_database.add(color)
 
-        delete_action = ColorDelete(default_database, [], [])
+        delete_action = action_factory(ColorDelete)
 
         assert default_database.query(Color).count() == 2
         _, ok = delete_action(self.color)
@@ -144,7 +145,7 @@ class TestGenderDelete:
         default_database.add(self.gender)
 
     def test_ok(self, default_database):
-        delete_action = GenderDelete(default_database, [], [])
+        delete_action = action_factory(GenderDelete)
 
         assert default_database.query(Gender).count() == 1
         _, ok = delete_action(self.gender)
@@ -169,7 +170,7 @@ class TestGenderDelete:
         gender = Gender(name='male')
         default_database.add(gender)
 
-        delete_action = GenderDelete(default_database, [], [])
+        delete_action = action_factory(GenderDelete)
 
         assert default_database.query(Gender).count() == 2
         _, ok = delete_action(self.gender)
@@ -187,7 +188,7 @@ class TestSpeciesDelete:
         default_database.add(self.species)
 
     def test_ok(self, default_database):
-        delete_action = SpeciesDelete(default_database, [], [])
+        delete_action = action_factory(SpeciesDelete)
 
         assert default_database.query(Species).count() == 1
         _, ok = delete_action(self.species)
@@ -212,7 +213,7 @@ class TestSpeciesDelete:
         species = Species(name='Fenine')
         default_database.add(species)
 
-        delete_action = SpeciesDelete(default_database, [], [])
+        delete_action = action_factory(SpeciesDelete)
 
         assert default_database.query(Species).count() == 2
         _, ok = delete_action(self.species)
@@ -230,7 +231,7 @@ class TestWeightUnitDelete:
         default_database.add(self.weight_unit)
 
     def test_ok(self, default_database):
-        delete_action = WeightUnitDelete(default_database, [], [])
+        delete_action = action_factory(WeightUnitDelete)
 
         assert default_database.query(WeightUnit).count() == 1
         _, ok = delete_action(self.weight_unit)
@@ -255,7 +256,7 @@ class TestWeightUnitDelete:
         unit = WeightUnit(name='Fenine')
         default_database.add(unit)
 
-        delete_action = WeightUnitDelete(default_database, [], [])
+        delete_action = action_factory(WeightUnitDelete)
 
         assert default_database.query(WeightUnit).count() == 2
         _, ok = delete_action(self.weight_unit)

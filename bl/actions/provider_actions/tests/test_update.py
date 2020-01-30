@@ -1,6 +1,7 @@
 import pytest
 
 from ghostdb.db.models.provider import Provider, ProviderContact, ContactKind
+from ghostdb.bl.actions.utils.base import action_factory
 from ..update import ProviderUpdate, ContactUpdate
 
 
@@ -12,7 +13,7 @@ class TestProviderUpdate:
         default_database.add(self.provider)
 
     def test_ok(self, default_database):
-        update_action = ProviderUpdate(default_database, [], [])
+        update_action = action_factory(ProviderUpdate)
 
         new_last_name = 'Krispi'
         assert new_last_name != self.provider.last_name
@@ -47,7 +48,7 @@ class TestProviderUpdate:
         provider2 = Provider(first_name='Jane', last_name='Doe')
         default_database.add(provider2)
 
-        update_action = ProviderUpdate(default_database, [], [])
+        update_action = action_factory(ProviderUpdate)
 
         new_last_name = 'Ktulhu'
         assert new_last_name != self.provider.last_name
@@ -87,7 +88,7 @@ class TestProviderContactUpdate:
         default_database.commit()
 
     def test_ok(self, default_database):
-        update_action = ContactUpdate(default_database, [], [])
+        update_action = action_factory(ContactUpdate)
 
         new_value = '+473829473'
         assert new_value != self.contact.value
@@ -95,7 +96,7 @@ class TestProviderContactUpdate:
         self.contact.value = new_value
 
         assert default_database.query(ProviderContact).count() == 1
-        contact, ok = update_action(self.provider, self.contact)
+        contact, ok = update_action(self.contact, self.provider)
         assert ok
         assert contact == self.contact
         assert default_database.query(ProviderContact).count() == 1
@@ -116,7 +117,7 @@ class TestProviderContactUpdate:
         monkeypatch.setattr(ContactUpdate, 'process', process)
 
         with pytest.raises(Called):
-            ProviderAction.update_contact(self.provider, self.contact)
+            ProviderAction.update_contact(self.contact, self.provider)
 
     def test_update_right_record(self, default_database):
         contact2 = ProviderContact(
@@ -126,7 +127,7 @@ class TestProviderContactUpdate:
         )
         default_database.add(contact2)
 
-        update_action = ContactUpdate(default_database, [], [])
+        update_action = action_factory(ContactUpdate)
 
         new_value = '+9685749821'
         assert new_value != self.contact.value
@@ -134,7 +135,7 @@ class TestProviderContactUpdate:
         self.contact.value = new_value
 
         assert default_database.query(ProviderContact).count() == 2
-        _, ok = update_action(self.provider, self.contact)
+        _, ok = update_action(self.contact, self.provider)
         assert ok
         assert default_database.query(ProviderContact).count() == 2
 
