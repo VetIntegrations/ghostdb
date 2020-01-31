@@ -54,6 +54,5 @@ def default_database(db_connection):
     yield db
 
     transaction.rollback()
-    # db.close_all()
     session.close_all_sessions()
     del meta.DATABASES['default']

@@ -30,9 +30,9 @@ class Appointment(meta.Base):
     __tablename__ = 'appointments'
 
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
-    business_id = Column(sqltypes.UUID, ForeignKey('businesses.id'))
+    business_id = Column(sqltypes.UUID, ForeignKey('businesses.id'), nullable=False)
     provider_id = Column(sqltypes.UUID, ForeignKey('providers.id'))
-    pet_id = Column(sqltypes.UUID, ForeignKey('pets.id'))
+    pet_id = Column(sqltypes.UUID, ForeignKey('pets.id'), nullable=False)
     duration = Column(Integer)
     scheduled_time = Column(DateTime)
     status = Column(Enum(Status))
