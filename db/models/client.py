@@ -38,7 +38,7 @@ class Client(meta.Base):
     is_active = Column(Boolean, default=True)
     is_deleted = Column(Boolean, default=False)
     note = Column(Text)
-    pms_ids = Column(JSON)
+    pms_ids = Column(JSON, default={})
 
     # clinic? VetSuccess.practice_id
 
@@ -96,6 +96,7 @@ class ClientAddress(meta.Base):
     state = Column(String(50))
     address = Column(String(200))
     note = Column(Text)
+    pms_ids = Column(JSON, default={})
 
     client = relationship('Client', back_populates='addresses')
 
@@ -117,5 +118,6 @@ class ClientContact(meta.Base):
     name = Column(String(50))
     value = Column(String(50))
     note = Column(Text)
+    pms_ids = Column(JSON, default={})
 
     client = relationship('Client', back_populates='contacts')
