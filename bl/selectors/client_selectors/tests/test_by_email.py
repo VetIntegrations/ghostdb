@@ -31,7 +31,7 @@ class TestClientSelectByEmail:
         monkeypatch.setattr(ByEmail, 'process', process)
 
         with pytest.raises(Called):
-            ClientSelector.by_email(self.client.email)
+            ClientSelector(default_database).by_email(self.client.email)
 
     def test_get_right_record(self, default_database):
         client2 = Client(first_name='Jane', last_name='Doe', email='jane@doe.local')

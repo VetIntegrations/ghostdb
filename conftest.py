@@ -1,4 +1,5 @@
 import os
+import warnings
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, session
@@ -45,8 +46,21 @@ def db_structure(db_connection):
     meta.Base.metadata.drop_all(bind=db_connection)
 
 
+@pytest.fixture
+def dbsession(db_connection):
+    transaction = db_connection.begin()
+    db = Session(bind=db_connection, autocommit=False)
+
+    yield db
+
+    transaction.rollback()
+    session.close_all_sessions()
+
+
 @pytest.fixture(scope='function')
 def default_database(db_connection):
+    warnings.warn("migrate to dbsession", DeprecationWarning)
+
     transaction = db_connection.begin()
     db = Session(bind=db_connection, autocommit=False)
     meta.register_dbsession('default', db)

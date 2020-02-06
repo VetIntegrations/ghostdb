@@ -3,26 +3,22 @@ import pytest
 from ghostdb.db.models.client import (
     Client, ClientContact, ContactKind, ClientAddress, AddressKind
 )
-from ghostdb.bl.actions.utils.base import action_factory
+from ghostdb.bl.actions.client import ClientAction
 from ..create import ClientCreate, ContactCreate, AddressCreate
 
 
 class TestClientCreate:
 
-    def test_ok(self, default_database):
-        create_action = action_factory(ClientCreate)
-
+    def test_ok(self, dbsession):
         client = Client(first_name='John', last_name='Doe')
 
-        assert default_database.query(Client).count() == 0
-        new_client, ok = create_action(client)
+        assert dbsession.query(Client).count() == 0
+        new_client, ok = ClientAction(dbsession).create(client)
         assert ok
         assert new_client == client
-        assert default_database.query(Client).count() == 1
+        assert dbsession.query(Client).count() == 1
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.client import ClientAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -33,56 +29,50 @@ class TestClientCreate:
 
         client = Client(first_name='John', last_name='Doe')
         with pytest.raises(Called):
-            ClientAction.create(client)
+            ClientAction(dbsession).create(client)
 
 
 class TestClientContactCreate:
 
     @pytest.fixture(autouse=True)
-    def setup_client(self, default_database):
+    def setup_client(self, dbsession):
         self.client = Client(first_name='John', last_name='Doe')
-        default_database.add(self.client)
-        default_database.commit()
+        dbsession.add(self.client)
+        dbsession.commit()
 
-    def test_ok(self, default_database):
-        create_action = action_factory(ContactCreate)
-
+    def test_ok(self, dbsession):
         contact = ClientContact(
             client_id=self.client.id,
             kind=ContactKind.home,
             value='+4783294432'
         )
 
-        assert default_database.query(ClientContact).count() == 0
-        new_contact, ok = create_action(contact, self.client)
+        assert dbsession.query(ClientContact).count() == 0
+        new_contact, ok = ClientAction(dbsession).add_contact(contact, self.client)
         assert ok
         assert new_contact == contact
-        assert default_database.query(ClientContact).count() == 1
+        assert dbsession.query(ClientContact).count() == 1
 
-    def test_prefill_client(self, default_database):
-        create_action = action_factory(ContactCreate)
-
+    def test_prefill_client(self, dbsession):
         contact = ClientContact(
             kind=ContactKind.home,
             value='+487329478932'
         )
 
-        assert default_database.query(ClientContact).count() == 0
-        new_contact, ok = create_action(contact, self.client)
+        assert dbsession.query(ClientContact).count() == 0
+        new_contact, ok = ClientAction(dbsession).add_contact(contact, self.client)
         assert ok
         assert new_contact == contact
         assert new_contact.client_id == self.client.id
-        assert default_database.query(ClientContact).count() == 1
+        assert dbsession.query(ClientContact).count() == 1
         query_client_contact = (
-            default_database
+            dbsession
             .query(ClientContact)
             .filter(ClientContact.client == self.client)
         )
         assert query_client_contact.count() == 1
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.client import ClientAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -97,56 +87,50 @@ class TestClientContactCreate:
             value='+327489327'
         )
         with pytest.raises(Called):
-            ClientAction.add_contact(contact, self.client)
+            ClientAction(dbsession).add_contact(contact, self.client)
 
 
 class TestClientAddressCreate:
 
     @pytest.fixture(autouse=True)
-    def setup_client(self, default_database):
+    def setup_client(self, dbsession):
         self.client = Client(first_name='John', last_name='Doe')
-        default_database.add(self.client)
-        default_database.commit()
+        dbsession.add(self.client)
+        dbsession.commit()
 
-    def test_ok(self, default_database):
-        create_action = action_factory(AddressCreate)
-
+    def test_ok(self, dbsession):
         address = ClientAddress(
             client_id=self.client.id,
             kind=AddressKind.home,
             zip_code='00001'
         )
 
-        assert default_database.query(ClientAddress).count() == 0
-        new_address, ok = create_action(address, self.client)
+        assert dbsession.query(ClientAddress).count() == 0
+        new_address, ok = ClientAction(dbsession).add_address(address, self.client)
         assert ok
         assert new_address == address
-        assert default_database.query(ClientAddress).count() == 1
+        assert dbsession.query(ClientAddress).count() == 1
 
-    def test_prefill_client(self, default_database):
-        create_action = action_factory(ContactCreate)
-
+    def test_prefill_client(self, dbsession):
         address = ClientAddress(
             kind=AddressKind.home,
             zip_code='00001'
         )
 
-        assert default_database.query(ClientAddress).count() == 0
-        new_address, ok = create_action(address, self.client)
+        assert dbsession.query(ClientAddress).count() == 0
+        new_address, ok = ClientAction(dbsession).add_address(address, self.client)
         assert ok
         assert new_address == address
         assert new_address.client_id == self.client.id
-        assert default_database.query(ClientAddress).count() == 1
+        assert dbsession.query(ClientAddress).count() == 1
         query_client_address = (
-            default_database
+            dbsession
             .query(ClientAddress)
             .filter(ClientAddress.client == self.client)
         )
         assert query_client_address.count() == 1
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.client import ClientAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -161,4 +145,4 @@ class TestClientAddressCreate:
             zip_code='00001'
         )
         with pytest.raises(Called):
-            ClientAction.add_address(address, self.client)
+            ClientAction(dbsession).add_address(address, self.client)

@@ -4,16 +4,16 @@ from .client_actions import (
 )
 
 
-class ClientAction:
+class ClientAction(base.BaseActionSet):
 
-    create = base.action_factory(create_act.ClientCreate)
-    update = base.action_factory(update_act.ClientUpdate)
-    delete = base.action_factory(delete_act.ClientDelete)
+    create = base.ActionFactory(create_act.ClientCreate)
+    update = base.ActionFactory(update_act.ClientUpdate)
+    delete = base.ActionFactory(delete_act.ClientDelete)
 
-    add_contact = base.action_factory(create_act.ContactCreate)
-    update_contact = base.action_factory(update_act.ContactUpdate)
-    remove_contact = base.action_factory(delete_act.ContactDelete)
+    add_contact = base.ActionFactory(create_act.ContactCreate)
+    update_contact = base.ActionFactory(update_act.ContactUpdate)
+    remove_contact = base.ActionFactory(delete_act.ContactDelete)
 
-    add_address = base.action_factory(create_act.AddressCreate)
-    update_address = base.action_factory(update_act.AddressUpdate)
-    remove_address = base.action_factory(delete_act.AddressDelete)
+    add_address = base.ActionFactory(create_act.AddressCreate)
+    update_address = base.ActionFactory(update_act.AddressUpdate)
+    remove_address = base.ActionFactory(delete_act.AddressDelete)
