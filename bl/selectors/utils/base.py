@@ -1,10 +1,17 @@
 import abc
 import typing
+import warnings
 from sqlalchemy.orm import session
 
 
 from ghostdb.db import meta
 from ghostdb import exceptions
+
+
+class BaseSelectorSet:
+
+    def __init__(self, db: session.Session):
+        self.db = db
 
 
 class BaseSelector(abc.ABC):
@@ -24,7 +31,26 @@ class BaseSelector(abc.ABC):
         ...
 
 
+class SelectorFactory:
+
+    def __init__(self, selector_class: BaseSelector, model: meta.Base):
+        self.selector_class = selector_class
+        self.model = model
+
+    def __get__(self, selectorset, _type):
+        assert issubclass(_type, BaseSelectorSet)
+
+        return self.selector_class(
+            selectorset.db,
+            self.model
+        )
+
+
 def selector_factory(selector_class: BaseSelector, model: meta.Base):
+    warnings.warn(
+        "migrate to SelectorFactory that works as descriptor to aviod global db connection",
+        DeprecationWarning
+    )
     if 'default' not in meta.DATABASES:
         raise exceptions.NoDefaultDatabase()
 

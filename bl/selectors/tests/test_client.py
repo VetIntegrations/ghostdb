@@ -15,7 +15,7 @@ class TestByID:
     def test_ok(self, default_database):
         from ..client import ClientSelector
 
-        client, ok = ClientSelector.by_id(self.client.id)
+        client, ok = ClientSelector(default_database).by_id(self.client.id)
 
         assert ok
         assert client.id == self.client.id
@@ -25,7 +25,7 @@ class TestByID:
     def test_not_found(self, default_database):
         from ..client import ClientSelector
 
-        client, ok = ClientSelector.by_id(uuid.uuid4())
+        client, ok = ClientSelector(default_database).by_id(uuid.uuid4())
 
         assert not ok
         assert client is None

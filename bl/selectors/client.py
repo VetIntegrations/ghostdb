@@ -3,7 +3,7 @@ from .utils import base, generic
 from .client_selectors import by_email as by_email_selector
 
 
-class ClientSelector:
+class ClientSelector(base.BaseSelectorSet):
 
-    by_id = base.selector_factory(generic.ByID, client.Client)
-    by_email = base.selector_factory(by_email_selector.ByEmail, client.Client)
+    by_id = base.SelectorFactory(generic.ByID, client.Client)
+    by_email = base.SelectorFactory(by_email_selector.ByEmail, client.Client)
