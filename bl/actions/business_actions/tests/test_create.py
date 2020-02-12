@@ -2,36 +2,32 @@ import pytest
 
 from ghostdb.db.models.corporation import Corporation
 from ghostdb.db.models.business import Business, BusinessContact, ContactKind
-from ghostdb.bl.actions.utils.base import action_factory
+from ghostdb.bl.actions.business import BusinessAction
 from ..create import BusinessCreate, ContactCreate
 
 
 class TestBusinessCreate:
 
     @pytest.fixture(autouse=True)
-    def setup_corporation(self, default_database):
+    def setup_corporation(self, dbsession):
         self.corp = Corporation(name='Test Corporation 1')
-        default_database.add(self.corp)
-        default_database.commit()
+        dbsession.add(self.corp)
+        dbsession.commit()
 
-    def test_ok(self, default_database):
-        create_action = action_factory(BusinessCreate)
-
+    def test_ok(self, dbsession):
         business = Business(
             corporation_id=self.corp.id,
             name='Antlers and Hooves',
             display_name='Antlers and Hooves'
         )
 
-        assert default_database.query(Business).count() == 0
-        new_business, ok = create_action(business)
+        assert dbsession.query(Business).count() == 0
+        new_business, ok = BusinessAction(dbsession).create(business)
         assert ok
         assert new_business == business
-        assert default_database.query(Business).count() == 1
+        assert dbsession.query(Business).count() == 1
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.business import BusinessAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -46,62 +42,56 @@ class TestBusinessCreate:
             display_name='Antlers and Hooves'
         )
         with pytest.raises(Called):
-            BusinessAction.create(business)
+            BusinessAction(dbsession).create(business)
 
 
 class TestBusinessContactCreate:
 
     @pytest.fixture(autouse=True)
-    def setup_business(self, default_database):
+    def setup_business(self, dbsession):
         self.corp = Corporation(name='Test Corporation 1')
         self.business = Business(
             corporation=self.corp,
             name='Antlers and Hooves',
             display_name='Antlers and Hooves'
         )
-        default_database.add(self.corp)
-        default_database.add(self.business)
-        default_database.commit()
+        dbsession.add(self.corp)
+        dbsession.add(self.business)
+        dbsession.commit()
 
-    def test_ok(self, default_database):
-        create_action = action_factory(ContactCreate)
-
+    def test_ok(self, dbsession):
         contact = BusinessContact(
             business_id=self.business.id,
             kind=ContactKind.email,
             value='aah@tcorp.local'
         )
 
-        assert default_database.query(BusinessContact).count() == 0
-        new_contact, ok = create_action(contact, self.business)
+        assert dbsession.query(BusinessContact).count() == 0
+        new_contact, ok = BusinessAction(dbsession).add_contact(contact, self.business)
         assert ok
         assert new_contact == contact
-        assert default_database.query(BusinessContact).count() == 1
+        assert dbsession.query(BusinessContact).count() == 1
 
-    def test_prefill_business(self, default_database):
-        create_action = action_factory(ContactCreate)
-
+    def test_prefill_business(self, dbsession):
         contact = BusinessContact(
             kind=ContactKind.email,
             value='aah@tcorp.local'
         )
 
-        assert default_database.query(BusinessContact).count() == 0
-        new_contact, ok = create_action(contact, self.business)
+        assert dbsession.query(BusinessContact).count() == 0
+        new_contact, ok = BusinessAction(dbsession).add_contact(contact, self.business)
         assert ok
         assert new_contact == contact
         assert new_contact.business_id == self.business.id
-        assert default_database.query(BusinessContact).count() == 1
+        assert dbsession.query(BusinessContact).count() == 1
         query_business_contact = (
-            default_database
+            dbsession
             .query(BusinessContact)
             .filter(BusinessContact.business == self.business)
         )
         assert query_business_contact.count() == 1
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.business import BusinessAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -116,4 +106,4 @@ class TestBusinessContactCreate:
             value='aah@tcorp.local'
         )
         with pytest.raises(Called):
-            BusinessAction.add_contact(contact, self.business)
+            BusinessAction(dbsession).add_contact(contact, self.business)

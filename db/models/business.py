@@ -52,6 +52,7 @@ class BusinessContact(meta.Base):
     name = Column(String(50))
     value = Column(String(100), nullable=False)
     note = Column(Text)
+    pms_ids = Column(JSON)
 
     business = relationship('Business', backref=backref('contacts'))
 
