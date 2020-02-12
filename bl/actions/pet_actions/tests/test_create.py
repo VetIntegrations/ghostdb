@@ -1,7 +1,10 @@
 import pytest
 
 from ghostdb.db.models.pet import Pet, Breed, Color, Gender, Species, WeightUnit
-from ghostdb.bl.actions.utils.base import action_factory
+from ghostdb.bl.actions.pet import (
+    PetAction, BreedAction, ColorAction, GenderAction, SpeciesAction,
+    WeightUnitAction
+)
 from ..create import (
     PetCreate, BreedCreate, ColorCreate, GenderCreate, SpeciesCreate,
     WeightUnitCreate
@@ -10,20 +13,16 @@ from ..create import (
 
 class TestPetCreate:
 
-    def test_ok(self, default_database):
-        create_action = action_factory(PetCreate)
-
+    def test_ok(self, dbsession):
         pet = Pet(name='Ricky')
 
-        assert default_database.query(Pet).count() == 0
-        new_pet, ok = create_action(pet)
+        assert dbsession.query(Pet).count() == 0
+        new_pet, ok = PetAction(dbsession).create(pet)
         assert ok
         assert new_pet == pet
-        assert default_database.query(Pet).count() == 1
+        assert dbsession.query(Pet).count() == 1
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.pet import PetAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -34,25 +33,21 @@ class TestPetCreate:
 
         pet = Pet(name='Ricky')
         with pytest.raises(Called):
-            PetAction.create(pet)
+            PetAction(dbsession).create(pet)
 
 
 class TestBreedCreate:
 
-    def test_ok(self, default_database):
-        create_action = action_factory(BreedCreate)
-
+    def test_ok(self, dbsession):
         breed = Breed(name='Beagle')
 
-        assert default_database.query(Breed).count() == 0
-        new_breed, ok = create_action(breed)
+        assert dbsession.query(Breed).count() == 0
+        new_breed, ok = BreedAction(dbsession).create(breed)
         assert ok
         assert new_breed == breed
-        assert default_database.query(Breed).count() == 1
+        assert dbsession.query(Breed).count() == 1
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.pet import BreedAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -63,25 +58,21 @@ class TestBreedCreate:
 
         breed = Breed(name='Beagle')
         with pytest.raises(Called):
-            BreedAction.create(breed)
+            BreedAction(dbsession).create(breed)
 
 
 class TestColorCreate:
 
-    def test_ok(self, default_database):
-        create_action = action_factory(ColorCreate)
-
+    def test_ok(self, dbsession):
         color = Color(name='Black')
 
-        assert default_database.query(Color).count() == 0
-        new_color, ok = create_action(color)
+        assert dbsession.query(Color).count() == 0
+        new_color, ok = ColorAction(dbsession).create(color)
         assert ok
         assert new_color == color
-        assert default_database.query(Color).count() == 1
+        assert dbsession.query(Color).count() == 1
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.pet import ColorAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -92,25 +83,21 @@ class TestColorCreate:
 
         color = Color(name='Red')
         with pytest.raises(Called):
-            ColorAction.create(color)
+            ColorAction(dbsession).create(color)
 
 
 class TestGenderCreate:
 
-    def test_ok(self, default_database):
-        create_action = action_factory(GenderCreate)
-
+    def test_ok(self, dbsession):
         gender = Gender(name='female')
 
-        assert default_database.query(Gender).count() == 0
-        new_gender, ok = create_action(gender)
+        assert dbsession.query(Gender).count() == 0
+        new_gender, ok = GenderAction(dbsession).create(gender)
         assert ok
         assert new_gender == gender
-        assert default_database.query(Gender).count() == 1
+        assert dbsession.query(Gender).count() == 1
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.pet import GenderAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -121,25 +108,21 @@ class TestGenderCreate:
 
         gender = Gender(name='female')
         with pytest.raises(Called):
-            GenderAction.create(gender)
+            GenderAction(dbsession).create(gender)
 
 
 class TestSpeciesCreate:
 
-    def test_ok(self, default_database):
-        create_action = action_factory(SpeciesCreate)
-
+    def test_ok(self, dbsession):
         species = Species(name='Canine')
 
-        assert default_database.query(Species).count() == 0
-        new_species, ok = create_action(species)
+        assert dbsession.query(Species).count() == 0
+        new_species, ok = SpeciesAction(dbsession).create(species)
         assert ok
         assert new_species == species
-        assert default_database.query(Species).count() == 1
+        assert dbsession.query(Species).count() == 1
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.pet import SpeciesAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -150,25 +133,21 @@ class TestSpeciesCreate:
 
         species = Species(name='Fanine')
         with pytest.raises(Called):
-            SpeciesAction.create(species)
+            SpeciesAction(dbsession).create(species)
 
 
 class TestWeightUnitCreate:
 
-    def test_ok(self, default_database):
-        create_action = action_factory(WeightUnitCreate)
-
+    def test_ok(self, dbsession):
         unit = WeightUnit(name='kg')
 
-        assert default_database.query(WeightUnit).count() == 0
-        new_unit, ok = create_action(unit)
+        assert dbsession.query(WeightUnit).count() == 0
+        new_unit, ok = WeightUnitAction(dbsession).create(unit)
         assert ok
         assert new_unit == unit
-        assert default_database.query(WeightUnit).count() == 1
+        assert dbsession.query(WeightUnit).count() == 1
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.pet import WeightUnitAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -179,4 +158,4 @@ class TestWeightUnitCreate:
 
         unit = WeightUnit(name='lb')
         with pytest.raises(Called):
-            WeightUnitAction.create(unit)
+            WeightUnitAction(dbsession).create(unit)
