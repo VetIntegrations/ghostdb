@@ -4,43 +4,43 @@ from .pet_actions import (
 )
 
 
-class PetAction:
+class PetAction(base.BaseActionSet):
 
-    create = base.action_factory(create_act.PetCreate)
-    update = base.action_factory(update_act.PetUpdate)
-    delete = base.action_factory(delete_act.PetDelete)
-
-
-class BreedAction:
-
-    create = base.action_factory(create_act.BreedCreate)
-    update = base.action_factory(update_act.BreedUpdate)
-    delete = base.action_factory(delete_act.BreedDelete)
+    create = base.ActionFactory(create_act.PetCreate)
+    update = base.ActionFactory(update_act.PetUpdate)
+    delete = base.ActionFactory(delete_act.PetDelete)
 
 
-class ColorAction:
+class BreedAction(base.BaseActionSet):
 
-    create = base.action_factory(create_act.ColorCreate)
-    update = base.action_factory(update_act.ColorUpdate)
-    delete = base.action_factory(delete_act.ColorDelete)
-
-
-class GenderAction:
-
-    create = base.action_factory(create_act.GenderCreate)
-    update = base.action_factory(update_act.GenderUpdate)
-    delete = base.action_factory(delete_act.GenderDelete)
+    create = base.ActionFactory(create_act.BreedCreate)
+    update = base.ActionFactory(update_act.BreedUpdate)
+    delete = base.ActionFactory(delete_act.BreedDelete)
 
 
-class SpeciesAction:
+class ColorAction(base.BaseActionSet):
 
-    create = base.action_factory(create_act.SpeciesCreate)
-    update = base.action_factory(update_act.SpeciesUpdate)
-    delete = base.action_factory(delete_act.SpeciesDelete)
+    create = base.ActionFactory(create_act.ColorCreate)
+    update = base.ActionFactory(update_act.ColorUpdate)
+    delete = base.ActionFactory(delete_act.ColorDelete)
 
 
-class WeightUnitAction:
+class GenderAction(base.BaseActionSet):
 
-    create = base.action_factory(create_act.WeightUnitCreate)
-    update = base.action_factory(update_act.WeightUnitUpdate)
-    delete = base.action_factory(delete_act.WeightUnitDelete)
+    create = base.ActionFactory(create_act.GenderCreate)
+    update = base.ActionFactory(update_act.GenderUpdate)
+    delete = base.ActionFactory(delete_act.GenderDelete)
+
+
+class SpeciesAction(base.BaseActionSet):
+
+    create = base.ActionFactory(create_act.SpeciesCreate)
+    update = base.ActionFactory(update_act.SpeciesUpdate)
+    delete = base.ActionFactory(delete_act.SpeciesDelete)
+
+
+class WeightUnitAction(base.BaseActionSet):
+
+    create = base.ActionFactory(create_act.WeightUnitCreate)
+    update = base.ActionFactory(update_act.WeightUnitUpdate)
+    delete = base.ActionFactory(delete_act.WeightUnitDelete)

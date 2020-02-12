@@ -1,7 +1,10 @@
 import pytest
 
 from ghostdb.db.models.pet import Pet, Breed, Color, Gender, Species, WeightUnit
-from ghostdb.bl.actions.utils.base import action_factory
+from ghostdb.bl.actions.pet import (
+    PetAction, BreedAction, ColorAction, GenderAction, SpeciesAction,
+    WeightUnitAction
+)
 from ..delete import (
     PetDelete, BreedDelete, ColorDelete, GenderDelete, SpeciesDelete,
     WeightUnitDelete
@@ -11,19 +14,17 @@ from ..delete import (
 class TestPetDelete:
 
     @pytest.fixture(autouse=True)
-    def setup_pet(self, default_database):
+    def setup_pet(self, dbsession):
         self.pet = Pet(name='Ricky')
-        default_database.add(self.pet)
+        dbsession.add(self.pet)
 
-    def test_ok(self, default_database):
-        delete_action = action_factory(PetDelete)
-
-        assert default_database.query(Pet).count() == 1
-        _, ok = delete_action(self.pet)
+    def test_ok(self, dbsession):
+        assert dbsession.query(Pet).count() == 1
+        _, ok = PetAction(dbsession).delete(self.pet)
         assert ok
-        assert default_database.query(Pet).count() == 0
+        assert dbsession.query(Pet).count() == 0
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         from ghostdb.bl.actions.pet import PetAction
 
         class Called(Exception):
@@ -35,40 +36,34 @@ class TestPetDelete:
         monkeypatch.setattr(PetDelete, 'process', process)
 
         with pytest.raises(Called):
-            PetAction.delete(self.pet)
+            PetAction(dbsession).delete(self.pet)
 
-    def test_delete_right_record(self, default_database):
+    def test_delete_right_record(self, dbsession):
         pet = Pet(name='Buch')
-        default_database.add(pet)
+        dbsession.add(pet)
 
-        delete_action = action_factory(PetDelete)
-
-        assert default_database.query(Pet).count() == 2
-        _, ok = delete_action(self.pet)
+        assert dbsession.query(Pet).count() == 2
+        _, ok = PetAction(dbsession).delete(self.pet)
         assert ok
-        assert default_database.query(Pet).count() == 1
+        assert dbsession.query(Pet).count() == 1
 
-        assert default_database.query(Pet)[0] == pet
+        assert dbsession.query(Pet)[0] == pet
 
 
 class TestBreedDelete:
 
     @pytest.fixture(autouse=True)
-    def setup_breed(self, default_database):
+    def setup_breed(self, dbsession):
         self.breed = Breed(name='Beagle')
-        default_database.add(self.breed)
+        dbsession.add(self.breed)
 
-    def test_ok(self, default_database):
-        delete_action = action_factory(BreedDelete)
-
-        assert default_database.query(Breed).count() == 1
-        _, ok = delete_action(self.breed)
+    def test_ok(self, dbsession):
+        assert dbsession.query(Breed).count() == 1
+        _, ok = BreedAction(dbsession).delete(self.breed)
         assert ok
-        assert default_database.query(Breed).count() == 0
+        assert dbsession.query(Breed).count() == 0
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.pet import BreedAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -78,40 +73,34 @@ class TestBreedDelete:
         monkeypatch.setattr(BreedDelete, 'process', process)
 
         with pytest.raises(Called):
-            BreedAction.delete(self.breed)
+            BreedAction(dbsession).delete(self.breed)
 
-    def test_delete_right_record(self, default_database):
+    def test_delete_right_record(self, dbsession):
         breed = Breed(name='American Staffordshire Terrier')
-        default_database.add(breed)
+        dbsession.add(breed)
 
-        delete_action = action_factory(BreedDelete)
-
-        assert default_database.query(Breed).count() == 2
-        _, ok = delete_action(self.breed)
+        assert dbsession.query(Breed).count() == 2
+        _, ok = BreedAction(dbsession).delete(self.breed)
         assert ok
-        assert default_database.query(Breed).count() == 1
+        assert dbsession.query(Breed).count() == 1
 
-        assert default_database.query(Breed)[0] == breed
+        assert dbsession.query(Breed)[0] == breed
 
 
 class TestColorDelete:
 
     @pytest.fixture(autouse=True)
-    def setup_color(self, default_database):
+    def setup_color(self, dbsession):
         self.color = Color(name='Black')
-        default_database.add(self.color)
+        dbsession.add(self.color)
 
-    def test_ok(self, default_database):
-        delete_action = action_factory(ColorDelete)
-
-        assert default_database.query(Color).count() == 1
-        _, ok = delete_action(self.color)
+    def test_ok(self, dbsession):
+        assert dbsession.query(Color).count() == 1
+        _, ok = ColorAction(dbsession).delete(self.color)
         assert ok
-        assert default_database.query(Color).count() == 0
+        assert dbsession.query(Color).count() == 0
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.pet import ColorAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -121,40 +110,34 @@ class TestColorDelete:
         monkeypatch.setattr(ColorDelete, 'process', process)
 
         with pytest.raises(Called):
-            ColorAction.delete(self.color)
+            ColorAction(dbsession).delete(self.color)
 
-    def test_delete_right_record(self, default_database):
+    def test_delete_right_record(self, dbsession):
         color = Color(name='Red')
-        default_database.add(color)
+        dbsession.add(color)
 
-        delete_action = action_factory(ColorDelete)
-
-        assert default_database.query(Color).count() == 2
-        _, ok = delete_action(self.color)
+        assert dbsession.query(Color).count() == 2
+        _, ok = ColorAction(dbsession).delete(self.color)
         assert ok
-        assert default_database.query(Color).count() == 1
+        assert dbsession.query(Color).count() == 1
 
-        assert default_database.query(Color)[0] == color
+        assert dbsession.query(Color)[0] == color
 
 
 class TestGenderDelete:
 
     @pytest.fixture(autouse=True)
-    def setup_gender(self, default_database):
+    def setup_gender(self, dbsession):
         self.gender = Gender(name='female')
-        default_database.add(self.gender)
+        dbsession.add(self.gender)
 
-    def test_ok(self, default_database):
-        delete_action = action_factory(GenderDelete)
-
-        assert default_database.query(Gender).count() == 1
-        _, ok = delete_action(self.gender)
+    def test_ok(self, dbsession):
+        assert dbsession.query(Gender).count() == 1
+        _, ok = GenderAction(dbsession).delete(self.gender)
         assert ok
-        assert default_database.query(Gender).count() == 0
+        assert dbsession.query(Gender).count() == 0
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.pet import GenderAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -164,40 +147,34 @@ class TestGenderDelete:
         monkeypatch.setattr(GenderDelete, 'process', process)
 
         with pytest.raises(Called):
-            GenderAction.delete(self.gender)
+            GenderAction(dbsession).delete(self.gender)
 
-    def test_delete_right_record(self, default_database):
+    def test_delete_right_record(self, dbsession):
         gender = Gender(name='male')
-        default_database.add(gender)
+        dbsession.add(gender)
 
-        delete_action = action_factory(GenderDelete)
-
-        assert default_database.query(Gender).count() == 2
-        _, ok = delete_action(self.gender)
+        assert dbsession.query(Gender).count() == 2
+        _, ok = GenderAction(dbsession).delete(self.gender)
         assert ok
-        assert default_database.query(Gender).count() == 1
+        assert dbsession.query(Gender).count() == 1
 
-        assert default_database.query(Gender)[0] == gender
+        assert dbsession.query(Gender)[0] == gender
 
 
 class TestSpeciesDelete:
 
     @pytest.fixture(autouse=True)
-    def setup_species(self, default_database):
+    def setup_species(self, dbsession):
         self.species = Species(name='Canine')
-        default_database.add(self.species)
+        dbsession.add(self.species)
 
-    def test_ok(self, default_database):
-        delete_action = action_factory(SpeciesDelete)
-
-        assert default_database.query(Species).count() == 1
-        _, ok = delete_action(self.species)
+    def test_ok(self, dbsession):
+        assert dbsession.query(Species).count() == 1
+        _, ok = SpeciesAction(dbsession).delete(self.species)
         assert ok
-        assert default_database.query(Species).count() == 0
+        assert dbsession.query(Species).count() == 0
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.pet import SpeciesAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -207,40 +184,34 @@ class TestSpeciesDelete:
         monkeypatch.setattr(SpeciesDelete, 'process', process)
 
         with pytest.raises(Called):
-            SpeciesAction.delete(self.species)
+            SpeciesAction(dbsession).delete(self.species)
 
-    def test_delete_right_record(self, default_database):
+    def test_delete_right_record(self, dbsession):
         species = Species(name='Fenine')
-        default_database.add(species)
+        dbsession.add(species)
 
-        delete_action = action_factory(SpeciesDelete)
-
-        assert default_database.query(Species).count() == 2
-        _, ok = delete_action(self.species)
+        assert dbsession.query(Species).count() == 2
+        _, ok = SpeciesAction(dbsession).delete(self.species)
         assert ok
-        assert default_database.query(Species).count() == 1
+        assert dbsession.query(Species).count() == 1
 
-        assert default_database.query(Species)[0] == species
+        assert dbsession.query(Species)[0] == species
 
 
 class TestWeightUnitDelete:
 
     @pytest.fixture(autouse=True)
-    def setup_weight_unit(self, default_database):
+    def setup_weight_unit(self, dbsession):
         self.weight_unit = WeightUnit(name='kg')
-        default_database.add(self.weight_unit)
+        dbsession.add(self.weight_unit)
 
-    def test_ok(self, default_database):
-        delete_action = action_factory(WeightUnitDelete)
-
-        assert default_database.query(WeightUnit).count() == 1
-        _, ok = delete_action(self.weight_unit)
+    def test_ok(self, dbsession):
+        assert dbsession.query(WeightUnit).count() == 1
+        _, ok = WeightUnitAction(dbsession).delete(self.weight_unit)
         assert ok
-        assert default_database.query(WeightUnit).count() == 0
+        assert dbsession.query(WeightUnit).count() == 0
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.pet import WeightUnitAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -250,17 +221,15 @@ class TestWeightUnitDelete:
         monkeypatch.setattr(WeightUnitDelete, 'process', process)
 
         with pytest.raises(Called):
-            WeightUnitAction.delete(self.weight_unit)
+            WeightUnitAction(dbsession).delete(self.weight_unit)
 
-    def test_delete_right_record(self, default_database):
+    def test_delete_right_record(self, dbsession):
         unit = WeightUnit(name='Fenine')
-        default_database.add(unit)
+        dbsession.add(unit)
 
-        delete_action = action_factory(WeightUnitDelete)
-
-        assert default_database.query(WeightUnit).count() == 2
-        _, ok = delete_action(self.weight_unit)
+        assert dbsession.query(WeightUnit).count() == 2
+        _, ok = WeightUnitAction(dbsession).delete(self.weight_unit)
         assert ok
-        assert default_database.query(WeightUnit).count() == 1
+        assert dbsession.query(WeightUnit).count() == 1
 
-        assert default_database.query(WeightUnit)[0] == unit
+        assert dbsession.query(WeightUnit)[0] == unit
