@@ -2,6 +2,6 @@ from ghostdb.db.models import business
 from .utils import base, generic
 
 
-class BusinessSelector:
+class BusinessSelector(base.BaseSelectorSet):
 
-    by_id = base.selector_factory(generic.ByID, business.Business)
+    by_id = base.SelectorFactory(generic.ByID, business.Business)

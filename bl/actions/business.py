@@ -4,12 +4,12 @@ from .business_actions import (
 )
 
 
-class BusinessAction:
+class BusinessAction(base.BaseActionSet):
 
-    create = base.action_factory(create_act.BusinessCreate)
-    update = base.action_factory(update_act.BusinessUpdate)
-    delete = base.action_factory(delete_act.BusinessDelete)
+    create = base.ActionFactory(create_act.BusinessCreate)
+    update = base.ActionFactory(update_act.BusinessUpdate)
+    delete = base.ActionFactory(delete_act.BusinessDelete)
 
-    add_contact = base.action_factory(create_act.ContactCreate)
-    update_contact = base.action_factory(update_act.ContactUpdate)
-    remove_contact = base.action_factory(delete_act.ContactDelete)
+    add_contact = base.ActionFactory(create_act.ContactCreate)
+    update_contact = base.ActionFactory(update_act.ContactUpdate)
+    remove_contact = base.ActionFactory(delete_act.ContactDelete)
