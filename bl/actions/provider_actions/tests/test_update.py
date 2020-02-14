@@ -1,38 +1,34 @@
 import pytest
 
-from ghostdb.db.models.provider import Provider, ProviderContact, ContactKind
-from ghostdb.bl.actions.utils.base import action_factory
-from ..update import ProviderUpdate, ContactUpdate
+from ghostdb.db.models.provider import Provider, ProviderContact, ContactKind, ProviderKind
+from ghostdb.bl.actions.provider import ProviderAction, ProviderKindAction
+from ..update import ProviderUpdate, ContactUpdate, ProviderKindUpdate
 
 
 class TestProviderUpdate:
 
     @pytest.fixture(autouse=True)
-    def setup_provider(self, default_database):
+    def setup_provider(self, dbsession):
         self.provider = Provider(first_name='John', last_name='Doe')
-        default_database.add(self.provider)
+        dbsession.add(self.provider)
 
-    def test_ok(self, default_database):
-        update_action = action_factory(ProviderUpdate)
-
+    def test_ok(self, dbsession):
         new_last_name = 'Krispi'
         assert new_last_name != self.provider.last_name
 
         self.provider.last_name = new_last_name
 
-        assert default_database.query(Provider).count() == 1
-        provider, ok = update_action(self.provider)
+        assert dbsession.query(Provider).count() == 1
+        provider, ok = ProviderAction(dbsession).update(self.provider)
         assert ok
         assert provider == self.provider
-        assert default_database.query(Provider).count() == 1
+        assert dbsession.query(Provider).count() == 1
 
-        updated_provider = default_database.query(Provider)[0]
+        updated_provider = dbsession.query(Provider)[0]
         assert updated_provider.id == self.provider.id
         assert updated_provider.last_name == new_last_name
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.provider import ProviderAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -42,31 +38,29 @@ class TestProviderUpdate:
         monkeypatch.setattr(ProviderUpdate, 'process', process)
 
         with pytest.raises(Called):
-            ProviderAction.update(self.provider)
+            ProviderAction(dbsession).update(self.provider)
 
-    def test_update_right_record(self, default_database):
+    def test_update_right_record(self, dbsession):
         provider2 = Provider(first_name='Jane', last_name='Doe')
-        default_database.add(provider2)
-
-        update_action = action_factory(ProviderUpdate)
+        dbsession.add(provider2)
 
         new_last_name = 'Ktulhu'
         assert new_last_name != self.provider.last_name
 
         self.provider.last_name = new_last_name
 
-        assert default_database.query(Provider).count() == 2
-        _, ok = update_action(self.provider)
+        assert dbsession.query(Provider).count() == 2
+        _, ok = ProviderAction(dbsession).update(self.provider)
         assert ok
-        assert default_database.query(Provider).count() == 2
+        assert dbsession.query(Provider).count() == 2
 
-        updated_provider = default_database.query(Provider).filter(
+        updated_provider = dbsession.query(Provider).filter(
             Provider.id == self.provider.id,
             Provider.last_name == new_last_name
         )
         assert updated_provider.count() == 1
 
-        stay_provider = default_database.query(Provider).filter(
+        stay_provider = dbsession.query(Provider).filter(
             Provider.id == provider2.id,
             Provider.last_name == provider2.last_name
         )
@@ -76,38 +70,34 @@ class TestProviderUpdate:
 class TestProviderContactUpdate:
 
     @pytest.fixture(autouse=True)
-    def setup_contact(self, default_database):
+    def setup_contact(self, dbsession):
         self.provider = Provider(first_name='John', last_name='Doe')
         self.contact = ProviderContact(
             provider=self.provider,
             kind=ContactKind.phone,
             value='+5874923'
         )
-        default_database.add(self.provider)
-        default_database.add(self.contact)
-        default_database.commit()
+        dbsession.add(self.provider)
+        dbsession.add(self.contact)
+        dbsession.commit()
 
-    def test_ok(self, default_database):
-        update_action = action_factory(ContactUpdate)
-
+    def test_ok(self, dbsession):
         new_value = '+473829473'
         assert new_value != self.contact.value
 
         self.contact.value = new_value
 
-        assert default_database.query(ProviderContact).count() == 1
-        contact, ok = update_action(self.contact, self.provider)
+        assert dbsession.query(ProviderContact).count() == 1
+        contact, ok = ProviderAction(dbsession).update_contact(self.contact, self.provider)
         assert ok
         assert contact == self.contact
-        assert default_database.query(ProviderContact).count() == 1
+        assert dbsession.query(ProviderContact).count() == 1
 
-        updated_contact = default_database.query(ProviderContact)[0]
+        updated_contact = dbsession.query(ProviderContact)[0]
         assert updated_contact.id == self.contact.id
         assert updated_contact.value == new_value
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.provider import ProviderAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -117,36 +107,96 @@ class TestProviderContactUpdate:
         monkeypatch.setattr(ContactUpdate, 'process', process)
 
         with pytest.raises(Called):
-            ProviderAction.update_contact(self.contact, self.provider)
+            ProviderAction(dbsession).update_contact(self.contact, self.provider)
 
-    def test_update_right_record(self, default_database):
+    def test_update_right_record(self, dbsession):
         contact2 = ProviderContact(
             provider=self.provider,
             kind=ContactKind.phone,
             value='+483254794'
         )
-        default_database.add(contact2)
-
-        update_action = action_factory(ContactUpdate)
+        dbsession.add(contact2)
 
         new_value = '+9685749821'
         assert new_value != self.contact.value
 
         self.contact.value = new_value
 
-        assert default_database.query(ProviderContact).count() == 2
-        _, ok = update_action(self.contact, self.provider)
+        assert dbsession.query(ProviderContact).count() == 2
+        _, ok = ProviderAction(dbsession).update_contact(self.contact, self.provider)
         assert ok
-        assert default_database.query(ProviderContact).count() == 2
+        assert dbsession.query(ProviderContact).count() == 2
 
-        updated_contact = default_database.query(ProviderContact).filter(
+        updated_contact = dbsession.query(ProviderContact).filter(
             ProviderContact.id == self.contact.id,
             ProviderContact.value == new_value
         )
         assert updated_contact.count() == 1
 
-        stay_contact = default_database.query(ProviderContact).filter(
+        stay_contact = dbsession.query(ProviderContact).filter(
             ProviderContact.id == contact2.id,
             ProviderContact.value == contact2.value
         )
         assert stay_contact.count() == 1
+
+
+class TestProviderKindUpdate:
+
+    @pytest.fixture(autouse=True)
+    def setup_kind(self, dbsession):
+        self.kind = ProviderKind(name='Doctor')
+        dbsession.add(self.kind)
+
+    def test_ok(self, dbsession):
+        new_name = 'Groomer'
+        assert new_name != self.kind.name
+
+        self.kind.name = new_name
+
+        assert dbsession.query(ProviderKind).count() == 1
+        kind, ok = ProviderKindAction(dbsession).update(self.kind)
+        assert ok
+        assert kind == self.kind
+        assert dbsession.query(ProviderKind).count() == 1
+
+        updated_kind = dbsession.query(ProviderKind)[0]
+        assert updated_kind.id == self.kind.id
+        assert updated_kind.name == new_name
+
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
+        class Called(Exception):
+            ...
+
+        def process(self, *args, **kwargs):
+            raise Called()
+
+        monkeypatch.setattr(ProviderKindUpdate, 'process', process)
+
+        with pytest.raises(Called):
+            ProviderKindAction(dbsession).update(self.kind)
+
+    def test_update_right_record(self, dbsession):
+        kind2 = ProviderKind(name='Masseur')
+        dbsession.add(kind2)
+
+        new_name = 'Groomer'
+        assert new_name != self.kind.name
+
+        self.kind.name = new_name
+
+        assert dbsession.query(ProviderKind).count() == 2
+        _, ok = ProviderKindAction(dbsession).update(self.kind)
+        assert ok
+        assert dbsession.query(ProviderKind).count() == 2
+
+        updated_kind = dbsession.query(ProviderKind).filter(
+            ProviderKind.id == self.kind.id,
+            ProviderKind.name == new_name
+        )
+        assert updated_kind.count() == 1
+
+        stay_kind = dbsession.query(ProviderKind).filter(
+            ProviderKind.id == kind2.id,
+            ProviderKind.name == kind2.name
+        )
+        assert stay_kind.count() == 1
