@@ -4,12 +4,19 @@ from .provider_actions import (
 )
 
 
-class ProviderAction:
+class ProviderAction(base.BaseActionSet):
 
-    create = base.action_factory(create_act.ProviderCreate)
-    update = base.action_factory(update_act.ProviderUpdate)
-    delete = base.action_factory(delete_act.ProviderDelete)
+    create = base.ActionFactory(create_act.ProviderCreate)
+    update = base.ActionFactory(update_act.ProviderUpdate)
+    delete = base.ActionFactory(delete_act.ProviderDelete)
 
-    add_contact = base.action_factory(create_act.ContactCreate)
-    update_contact = base.action_factory(update_act.ContactUpdate)
-    remove_contact = base.action_factory(delete_act.ContactDelete)
+    add_contact = base.ActionFactory(create_act.ContactCreate)
+    update_contact = base.ActionFactory(update_act.ContactUpdate)
+    remove_contact = base.ActionFactory(delete_act.ContactDelete)
+
+
+class ProviderKindAction(base.BaseActionSet):
+
+    create = base.ActionFactory(create_act.ProviderKindCreate)
+    update = base.ActionFactory(update_act.ProviderKindUpdate)
+    delete = base.ActionFactory(delete_act.ProviderKindDelete)

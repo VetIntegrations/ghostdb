@@ -27,3 +27,12 @@ class ContactCreate(base.BaseAction):
         self.db.commit()
 
         return (contact, True)
+
+
+class ProviderKindCreate(base.BaseAction):
+
+    def process(self, kind: provider.ProviderKind) -> typing.Tuple[provider.ProviderKind, bool]:
+        self.db.add(kind)
+        self.db.commit()
+
+        return (kind, True)

@@ -26,3 +26,12 @@ class ContactDelete(base.BaseAction):
         self.db.commit()
 
         return (contact, True)
+
+
+class ProviderKindDelete(base.BaseAction):
+
+    def process(self, kind: provider.ProviderKind) -> typing.Tuple[provider.ProviderKind, bool]:
+        self.db.delete(kind)
+        self.db.commit()
+
+        return (kind, True)
