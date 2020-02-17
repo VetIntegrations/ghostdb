@@ -11,3 +11,21 @@ class AppointmentCreate(base.BaseAction):
         self.db.commit()
 
         return (_appiontment, True)
+
+
+class AppointmentSourceCreate(base.BaseAction):
+
+    def process(self, source: appointment.AppointmentSource) -> typing.Tuple[appointment.AppointmentSource, bool]:
+        self.db.add(source)
+        self.db.commit()
+
+        return (source, True)
+
+
+class AppointmentKindCreate(base.BaseAction):
+
+    def process(self, kind: appointment.AppointmentKind) -> typing.Tuple[appointment.AppointmentKind, bool]:
+        self.db.add(kind)
+        self.db.commit()
+
+        return (kind, True)

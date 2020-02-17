@@ -4,8 +4,22 @@ from .appointment_actions import (
 )
 
 
-class AppointmentAction:
+class AppointmentAction(base.BaseActionSet):
 
-    create = base.action_factory(create_act.AppointmentCreate)
-    update = base.action_factory(update_act.AppointmentUpdate)
-    delete = base.action_factory(delete_act.AppointmentDelete)
+    create = base.ActionFactory(create_act.AppointmentCreate)
+    update = base.ActionFactory(update_act.AppointmentUpdate)
+    delete = base.ActionFactory(delete_act.AppointmentDelete)
+
+
+class AppointmentSourceAction(base.BaseActionSet):
+
+    create = base.ActionFactory(create_act.AppointmentSourceCreate)
+    update = base.ActionFactory(update_act.AppointmentSourceUpdate)
+    delete = base.ActionFactory(delete_act.AppointmentSourceDelete)
+
+
+class AppointmentKindAction(base.BaseActionSet):
+
+    create = base.ActionFactory(create_act.AppointmentKindCreate)
+    update = base.ActionFactory(update_act.AppointmentKindUpdate)
+    delete = base.ActionFactory(delete_act.AppointmentKindDelete)
