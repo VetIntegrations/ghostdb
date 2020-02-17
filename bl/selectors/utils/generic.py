@@ -25,7 +25,6 @@ class ByIName(base.BaseSelector):
             self.db.query(self.model)
             .filter(func.lower(self.model.name) == func.lower(name))
         )
-
         obj = query.first()
 
         return (obj, obj is not None)

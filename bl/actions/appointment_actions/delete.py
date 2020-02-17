@@ -11,3 +11,21 @@ class AppointmentDelete(base.BaseAction):
         self.db.commit()
 
         return (_appiontment, True)
+
+
+class AppointmentSourceDelete(base.BaseAction):
+
+    def process(self, source: appointment.AppointmentSource) -> typing.Tuple[appointment.AppointmentSource, bool]:
+        self.db.delete(source)
+        self.db.commit()
+
+        return (source, True)
+
+
+class AppointmentKindDelete(base.BaseAction):
+
+    def process(self, kind: appointment.AppointmentKind) -> typing.Tuple[appointment.AppointmentKind, bool]:
+        self.db.delete(kind)
+        self.db.commit()
+
+        return (kind, True)
