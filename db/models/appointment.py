@@ -41,7 +41,7 @@ class Appointment(meta.Base):
     duration = Column(Integer)
     scheduled_time = Column(DateTime)
     status = Column(Enum(Status))
-    reason = Column(String(500))
+    reason = Column(Text)
     note = Column(Text)
     pms_ids = Column(JSON, default={})
 
