@@ -4,50 +4,50 @@ from .code_actions import (
 )
 
 
-class RevenueCenterAction:
+class RevenueCenterAction(base.BaseActionSet):
 
-    create = base.action_factory(create_act.RevenueCenterCreate)
-    update = base.action_factory(update_act.RevenueCenterUpdate)
-    delete = base.action_factory(delete_act.RevenueCenterDelete)
-
-
-class DepartmentAction:
-
-    create = base.action_factory(create_act.DepartmentCreate)
-    update = base.action_factory(update_act.DepartmentUpdate)
-    delete = base.action_factory(delete_act.DepartmentDelete)
+    create = base.ActionFactory(create_act.RevenueCenterCreate)
+    update = base.ActionFactory(update_act.RevenueCenterUpdate)
+    delete = base.ActionFactory(delete_act.RevenueCenterDelete)
 
 
-class CategoryAction:
+class DepartmentAction(base.BaseActionSet):
 
-    create = base.action_factory(create_act.CategoryCreate)
-    update = base.action_factory(update_act.CategoryUpdate)
-    delete = base.action_factory(delete_act.CategoryDelete)
-
-
-class ClassAction:
-
-    create = base.action_factory(create_act.ClassCreate)
-    update = base.action_factory(update_act.ClassUpdate)
-    delete = base.action_factory(delete_act.ClassDelete)
+    create = base.ActionFactory(create_act.DepartmentCreate)
+    update = base.ActionFactory(update_act.DepartmentUpdate)
+    delete = base.ActionFactory(delete_act.DepartmentDelete)
 
 
-class SubClassAction:
+class CategoryAction(base.BaseActionSet):
 
-    create = base.action_factory(create_act.SubClassCreate)
-    update = base.action_factory(update_act.SubClassUpdate)
-    delete = base.action_factory(delete_act.SubClassDelete)
-
-
-class ServiceTypeAction:
-
-    create = base.action_factory(create_act.ServiceTypeCreate)
-    update = base.action_factory(update_act.ServiceTypeUpdate)
-    delete = base.action_factory(delete_act.ServiceTypeDelete)
+    create = base.ActionFactory(create_act.CategoryCreate)
+    update = base.ActionFactory(update_act.CategoryUpdate)
+    delete = base.ActionFactory(delete_act.CategoryDelete)
 
 
-class ServiceAction:
+class ClassAction(base.BaseActionSet):
 
-    create = base.action_factory(create_act.ServiceCreate)
-    update = base.action_factory(update_act.ServiceUpdate)
-    delete = base.action_factory(delete_act.ServiceDelete)
+    create = base.ActionFactory(create_act.ClassCreate)
+    update = base.ActionFactory(update_act.ClassUpdate)
+    delete = base.ActionFactory(delete_act.ClassDelete)
+
+
+class SubClassAction(base.BaseActionSet):
+
+    create = base.ActionFactory(create_act.SubClassCreate)
+    update = base.ActionFactory(update_act.SubClassUpdate)
+    delete = base.ActionFactory(delete_act.SubClassDelete)
+
+
+class ServiceTypeAction(base.BaseActionSet):
+
+    create = base.ActionFactory(create_act.ServiceTypeCreate)
+    update = base.ActionFactory(update_act.ServiceTypeUpdate)
+    delete = base.ActionFactory(delete_act.ServiceTypeDelete)
+
+
+class ServiceAction(base.BaseActionSet):
+
+    create = base.ActionFactory(create_act.ServiceCreate)
+    update = base.ActionFactory(update_act.ServiceUpdate)
+    delete = base.ActionFactory(delete_act.ServiceDelete)

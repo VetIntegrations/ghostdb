@@ -1,45 +1,44 @@
 from ghostdb.db.models import code
 from .utils import base, generic
-from .code_selectors import by_name as by_name_selector
 
 
-class RevenueCenterSelector:
+class RevenueCenterSelector(base.BaseSelectorSet):
 
-    by_id = base.selector_factory(generic.ByID, code.RevenueCenter)
-    by_name = base.selector_factory(by_name_selector.ByName, code.RevenueCenter)
-
-
-class DepartmentSelector:
-
-    by_id = base.selector_factory(generic.ByID, code.Department)
-    by_name = base.selector_factory(by_name_selector.ByName, code.Department)
+    by_id = base.SelectorFactory(generic.ByID, code.RevenueCenter)
+    by_iname = base.SelectorFactory(generic.ByIName, code.RevenueCenter)
 
 
-class CategorySelector:
+class DepartmentSelector(base.BaseSelectorSet):
 
-    by_id = base.selector_factory(generic.ByID, code.Category)
-    by_name = base.selector_factory(by_name_selector.ByName, code.Category)
-
-
-class ClassSelector:
-
-    by_id = base.selector_factory(generic.ByID, code.Class)
-    by_name = base.selector_factory(by_name_selector.ByName, code.Class)
+    by_id = base.SelectorFactory(generic.ByID, code.Department)
+    by_iname = base.SelectorFactory(generic.ByIName, code.Department)
 
 
-class SubClassSelector:
+class CategorySelector(base.BaseSelectorSet):
 
-    by_id = base.selector_factory(generic.ByID, code.SubClass)
-    by_name = base.selector_factory(by_name_selector.ByName, code.SubClass)
-
-
-class ServiceTypeSelector:
-
-    by_id = base.selector_factory(generic.ByID, code.ServiceType)
-    by_name = base.selector_factory(by_name_selector.ByName, code.ServiceType)
+    by_id = base.SelectorFactory(generic.ByID, code.Category)
+    by_iname = base.SelectorFactory(generic.ByIName, code.Category)
 
 
-class ServiceSelector:
+class ClassSelector(base.BaseSelectorSet):
 
-    by_id = base.selector_factory(generic.ByID, code.Service)
-    by_name = base.selector_factory(by_name_selector.ByName, code.Service)
+    by_id = base.SelectorFactory(generic.ByID, code.Class)
+    by_iname = base.SelectorFactory(generic.ByIName, code.Class)
+
+
+class SubClassSelector(base.BaseSelectorSet):
+
+    by_id = base.SelectorFactory(generic.ByID, code.SubClass)
+    by_iname = base.SelectorFactory(generic.ByIName, code.SubClass)
+
+
+class ServiceTypeSelector(base.BaseSelectorSet):
+
+    by_id = base.SelectorFactory(generic.ByID, code.ServiceType)
+    by_iname = base.SelectorFactory(generic.ByIName, code.ServiceType)
+
+
+class ServiceSelector(base.BaseSelectorSet):
+
+    by_id = base.SelectorFactory(generic.ByID, code.Service)
+    by_iname = base.SelectorFactory(generic.ByIName, code.Service)

@@ -1,6 +1,8 @@
 import enum
 import uuid
-from sqlalchemy import Column, String, ForeignKey, DateTime, JSON, Boolean, Enum
+from sqlalchemy import (
+    Column, String, ForeignKey, DateTime, JSON, Boolean, Enum, Table, Numeric
+)
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql import func
 
@@ -14,6 +16,7 @@ class RevenueCenter(meta.Base):
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
     name = Column(String(100), unique=True, nullable=False)
     is_vis_default = Column(Boolean, default=False)
+    pms_ids = Column(JSON)
 
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
@@ -28,6 +31,7 @@ class Department(meta.Base):
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
     name = Column(String(100), unique=True, nullable=False)
     is_vis_default = Column(Boolean, default=False)
+    pms_ids = Column(JSON)
 
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
@@ -42,12 +46,13 @@ class Category(meta.Base):
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
     name = Column(String(100), unique=True, nullable=False)
     is_vis_default = Column(Boolean, default=False)
+    pms_ids = Column(JSON)
 
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
 
     def __repr__(self):
-        return '<Department name={}>'.format(self.name)
+        return '<Category name={}>'.format(self.name)
 
 
 class Class(meta.Base):
@@ -56,6 +61,7 @@ class Class(meta.Base):
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
     name = Column(String(100), unique=True, nullable=False)
     is_vis_default = Column(Boolean, default=False)
+    pms_ids = Column(JSON)
 
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
@@ -70,6 +76,7 @@ class SubClass(meta.Base):
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
     name = Column(String(100), unique=True, nullable=False)
     is_vis_default = Column(Boolean, default=False)
+    pms_ids = Column(JSON)
 
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
@@ -84,6 +91,7 @@ class ServiceType(meta.Base):
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
     name = Column(String(100), unique=True, nullable=False)
     is_vis_default = Column(Boolean, default=False)
+    pms_ids = Column(JSON)
 
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
@@ -92,26 +100,58 @@ class ServiceType(meta.Base):
         return '<ServiceType name={}>'.format(self.name)
 
 
+subclass_rel_table = Table(
+    'glcode_srv_subclass_rel',
+    meta.Base.metadata,
+    Column('subclass', sqltypes.UUID, ForeignKey('glcode_subclass.id')),
+    Column('service', sqltypes.UUID, ForeignKey('glcode_service.id'))
+)
+
+
+servicetype_rel_table = Table(
+    'glcode_srv_servicetype_rel',
+    meta.Base.metadata,
+    Column('service_type', sqltypes.UUID, ForeignKey('glcode_servicetype.id')),
+    Column('service', sqltypes.UUID, ForeignKey('glcode_service.id'))
+)
+
+
 class ServiceKind(enum.Enum):
-    service = 'Service'
-    product = 'Product'
-    inventory = 'Inventory'
-    admin = 'Admin.'
+    SERVICE = 'Service'
+    PRODUCT = 'Product'
+    INVENTORY = 'Inventory'
+    ADMIN = 'Admin'
+
+    GROUPITEM = 'GroupItem'
+    DISCOUNT = 'Discount'
+    MEDICAL = 'Medical'
+    DIAGNOSTIC = 'Diagnostic'
+    SALES_TAX = 'Sales Tax'
+    PROBLEM = 'Problem'
+    PAYMENT = 'Payment'
+    TYPE = 'Type'
 
 
 class Service(meta.Base):
     __tablename__ = 'glcode_service'
 
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
-    name = Column(String(100), unique=True, nullable=False)
-    kind = Column(Enum(ServiceKind), nullable=False)
+    business_id = Column(sqltypes.UUID, ForeignKey('businesses.id'))
+    name = Column(String(200), nullable=False)
+    category_description = Column(String(200))
+    kind = Column(Enum(ServiceKind))
     revenue_center_id = Column(sqltypes.UUID, ForeignKey('glcode_revenuecenter.id'))
     department_id = Column(sqltypes.UUID, ForeignKey('glcode_department.id'))
     category_id = Column(sqltypes.UUID, ForeignKey('glcode_category.id'))
     class_id = Column(sqltypes.UUID, ForeignKey('glcode_class.id'))
-    subclass_id = Column(sqltypes.UUID, ForeignKey('glcode_subclass.id'))
-    servicetype_id = Column(sqltypes.UUID, ForeignKey('glcode_servicetype.id'))
     is_vis_default = Column(Boolean, default=False)
+    base_price = Column(Numeric)
+    dispensing_fee = Column(Numeric)
+    paid_doses = Column(Numeric)  # int or float
+    free_doses = Column(Numeric)  # int or float
+    unit_of_measure = Column(String(50))
+    active = Column(Boolean)
+    verified = Column(Boolean)
     pms_ids = Column(JSON)
 
     created_at = Column(DateTime, server_default=func.now())
@@ -121,8 +161,9 @@ class Service(meta.Base):
     department = relationship('Department', backref=backref('services'))
     category = relationship('Category', backref=backref('services'))
     klass = relationship('Class', backref=backref('services'))
-    subclass = relationship('SubClass', backref=backref('services'))
-    service_type = relationship('ServiceType', backref=backref('services'))
+    subclass = relationship('SubClass', secondary=subclass_rel_table, backref=backref('services'))
+    service_type = relationship('ServiceType', secondary=servicetype_rel_table, backref=backref('services'))
+    business = relationship('Business', backref=backref('glcode_services'))
 
     def __repr__(self):
         return '<Service name={}>'.format(self.name)
