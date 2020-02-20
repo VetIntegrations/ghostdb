@@ -4,7 +4,10 @@ from ghostdb.db.models.code import (
     RevenueCenter, Department, Category, Class, SubClass, ServiceType,
     Service, ServiceKind
 )
-from ghostdb.bl.actions.utils.base import action_factory
+from ghostdb.bl.actions.code import (
+    RevenueCenterAction, DepartmentAction, CategoryAction, ClassAction,
+    SubClassAction, ServiceTypeAction, ServiceAction
+)
 from ..update import (
     RevenueCenterUpdate, DepartmentUpdate, CategoryUpdate, ClassUpdate,
     SubClassUpdate, ServiceTypeUpdate, ServiceUpdate
@@ -12,38 +15,36 @@ from ..update import (
 
 
 @pytest.mark.parametrize(
-    'model, action_class, actionset_name',
+    'model, action_class, actionset',
     (
-        (RevenueCenter, RevenueCenterUpdate, 'RevenueCenterAction', ),
-        (Department, DepartmentUpdate, 'DepartmentAction', ),
-        (Category, CategoryUpdate, 'CategoryAction', ),
-        (Class, ClassUpdate, 'ClassAction', ),
-        (SubClass, SubClassUpdate, 'SubClassAction', ),
-        (ServiceType, ServiceTypeUpdate, 'ServiceTypeAction', ),
+        (RevenueCenter, RevenueCenterUpdate, RevenueCenterAction, ),
+        (Department, DepartmentUpdate, DepartmentAction, ),
+        (Category, CategoryUpdate, CategoryAction, ),
+        (Class, ClassUpdate, ClassAction, ),
+        (SubClass, SubClassUpdate, SubClassAction, ),
+        (ServiceType, ServiceTypeUpdate, ServiceTypeAction, ),
     )
 )
 class TestCodeRelatedModelsUpdate:
 
     @pytest.fixture(autouse=True)
-    def setup(self, model, action_class, actionset_name, default_database):
+    def setup(self, model, action_class, actionset, dbsession):
         self.obj = model(name='FooBar')
-        default_database.add(self.obj)
+        dbsession.add(self.obj)
 
-    def test_ok(self, model, action_class, actionset_name, default_database):
-        update_action = action_factory(action_class)
-
+    def test_ok(self, model, action_class, actionset, dbsession):
         new_name = 'FooBazz'
         assert new_name != self.obj.name
 
         self.obj.name = new_name
 
-        assert default_database.query(model).count() == 1
-        obj, ok = update_action(self.obj)
+        assert dbsession.query(model).count() == 1
+        obj, ok = actionset(dbsession).update(self.obj)
         assert ok
         assert obj == self.obj
-        assert default_database.query(model).count() == 1
+        assert dbsession.query(model).count() == 1
 
-        updated_obj = default_database.query(model)[0]
+        updated_obj = dbsession.query(model)[0]
         assert updated_obj.id == self.obj.id
         assert updated_obj.name == new_name
 
@@ -51,12 +52,10 @@ class TestCodeRelatedModelsUpdate:
         self,
         model,
         action_class,
-        actionset_name,
-        default_database,
+        actionset,
+        dbsession,
         monkeypatch
     ):
-        from ghostdb.bl.actions import code
-
         class Called(Exception):
             ...
 
@@ -66,31 +65,29 @@ class TestCodeRelatedModelsUpdate:
         monkeypatch.setattr(action_class, 'process', process)
 
         with pytest.raises(Called):
-            getattr(code, actionset_name).update(self.obj)
+            actionset(dbsession).update(self.obj)
 
-    def test_update_right_record(self, model, action_class, actionset_name, default_database):
+    def test_update_right_record(self, model, action_class, actionset, dbsession):
         obj = model(name='BarBaz')
-        default_database.add(obj)
-
-        update_action = action_factory(action_class)
+        dbsession.add(obj)
 
         new_name = 'FooBaz'
         assert new_name != self.obj.name
 
         self.obj.name = new_name
 
-        assert default_database.query(model).count() == 2
-        _, ok = update_action(self.obj)
+        assert dbsession.query(model).count() == 2
+        _, ok = actionset(dbsession).update(self.obj)
         assert ok
-        assert default_database.query(model).count() == 2
+        assert dbsession.query(model).count() == 2
 
-        updated_obj = default_database.query(model).filter(
+        updated_obj = dbsession.query(model).filter(
             model.id == self.obj.id,
             model.name == new_name
         )
         assert updated_obj.count() == 1
 
-        stay_obj = default_database.query(model).filter(
+        stay_obj = dbsession.query(model).filter(
             model.id == obj.id,
             model.name == obj.name
         )
@@ -100,31 +97,27 @@ class TestCodeRelatedModelsUpdate:
 class TestServiceUpdate:
 
     @pytest.fixture(autouse=True)
-    def setup_service(self, default_database):
-        self.service = Service(name='FooBar', kind=ServiceKind.service)
-        default_database.add(self.service)
+    def setup_service(self, dbsession):
+        self.service = Service(name='FooBar', kind=ServiceKind.SERVICE)
+        dbsession.add(self.service)
 
-    def test_ok(self, default_database):
-        update_action = action_factory(ServiceUpdate)
-
+    def test_ok(self, dbsession):
         new_name = 'BarBuz'
         assert new_name != self.service.name
 
         self.service.name = new_name
 
-        assert default_database.query(Service).count() == 1
-        service, ok = update_action(self.service)
+        assert dbsession.query(Service).count() == 1
+        service, ok = ServiceAction(dbsession).update(self.service)
         assert ok
         assert service == self.service
-        assert default_database.query(Service).count() == 1
+        assert dbsession.query(Service).count() == 1
 
-        updated_service = default_database.query(Service)[0]
+        updated_service = dbsession.query(Service)[0]
         assert updated_service.id == self.service.id
         assert updated_service.name == new_name
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.code import ServiceAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -134,31 +127,29 @@ class TestServiceUpdate:
         monkeypatch.setattr(ServiceUpdate, 'process', process)
 
         with pytest.raises(Called):
-            ServiceAction.update(self.service)
+            ServiceAction(dbsession).update(self.service)
 
-    def test_update_right_record(self, default_database):
-        service = Service(name='FooBaz', kind=ServiceKind.product)
-        default_database.add(service)
-
-        update_action = action_factory(ServiceUpdate)
+    def test_update_right_record(self, dbsession):
+        service = Service(name='FooBaz', kind=ServiceKind.PRODUCT)
+        dbsession.add(service)
 
         new_name = 'BarBuz'
         assert new_name != self.service.name
 
         self.service.name = new_name
 
-        assert default_database.query(Service).count() == 2
-        _, ok = update_action(self.service)
+        assert dbsession.query(Service).count() == 2
+        _, ok = ServiceAction(dbsession).update(self.service)
         assert ok
-        assert default_database.query(Service).count() == 2
+        assert dbsession.query(Service).count() == 2
 
-        updated_service = default_database.query(Service).filter(
+        updated_service = dbsession.query(Service).filter(
             Service.id == self.service.id,
             Service.name == new_name
         )
         assert updated_service.count() == 1
 
-        stay_service = default_database.query(Service).filter(
+        stay_service = dbsession.query(Service).filter(
             Service.id == service.id,
             Service.name == service.name
         )

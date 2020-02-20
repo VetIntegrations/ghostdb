@@ -4,7 +4,10 @@ from ghostdb.db.models.code import (
     RevenueCenter, Department, Category, Class, SubClass, ServiceType,
     Service, ServiceKind
 )
-from ghostdb.bl.actions.utils.base import action_factory
+from ghostdb.bl.actions.code import (
+    RevenueCenterAction, DepartmentAction, CategoryAction, ClassAction,
+    SubClassAction, ServiceTypeAction, ServiceAction
+)
 from ..create import (
     RevenueCenterCreate, DepartmentCreate, CategoryCreate, ClassCreate,
     SubClassCreate, ServiceTypeCreate, ServiceCreate
@@ -12,39 +15,35 @@ from ..create import (
 
 
 @pytest.mark.parametrize(
-    'model, action_class, actionset_name',
+    'model, action_class, actionset',
     (
-        (RevenueCenter, RevenueCenterCreate, 'RevenueCenterAction', ),
-        (Department, DepartmentCreate, 'DepartmentAction', ),
-        (Category, CategoryCreate, 'CategoryAction', ),
-        (Class, ClassCreate, 'ClassAction', ),
-        (SubClass, SubClassCreate, 'SubClassAction', ),
-        (ServiceType, ServiceTypeCreate, 'ServiceTypeAction', ),
+        (RevenueCenter, RevenueCenterCreate, RevenueCenterAction, ),
+        (Department, DepartmentCreate, DepartmentAction, ),
+        (Category, CategoryCreate, CategoryAction, ),
+        (Class, ClassCreate, ClassAction, ),
+        (SubClass, SubClassCreate, SubClassAction, ),
+        (ServiceType, ServiceTypeCreate, ServiceTypeAction, ),
     )
 )
 class TestCodeRelatedModelsCreate:
 
-    def test_ok(self, model, action_class, actionset_name, default_database):
-        create_action = action_factory(action_class)
-
+    def test_ok(self, model, action_class, actionset, dbsession):
         obj = model(name='FooBar')
 
-        assert default_database.query(model).count() == 0
-        new_obj, ok = create_action(obj)
+        assert dbsession.query(model).count() == 0
+        new_obj, ok = actionset(dbsession).create(obj)
         assert ok
         assert new_obj == obj
-        assert default_database.query(model).filter(model.name == 'FooBar').count() == 1
+        assert dbsession.query(model).filter(model.name == 'FooBar').count() == 1
 
     def test_action_class_use_right_action(
         self,
         model,
         action_class,
-        actionset_name,
-        default_database,
+        actionset,
+        dbsession,
         monkeypatch
     ):
-        from ghostdb.bl.actions import code
-
         class Called(Exception):
             ...
 
@@ -55,25 +54,21 @@ class TestCodeRelatedModelsCreate:
 
         obj = model(name='FooBar')
         with pytest.raises(Called):
-            getattr(code, actionset_name).create(obj)
+            actionset(dbsession).create(obj)
 
 
 class TestServiceCreate:
 
-    def test_ok(self, default_database):
-        create_action = action_factory(ServiceCreate)
+    def test_ok(self, dbsession):
+        service = Service(name='FooBar', kind=ServiceKind.PRODUCT)
 
-        service = Service(name='FooBar', kind=ServiceKind.product)
-
-        assert default_database.query(Service).count() == 0
-        new_service, ok = create_action(service)
+        assert dbsession.query(Service).count() == 0
+        new_service, ok = ServiceAction(dbsession).create(service)
         assert ok
         assert new_service == service
-        assert default_database.query(Service).count() == 1
+        assert dbsession.query(Service).count() == 1
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.code import ServiceAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -82,6 +77,6 @@ class TestServiceCreate:
 
         monkeypatch.setattr(ServiceCreate, 'process', process)
 
-        service = Service(name='FooBar', kind=ServiceKind.service)
+        service = Service(name='FooBar', kind=ServiceKind.SERVICE)
         with pytest.raises(Called):
-            ServiceAction.create(service)
+            ServiceAction(dbsession).create(service)
