@@ -7,3 +7,8 @@ class ClientSelector(base.BaseSelectorSet):
 
     by_id = base.SelectorFactory(generic.ByID, client.Client)
     by_email = base.SelectorFactory(by_email_selector.ByEmail, client.Client)
+
+
+class ContactSelector(base.BaseSelectorSet):
+
+    by_id = base.SelectorFactory(generic.ByID, client.ClientContact)
