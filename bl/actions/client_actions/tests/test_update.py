@@ -76,7 +76,7 @@ class TestClientContactUpdate:
         self.client = Client(first_name='John', last_name='Doe')
         self.contact = ClientContact(
             client=self.client,
-            kind=ContactKind.home,
+            kind=ContactKind.HOME,
             value='+5874923'
         )
         dbsession.add(self.client)
@@ -114,7 +114,7 @@ class TestClientContactUpdate:
     def test_update_right_record(self, dbsession):
         contact2 = ClientContact(
             client=self.client,
-            kind=ContactKind.home,
+            kind=ContactKind.HOME,
             value='+483254794'
         )
         dbsession.add(contact2)

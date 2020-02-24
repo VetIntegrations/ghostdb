@@ -51,7 +51,7 @@ class TestClientContactDelete:
         self.client = Client(first_name='John', last_name='Doe')
         self.contact = ClientContact(
             client=self.client,
-            kind=ContactKind.home,
+            kind=ContactKind.HOME,
             value='+5874923'
         )
         dbsession.add(self.client)
@@ -79,7 +79,7 @@ class TestClientContactDelete:
     def test_delete_right_record(self, dbsession):
         contact2 = ClientContact(
             client=self.client,
-            kind=ContactKind.home,
+            kind=ContactKind.HOME,
             value='+48329482739'
         )
         dbsession.add(contact2)

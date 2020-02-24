@@ -92,10 +92,12 @@ class ClientAddress(meta.Base):
 
 
 class ContactKind(enum.Enum):
-    mobile = 'Mobile Phone'
-    home = 'Home Phone'
-    work = 'Work Phone'
-    skype = 'Skype'
+    MOBILE = 'Mobile Phone'
+    HOME = 'Home Phone'
+    WORK = 'Work Phone'
+    PHONE = 'Phone'
+    FAX = 'Fax'
+    SKYPE = 'Skype'
 
 
 class ClientContact(meta.Base):

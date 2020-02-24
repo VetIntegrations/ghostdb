@@ -43,7 +43,7 @@ class TestClientContactCreate:
     def test_ok(self, dbsession):
         contact = ClientContact(
             client_id=self.client.id,
-            kind=ContactKind.home,
+            kind=ContactKind.HOME,
             value='+4783294432'
         )
 
@@ -55,7 +55,7 @@ class TestClientContactCreate:
 
     def test_prefill_client(self, dbsession):
         contact = ClientContact(
-            kind=ContactKind.home,
+            kind=ContactKind.HOME,
             value='+487329478932'
         )
 
@@ -83,7 +83,7 @@ class TestClientContactCreate:
 
         contact = ClientContact(
             client_id=self.client.id,
-            kind=ContactKind.home,
+            kind=ContactKind.HOME,
             value='+327489327'
         )
         with pytest.raises(Called):
