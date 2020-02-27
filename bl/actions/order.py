@@ -4,21 +4,21 @@ from .order_actions import (
 )
 
 
-OrderRequiredFields = validators.RequiredFields(('corporation', 'client', 'pet', 'provider', ))
+OrderRequiredFields = validators.RequiredFields(('corporation', 'client', ))
 
 
-class OrderAction:
+class OrderAction(base.BaseActionSet):
 
-    create = base.action_factory(
+    create = base.ActionFactory(
         create_act.OrderCreate,
         validators=(OrderRequiredFields, )
     )
-    update = base.action_factory(
+    update = base.ActionFactory(
         update_act.OrderUpdate,
         validators=(OrderRequiredFields, )
     )
-    delete = base.action_factory(delete_act.OrderDelete)
+    delete = base.ActionFactory(delete_act.OrderDelete)
 
-    add_item = base.action_factory(create_act.ItemCreate)
-    update_item = base.action_factory(update_act.ItemUpdate)
-    remove_item = base.action_factory(delete_act.ItemDelete)
+    add_item = base.ActionFactory(create_act.ItemCreate)
+    update_item = base.ActionFactory(update_act.ItemUpdate)
+    remove_item = base.ActionFactory(delete_act.ItemDelete)

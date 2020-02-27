@@ -18,7 +18,6 @@ class RequiredFields:
             for field in self.fields
             if getattr(obj, field) is None
         ]
-
         if empty_fields:
             raise ValidationError(
                 'Empty required fields: {}'.format(', '.join(empty_fields))
