@@ -10,6 +10,8 @@ class PetAction(base.BaseActionSet):
     update = base.ActionFactory(update_act.PetUpdate)
     delete = base.ActionFactory(delete_act.PetDelete)
 
+    add_owner = base.ActionFactory(create_act.OwnerCreate)
+
 
 class BreedAction(base.BaseActionSet):
 
