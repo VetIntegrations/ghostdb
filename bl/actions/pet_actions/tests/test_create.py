@@ -1,13 +1,14 @@
 import pytest
 
-from ghostdb.db.models.pet import Pet, Breed, Color, Gender, Species, WeightUnit
+from ghostdb.db.models.client import Client
+from ghostdb.db.models.pet import Pet, Breed, Color, Gender, Species, WeightUnit, PetOwner
 from ghostdb.bl.actions.pet import (
     PetAction, BreedAction, ColorAction, GenderAction, SpeciesAction,
     WeightUnitAction
 )
 from ..create import (
     PetCreate, BreedCreate, ColorCreate, GenderCreate, SpeciesCreate,
-    WeightUnitCreate
+    WeightUnitCreate, OwnerCreate
 )
 
 
@@ -34,6 +35,47 @@ class TestPetCreate:
         pet = Pet(name='Ricky')
         with pytest.raises(Called):
             PetAction(dbsession).create(pet)
+
+
+class TestpetOwnerCreate:
+
+    @pytest.fixture(autouse=True)
+    def setup(self, dbsession):
+        self.pet = Pet(name='Ricky')
+        self.client = Client(first_name='John', last_name='Doe')
+        dbsession.add(self.client)
+        dbsession.add(self.pet)
+        dbsession.commit()
+
+    def test_ok(self, dbsession):
+        owner = PetOwner(
+            client_id=self.client.id,
+            pet_id=self.pet.id,
+            is_primary=False
+        )
+
+        assert dbsession.query(PetOwner).count() == 0
+        new_owner, ok = PetAction(dbsession).add_owner(owner)
+        assert ok
+        assert new_owner == owner
+        assert dbsession.query(PetOwner).count() == 1
+
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
+        class Called(Exception):
+            ...
+
+        def process(self, *args, **kwargs):
+            raise Called()
+
+        monkeypatch.setattr(OwnerCreate, 'process', process)
+
+        owner = PetOwner(
+            client_id=self.client.id,
+            pet_id=self.pet.id,
+            is_primary=False
+        )
+        with pytest.raises(Called):
+            PetAction(dbsession).add_owner(owner)
 
 
 class TestBreedCreate:

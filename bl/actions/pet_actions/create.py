@@ -13,6 +13,15 @@ class PetCreate(base.BaseAction):
         return (_pet, True)
 
 
+class OwnerCreate(base.BaseAction):
+
+    def process(self, pet_owner: pet.PetOwner) -> typing.Tuple[pet.PetOwner, bool]:
+        self.db.add(pet_owner)
+        self.db.commit()
+
+        return (pet_owner, True)
+
+
 class BreedCreate(base.BaseAction):
 
     def process(self, breed: pet.Breed) -> typing.Tuple[pet.Breed, bool]:
