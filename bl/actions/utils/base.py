@@ -6,6 +6,7 @@ from sqlalchemy.orm import session
 
 from ghostdb.db import meta
 from ghostdb import exceptions
+from ghostdb.core.event.event import InternalEvent
 
 
 CoProcessor = typing.Callable[[typing.Any, 'BaseAction'], bool]
@@ -22,12 +23,13 @@ class BaseAction(abc.ABC):
     def __init__(
         self,
         db: session.Session,
+        event_processor: InternalEvent,
         validators: typing.Tuple[typing.Callable],
-        # event processor (push to Pub/Sub notification)
         pre_processors: typing.Tuple[CoProcessor],
         post_processors: typing.Tuple[CoProcessor]
     ):
         self.db = db
+        self._event_processor = event_processor
         self._validators = validators
         self._pre_processors = pre_processors
         self._post_processors = post_processors
@@ -45,7 +47,14 @@ class BaseAction(abc.ABC):
         for processor in self._pre_processors:
             ret[processor] = processor(obj, self)
 
+        if self._event_processor:  # TODO DEV-146, delete this line
+            self._event_processor.register('NetSuite', obj)
+
         obj, ret['process'] = self.process(obj, *args, **kwargs)
+
+        if ret['process']:
+            if self._event_processor:  # TODO DEV-146, delete this line
+                self._event_processor.trigger()
 
         for processor in self._post_processors:
             ret[processor] = processor(obj, self)
@@ -62,11 +71,13 @@ class ActionFactory:
     def __init__(
         self,
         action_class: BaseAction,
+        event_processor: InternalEvent = None,  # TODO DEV-146, delete None
         validators: typing.Tuple[typing.Callable] = None,
         pre_processors: typing.Tuple[CoProcessor] = None,
         post_processors: typing.Tuple[CoProcessor] = None
     ):
         self.action_class = action_class
+        self.event_processor = event_processor
         self.validators = validators or tuple()
         self.pre_processors = pre_processors or tuple()
         self.post_processors = post_processors or tuple()
@@ -76,6 +87,7 @@ class ActionFactory:
 
         return self.action_class(
             actionset.db,
+            self.event_processor,
             self.validators,
             self.pre_processors,
             self.post_processors
@@ -84,6 +96,7 @@ class ActionFactory:
 
 def action_factory(
     action_class: BaseAction,
+    event_processor: InternalEvent = None,  # TODO DEV-146, delete None
     validators: typing.Tuple[typing.Callable] = None,
     pre_processors: typing.Tuple[CoProcessor] = None,
     post_processors: typing.Tuple[CoProcessor] = None
@@ -97,6 +110,7 @@ def action_factory(
 
     instance = action_class(
         meta.DATABASES['default'],
+        event_processor,
         validators or tuple(),
         pre_processors or tuple(),
         post_processors or tuple()
