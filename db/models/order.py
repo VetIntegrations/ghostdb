@@ -1,7 +1,7 @@
 import enum
 import uuid
 from sqlalchemy import (
-    Column, ForeignKey, DateTime, JSON, Boolean, Enum, Text, Date, Numeric
+    Column, ForeignKey, DateTime, JSON, Boolean, Enum, Text, Date, Numeric, String
 )
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql import func
@@ -34,6 +34,7 @@ class Order(meta.Base):
     note = Column(Text)
     status = Column(Enum(OrderStatus))
     pms_ids = Column(JSON)
+    site_id = Column(String(50))
 
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
