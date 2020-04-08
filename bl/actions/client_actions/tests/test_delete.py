@@ -14,7 +14,7 @@ class TestClientDelete:
         self.client = Client(first_name='John', last_name='Doe')
         dbsession.add(self.client)
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         assert dbsession.query(Client).count() == 1
         _, ok = ClientAction(dbsession).delete(self.client)
         assert ok
@@ -32,7 +32,7 @@ class TestClientDelete:
         with pytest.raises(Called):
             ClientAction(dbsession).delete(self.client)
 
-    def test_delete_right_record(self, dbsession):
+    def test_delete_right_record(self, dbsession, event_off):
         client = Client(first_name='Jane', last_name='Doe')
         dbsession.add(client)
 
@@ -58,7 +58,7 @@ class TestClientContactDelete:
         dbsession.add(self.contact)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         assert dbsession.query(ClientContact).count() == 1
         _, ok = ClientAction(dbsession).remove_contact(self.contact, self.client)
         assert ok
@@ -76,7 +76,7 @@ class TestClientContactDelete:
         with pytest.raises(Called):
             ClientAction(dbsession).remove_contact(self.contact, self.client)
 
-    def test_delete_right_record(self, dbsession):
+    def test_delete_right_record(self, dbsession, event_off):
         contact2 = ClientContact(
             client=self.client,
             kind=ContactKind.HOME,
@@ -106,7 +106,7 @@ class TestClientAddressDelete:
         dbsession.add(self.address)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         assert dbsession.query(ClientAddress).count() == 1
         _, ok = ClientAction(dbsession).remove_address(self.address, self.client)
         assert ok
@@ -124,7 +124,7 @@ class TestClientAddressDelete:
         with pytest.raises(Called):
             ClientAction(dbsession).remove_address(self.address, self.client)
 
-    def test_delete_right_record(self, dbsession):
+    def test_delete_right_record(self, dbsession, event_off):
         address2 = ClientAddress(
             client=self.client,
             kind=AddressKind.home,

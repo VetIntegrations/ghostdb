@@ -14,7 +14,7 @@ class TestClientUpdate:
         self.client = Client(first_name='John', last_name='Doe')
         dbsession.add(self.client)
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         new_last_name = 'Krispi'
         assert new_last_name != self.client.last_name
 
@@ -42,7 +42,7 @@ class TestClientUpdate:
         with pytest.raises(Called):
             ClientAction(dbsession).update(self.client)
 
-    def test_update_right_record(self, dbsession):
+    def test_update_right_record(self, dbsession, event_off):
         client = Client(first_name='Jane', last_name='Doe')
         dbsession.add(client)
 
@@ -83,7 +83,7 @@ class TestClientContactUpdate:
         dbsession.add(self.contact)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         new_value = '+473829473'
         assert new_value != self.contact.value
 
@@ -111,7 +111,7 @@ class TestClientContactUpdate:
         with pytest.raises(Called):
             ClientAction(dbsession).update_contact(self.contact, self.client)
 
-    def test_update_right_record(self, dbsession):
+    def test_update_right_record(self, dbsession, event_off):
         contact2 = ClientContact(
             client=self.client,
             kind=ContactKind.HOME,
@@ -156,7 +156,7 @@ class TestClientAddressUpdate:
         dbsession.add(self.address)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         new_zip_code = '00002'
         assert new_zip_code != self.address.zip_code
 
@@ -184,7 +184,7 @@ class TestClientAddressUpdate:
         with pytest.raises(Called):
             ClientAction(dbsession).update_address(self.address, self.client)
 
-    def test_update_right_record(self, dbsession):
+    def test_update_right_record(self, dbsession, event_off):
         address2 = ClientAddress(
             client=self.client,
             kind=AddressKind.home,

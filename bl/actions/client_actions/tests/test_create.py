@@ -9,16 +9,22 @@ from ..create import ClientCreate, ContactCreate, AddressCreate
 
 class TestClientCreate:
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         client = Client(first_name='John', last_name='Doe')
 
+        act = ClientAction(dbsession, None)
+
+        assert len(act.create._event.messages) == 0
         assert dbsession.query(Client).count() == 0
-        new_client, ok = ClientAction(dbsession).create(client)
+        new_client, ok = act.create(client)
         assert ok
         assert new_client == client
         assert dbsession.query(Client).count() == 1
 
-    def test_action_class_use_right_action(self, dbsession, monkeypatch):
+        event_off.assert_called_once()
+        assert len(act.create._event.messages) == 1
+
+    def test_action_class_use_right_action(self, dbsession, event_off, monkeypatch):
         class Called(Exception):
             ...
 
@@ -40,20 +46,26 @@ class TestClientContactCreate:
         dbsession.add(self.client)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         contact = ClientContact(
             client_id=self.client.id,
             kind=ContactKind.HOME,
             value='+4783294432'
         )
 
+        act = ClientAction(dbsession, None)
+
+        assert len(act.create._event.messages) == 0
         assert dbsession.query(ClientContact).count() == 0
-        new_contact, ok = ClientAction(dbsession).add_contact(contact, self.client)
+        new_contact, ok = act.add_contact(contact, self.client)
         assert ok
         assert new_contact == contact
         assert dbsession.query(ClientContact).count() == 1
 
-    def test_prefill_client(self, dbsession):
+        event_off.assert_called_once()
+        assert len(act.create._event.messages) == 1
+
+    def test_prefill_client(self, dbsession, event_off):
         contact = ClientContact(
             kind=ContactKind.HOME,
             value='+487329478932'
@@ -72,7 +84,7 @@ class TestClientContactCreate:
         )
         assert query_client_contact.count() == 1
 
-    def test_action_class_use_right_action(self, dbsession, monkeypatch):
+    def test_action_class_use_right_action(self, dbsession, event_off, monkeypatch):
         class Called(Exception):
             ...
 
@@ -98,7 +110,7 @@ class TestClientAddressCreate:
         dbsession.add(self.client)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         address = ClientAddress(
             client_id=self.client.id,
             kind=AddressKind.home,
@@ -111,7 +123,7 @@ class TestClientAddressCreate:
         assert new_address == address
         assert dbsession.query(ClientAddress).count() == 1
 
-    def test_prefill_client(self, dbsession):
+    def test_prefill_client(self, dbsession, event_off):
         address = ClientAddress(
             kind=AddressKind.home,
             zip_code='00001'
@@ -130,7 +142,7 @@ class TestClientAddressCreate:
         )
         assert query_client_address.count() == 1
 
-    def test_action_class_use_right_action(self, dbsession, monkeypatch):
+    def test_action_class_use_right_action(self, dbsession, event_off, monkeypatch):
         class Called(Exception):
             ...
 
