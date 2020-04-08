@@ -12,7 +12,7 @@ class TestProviderUpdate:
         self.provider = Provider(first_name='John', last_name='Doe')
         dbsession.add(self.provider)
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         new_last_name = 'Krispi'
         assert new_last_name != self.provider.last_name
 
@@ -23,6 +23,7 @@ class TestProviderUpdate:
         assert ok
         assert provider == self.provider
         assert dbsession.query(Provider).count() == 1
+        event_off.assert_called_once()
 
         updated_provider = dbsession.query(Provider)[0]
         assert updated_provider.id == self.provider.id
@@ -40,7 +41,7 @@ class TestProviderUpdate:
         with pytest.raises(Called):
             ProviderAction(dbsession).update(self.provider)
 
-    def test_update_right_record(self, dbsession):
+    def test_update_right_record(self, dbsession, event_off):
         provider2 = Provider(first_name='Jane', last_name='Doe')
         dbsession.add(provider2)
 
@@ -81,7 +82,7 @@ class TestProviderContactUpdate:
         dbsession.add(self.contact)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         new_value = '+473829473'
         assert new_value != self.contact.value
 
@@ -92,6 +93,7 @@ class TestProviderContactUpdate:
         assert ok
         assert contact == self.contact
         assert dbsession.query(ProviderContact).count() == 1
+        event_off.assert_called_once()
 
         updated_contact = dbsession.query(ProviderContact)[0]
         assert updated_contact.id == self.contact.id
@@ -109,7 +111,7 @@ class TestProviderContactUpdate:
         with pytest.raises(Called):
             ProviderAction(dbsession).update_contact(self.contact, self.provider)
 
-    def test_update_right_record(self, dbsession):
+    def test_update_right_record(self, dbsession, event_off):
         contact2 = ProviderContact(
             provider=self.provider,
             kind=ContactKind.phone,
@@ -147,7 +149,7 @@ class TestProviderKindUpdate:
         self.kind = ProviderKind(name='Doctor')
         dbsession.add(self.kind)
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         new_name = 'Groomer'
         assert new_name != self.kind.name
 
@@ -158,6 +160,7 @@ class TestProviderKindUpdate:
         assert ok
         assert kind == self.kind
         assert dbsession.query(ProviderKind).count() == 1
+        event_off.assert_called_once()
 
         updated_kind = dbsession.query(ProviderKind)[0]
         assert updated_kind.id == self.kind.id
@@ -175,7 +178,7 @@ class TestProviderKindUpdate:
         with pytest.raises(Called):
             ProviderKindAction(dbsession).update(self.kind)
 
-    def test_update_right_record(self, dbsession):
+    def test_update_right_record(self, dbsession, event_off):
         kind2 = ProviderKind(name='Masseur')
         dbsession.add(kind2)
 

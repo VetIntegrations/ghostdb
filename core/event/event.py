@@ -7,6 +7,11 @@ from . import message, bus, exceptions
 logger = logging.getLogger('ghostdb.event')
 
 
+EVENT_RECORD_CREATE = 'record.create'
+EVENT_RECORD_UPDATE = 'record.update'
+EVENT_RECORD_DELETE = 'record.delete'
+
+
 class BaseEvent(abc.ABC):
 
     def __init__(self, event_name: str, data_dumper):
@@ -29,7 +34,7 @@ class BaseEvent(abc.ABC):
     def trigger(self):
         self.check_event_bus()
 
-        for msg in self.messages:
+        for msg in self.messages[::]:
             self.event_bus.publish(msg)
 
     def __enter__(self):

@@ -14,7 +14,7 @@ class TestBusinessCreate:
         dbsession.add(self.corp)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         business = Business(
             corporation_id=self.corp.id,
             name='Antlers and Hooves',
@@ -26,8 +26,9 @@ class TestBusinessCreate:
         assert ok
         assert new_business == business
         assert dbsession.query(Business).count() == 1
+        event_off.assert_called_once()
 
-    def test_action_class_use_right_action(self, dbsession, monkeypatch):
+    def test_action_class_use_right_action(self, dbsession, monkeypatch, event_off):
         class Called(Exception):
             ...
 
@@ -59,7 +60,7 @@ class TestBusinessContactCreate:
         dbsession.add(self.business)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         contact = BusinessContact(
             business_id=self.business.id,
             kind=ContactKind.email,
@@ -71,8 +72,9 @@ class TestBusinessContactCreate:
         assert ok
         assert new_contact == contact
         assert dbsession.query(BusinessContact).count() == 1
+        event_off.assert_called_once()
 
-    def test_prefill_business(self, dbsession):
+    def test_prefill_business(self, dbsession, event_off):
         contact = BusinessContact(
             kind=ContactKind.email,
             value='aah@tcorp.local'

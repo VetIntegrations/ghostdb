@@ -12,11 +12,12 @@ class TestCorporationDelete:
         self.corp = Corporation(name='Test Corporation')
         dbsession.add(self.corp)
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         assert dbsession.query(Corporation).count() == 1
         _, ok = CorporationAction(dbsession).delete(self.corp)
         assert ok
         assert dbsession.query(Corporation).count() == 0
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
@@ -30,7 +31,7 @@ class TestCorporationDelete:
         with pytest.raises(Called):
             CorporationAction(dbsession).delete(self.corp)
 
-    def test_delete_right_record(self, dbsession):
+    def test_delete_right_record(self, dbsession, event_off):
         corp = Corporation(name='Test Corporation Stay')
         dbsession.add(corp)
 

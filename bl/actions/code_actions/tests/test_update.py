@@ -32,7 +32,14 @@ class TestCodeRelatedModelsUpdate:
         self.obj = model(name='FooBar')
         dbsession.add(self.obj)
 
-    def test_ok(self, model, action_class, actionset, dbsession):
+    def test_ok(
+        self,
+        model,
+        action_class,
+        actionset,
+        dbsession,
+        event_off
+    ):
         new_name = 'FooBazz'
         assert new_name != self.obj.name
 
@@ -43,6 +50,7 @@ class TestCodeRelatedModelsUpdate:
         assert ok
         assert obj == self.obj
         assert dbsession.query(model).count() == 1
+        event_off.assert_called_once()
 
         updated_obj = dbsession.query(model)[0]
         assert updated_obj.id == self.obj.id
@@ -67,7 +75,14 @@ class TestCodeRelatedModelsUpdate:
         with pytest.raises(Called):
             actionset(dbsession).update(self.obj)
 
-    def test_update_right_record(self, model, action_class, actionset, dbsession):
+    def test_update_right_record(
+        self,
+        model,
+        action_class,
+        actionset,
+        dbsession,
+        event_off
+    ):
         obj = model(name='BarBaz')
         dbsession.add(obj)
 
@@ -101,7 +116,7 @@ class TestServiceUpdate:
         self.service = Service(name='FooBar', kind=ServiceKind.SERVICE)
         dbsession.add(self.service)
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         new_name = 'BarBuz'
         assert new_name != self.service.name
 
@@ -112,6 +127,7 @@ class TestServiceUpdate:
         assert ok
         assert service == self.service
         assert dbsession.query(Service).count() == 1
+        event_off.assert_called_once()
 
         updated_service = dbsession.query(Service)[0]
         assert updated_service.id == self.service.id
@@ -129,7 +145,7 @@ class TestServiceUpdate:
         with pytest.raises(Called):
             ServiceAction(dbsession).update(self.service)
 
-    def test_update_right_record(self, dbsession):
+    def test_update_right_record(self, dbsession, event_off):
         service = Service(name='FooBaz', kind=ServiceKind.PRODUCT)
         dbsession.add(service)
 

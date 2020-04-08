@@ -6,8 +6,8 @@ from ghostdb.db.models.client import Client
 from ghostdb.db.models.pet import Pet
 from ghostdb.db.models.order import Order, OrderStatus, OrderItem
 from ghostdb.bl.actions.utils.validators import ValidationError
-from ..create import OrderCreate, ItemCreate
 from ghostdb.bl.actions.order import OrderAction
+from ..create import OrderCreate, ItemCreate
 
 
 class TestOrderCreate:
@@ -25,7 +25,7 @@ class TestOrderCreate:
         dbsession.add(self.pet)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         order = Order(
             corporation=self.corporation,
             client=self.client,
@@ -40,6 +40,7 @@ class TestOrderCreate:
         assert new_order == order
         with dbsession.no_autoflush:
             assert dbsession.query(Order).count() == 1
+            event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
@@ -59,7 +60,7 @@ class TestOrderCreate:
         with pytest.raises(Called):
             OrderAction(dbsession).create(order)
 
-    def test_validate_required_fields(self, dbsession):
+    def test_validate_required_fields(self, dbsession, event_off):
         order = Order()
 
         with pytest.raises(ValidationError, match='Empty required fields: corporation, client'):
@@ -89,7 +90,7 @@ class TestOrderItemCreate:
         dbsession.add(self.order)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         order_item = OrderItem(
             order_id=self.order.id,
             quantity=1,
@@ -101,8 +102,9 @@ class TestOrderItemCreate:
         assert ok
         assert new_order_item == order_item
         assert dbsession.query(OrderItem).count() == 1
+        event_off.assert_called_once()
 
-    def test_prefill_order(self, dbsession):
+    def test_prefill_order(self, dbsession, event_off):
         order_item = OrderItem(
             order_id=self.order.id,
             quantity=1,
@@ -122,7 +124,7 @@ class TestOrderItemCreate:
         )
         assert query_order_item.count() == 1
 
-    def test_action_class_use_right_action(self, dbsession, monkeypatch):
+    def test_action_class_use_right_action(self, dbsession, monkeypatch, event_off):
         class Called(Exception):
             ...
 
