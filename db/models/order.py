@@ -19,6 +19,7 @@ class OrderStatus(enum.Enum):
     UNCOLLECTIBLE = 'Uncollectible'
     VOID = 'Void'
     CLOSED = 'Closed'
+    UNFINISHED = 'Unfinished'
 
 
 class Order(meta.Base):
@@ -35,6 +36,8 @@ class Order(meta.Base):
     status = Column(Enum(OrderStatus))
     pms_ids = Column(JSON)
     site_id = Column(String(50))
+    transaction_type = Column(String(100))
+    source_type = Column(String(50))
 
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
