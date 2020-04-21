@@ -4,8 +4,8 @@ from .corporation_actions import (
 )
 
 
-class CorporationAction:
+class CorporationAction(base.BaseActionSet):
 
-    create = base.action_factory(create_act.Create)
-    update = base.action_factory(update_act.Update)
-    delete = base.action_factory(delete_act.Delete)
+    create = base.ActionFactory(create_act.Create)
+    update = base.ActionFactory(update_act.Update)
+    delete = base.ActionFactory(delete_act.Delete)

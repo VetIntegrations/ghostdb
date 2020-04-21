@@ -1,42 +1,6 @@
-import pytest
 from functools import partial
 
-from ghostdb.exceptions import NoDefaultDatabase
-from ..base import BaseAction, action_factory
-
-
-class TestActionFactory:
-
-    def test_action_factory(self, mock_default_database):
-        class Action(BaseAction):
-            called = False
-
-            def process(self, obj, *args, **kwargs):
-                self.called = True
-                return (None, True)
-
-        validators = [lambda obj: ...]
-        pre_processors = [lambda obj, act: ...]
-        post_processors = [lambda obj, act: ..., lambda obj, act: ...]
-
-        action = action_factory(Action, validators, pre_processors, post_processors)
-
-        assert not action.called
-        assert action._validators == validators
-        assert action._pre_processors == pre_processors
-        assert action._post_processors == post_processors
-        action(None)
-        assert action.called
-
-    def test_no_default_db(self):
-        class Action(BaseAction):
-            called = False
-
-            def process(self, obj, *args, **kwargs):
-                self.called = True
-
-        with pytest.raises(NoDefaultDatabase):
-            action_factory(Action, [], [])
+from ..base import BaseAction
 
 
 class TestBaseAction:
