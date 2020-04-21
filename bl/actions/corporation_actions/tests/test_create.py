@@ -1,26 +1,22 @@
 import pytest
 
 from ghostdb.db.models.corporation import Corporation
-from ghostdb.bl.actions.utils.base import action_factory
+from ghostdb.bl.actions.corporation import CorporationAction
 from ..create import Create
 
 
 class TestCorporationCreate:
 
-    def test_ok(self, default_database):
-        create_action = action_factory(Create)
-
+    def test_ok(self, dbsession):
         corp = Corporation(name='Test Corp 1')
 
-        assert default_database.query(Corporation).count() == 0
-        new_corp, ok = create_action(corp)
+        assert dbsession.query(Corporation).count() == 0
+        new_corp, ok = CorporationAction(dbsession).create(corp)
         assert ok
         assert new_corp == corp
-        assert default_database.query(Corporation).count() == 1
+        assert dbsession.query(Corporation).count() == 1
 
-    def test_action_class_use_right_action(self, default_database, monkeypatch):
-        from ghostdb.bl.actions.corporation import CorporationAction
-
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
 
@@ -31,4 +27,4 @@ class TestCorporationCreate:
 
         corp = Corporation(name='Test Corp 1')
         with pytest.raises(Called):
-            CorporationAction.create(corp)
+            CorporationAction(dbsession).create(corp)

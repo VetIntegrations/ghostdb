@@ -1,58 +1,7 @@
-import pytest
 from functools import partial
 
-from ghostdb.exceptions import NoDefaultDatabase
 from ghostdb.core.event.event import BaseEvent
-from ..base import BaseAction, action_factory
-
-
-class TestActionFactory:
-
-    def test_action_factory(self, mock_default_database):
-
-        class FakeEvent(BaseEvent):
-            called = False
-
-            def register(self, customer: str, obj):
-                return self.messages.append('registered')
-
-            def trigger(self):
-                self.called = True
-                return self.messages.append('triggered')
-
-        class Action(BaseAction):
-            called = False
-
-            def process(self, obj, *args, **kwargs):
-                self.called = True
-                return (None, True)
-
-        fake_event = FakeEvent(lambda customer: ..., lambda obj: ...)
-        validators = [lambda obj: ...]
-        pre_processors = [lambda obj, act: ...]
-        post_processors = [lambda obj, act: ..., lambda obj, act: ...]
-
-        action = action_factory(Action, fake_event, validators, pre_processors, post_processors)
-
-        assert not action.called
-
-        assert action._validators == validators
-        assert action._pre_processors == pre_processors
-        assert action._post_processors == post_processors
-        action(None)
-        assert fake_event.called
-        assert fake_event.messages == ['registered', 'triggered']
-        assert action.called
-
-    def test_no_default_db(self):
-        class Action(BaseAction):
-            called = False
-
-            def process(self, obj, *args, **kwargs):
-                self.called = True
-
-        with pytest.raises(NoDefaultDatabase):
-            action_factory(Action, [], [])
+from ..base import BaseAction
 
 
 class TestBaseAction:

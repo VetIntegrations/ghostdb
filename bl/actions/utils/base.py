@@ -1,11 +1,8 @@
 import abc
 import typing
-import warnings
 from collections import OrderedDict
 from sqlalchemy.orm import session
 
-from ghostdb.db import meta
-from ghostdb import exceptions
 from ghostdb.core.event.event import InternalEvent
 
 
@@ -92,28 +89,3 @@ class ActionFactory:
             self.pre_processors,
             self.post_processors
         )
-
-
-def action_factory(
-    action_class: BaseAction,
-    event_processor: InternalEvent = None,  # TODO DEV-146, delete None
-    validators: typing.Tuple[typing.Callable] = None,
-    pre_processors: typing.Tuple[CoProcessor] = None,
-    post_processors: typing.Tuple[CoProcessor] = None
-):
-    warnings.warn(
-        "migrate to ActionFactory that works as descriptor to aviod global db connection",
-        DeprecationWarning
-    )
-    if 'default' not in meta.DATABASES:
-        raise exceptions.NoDefaultDatabase()
-
-    instance = action_class(
-        meta.DATABASES['default'],
-        event_processor,
-        validators or tuple(),
-        pre_processors or tuple(),
-        post_processors or tuple()
-    )
-
-    return instance
