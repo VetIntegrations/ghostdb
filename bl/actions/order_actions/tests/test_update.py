@@ -33,7 +33,7 @@ class TestOrderUpdate:
         dbsession.add(self.order)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         new_status = OrderStatus.PAID
         assert new_status != self.order.status
 
@@ -44,6 +44,7 @@ class TestOrderUpdate:
         assert ok
         assert order == self.order
         assert dbsession.query(Order).count() == 1
+        event_off.assert_called_once()
 
         updated_order = dbsession.query(Order)[0]
         assert updated_order.id == self.order.id
@@ -61,7 +62,7 @@ class TestOrderUpdate:
         with pytest.raises(Called):
             OrderAction(dbsession).update(self.order)
 
-    def test_update_right_record(self, dbsession):
+    def test_update_right_record(self, dbsession, event_off):
         pet2 = Pet(name='Ricky')
         order2 = Order(
             corporation=self.corporation,
@@ -97,7 +98,7 @@ class TestOrderUpdate:
         )
         assert stay_order.count() == 1
 
-    def test_validate_required_fields(self, dbsession):
+    def test_validate_required_fields(self, dbsession, event_off):
         self.order.client = None
 
         with pytest.raises(ValidationError, match='Empty required fields: client'):
@@ -133,7 +134,7 @@ class TestOrderItemUpdate:
         dbsession.add(self.order_item)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         new_quantity = 5
         assert new_quantity != self.order_item.quantity
 
@@ -161,7 +162,7 @@ class TestOrderItemUpdate:
         with pytest.raises(Called):
             OrderAction(dbsession).update_item(self.order_item, self.order)
 
-    def test_update_right_record(self, dbsession):
+    def test_update_right_record(self, dbsession, event_off):
         order_item2 = OrderItem(
             order_id=self.order.id,
             quantity=50,

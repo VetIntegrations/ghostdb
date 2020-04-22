@@ -19,7 +19,7 @@ class TestBusinessUpdate:
         dbsession.add(self.corp)
         dbsession.add(self.business)
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         new_name = 'Beaver\'s tail'
         assert new_name != self.business.name
 
@@ -30,6 +30,7 @@ class TestBusinessUpdate:
         assert ok
         assert business == self.business
         assert dbsession.query(Business).count() == 1
+        event_off.assert_called_once()
 
         updated_business = dbsession.query(Business)[0]
         assert updated_business.id == self.business.id
@@ -47,7 +48,7 @@ class TestBusinessUpdate:
         with pytest.raises(Called):
             BusinessAction(dbsession).update(self.business)
 
-    def test_update_right_record(self, dbsession):
+    def test_update_right_record(self, dbsession, event_off):
         business2 = Business(
             corporation=self.corp,
             name='Wet Nose',
@@ -97,7 +98,7 @@ class TestBusinessContactUpdate:
         dbsession.add(self.business)
         dbsession.add(self.contact)
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         new_value = 'hello@aah.local'
         assert new_value != self.contact.value
 
@@ -108,6 +109,7 @@ class TestBusinessContactUpdate:
         assert ok
         assert contact == self.contact
         assert dbsession.query(BusinessContact).count() == 1
+        event_off.assert_called_once()
 
         updated_contact = dbsession.query(BusinessContact)[0]
         assert updated_contact.id == self.contact.id
@@ -125,7 +127,7 @@ class TestBusinessContactUpdate:
         with pytest.raises(Called):
             BusinessAction(dbsession).update_contact(self.contact, self.business)
 
-    def test_update_right_record(self, dbsession):
+    def test_update_right_record(self, dbsession, event_off):
         contact2 = BusinessContact(
             business=self.business,
             kind=ContactKind.phone,

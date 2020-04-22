@@ -18,7 +18,7 @@ class TestPetUpdate:
         self.pet = Pet(name='Ricky')
         dbsession.add(self.pet)
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         new_name = 'Rocky'
         assert new_name != self.pet.name
 
@@ -29,6 +29,7 @@ class TestPetUpdate:
         assert ok
         assert pet == self.pet
         assert dbsession.query(Pet).count() == 1
+        event_off.assert_called_once()
 
         updated_pet = dbsession.query(Pet)[0]
         assert updated_pet.id == self.pet.id
@@ -48,7 +49,7 @@ class TestPetUpdate:
         with pytest.raises(Called):
             PetAction(dbsession).update(self.pet)
 
-    def test_update_right_record(self, dbsession):
+    def test_update_right_record(self, dbsession, event_off):
         pet2 = Pet(name='Buch')
         dbsession.add(pet2)
 
@@ -83,7 +84,7 @@ class TestBreedUpdate:
         self.breed = Breed(name='Beable')
         dbsession.add(self.breed)
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         new_name = 'American Staffordshire Terrier'
         assert new_name != self.breed.name
 
@@ -94,6 +95,7 @@ class TestBreedUpdate:
         assert ok
         assert breed == self.breed
         assert dbsession.query(Breed).count() == 1
+        event_off.assert_called_once()
 
         updated_breed = dbsession.query(Breed)[0]
         assert updated_breed.id == self.breed.id
@@ -113,7 +115,7 @@ class TestBreedUpdate:
         with pytest.raises(Called):
             BreedAction(dbsession).update(self.breed)
 
-    def test_update_right_record(self, dbsession):
+    def test_update_right_record(self, dbsession, event_off):
         breed2 = Breed(name='American Staffordshire Terrier')
         dbsession.add(breed2)
 
@@ -147,7 +149,7 @@ class TestColorUpdate:
         self.color = Color(name='Black')
         dbsession.add(self.color)
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         new_name = 'Red'
         assert new_name != self.color.name
 
@@ -158,6 +160,7 @@ class TestColorUpdate:
         assert ok
         assert color == self.color
         assert dbsession.query(Color).count() == 1
+        event_off.assert_called_once()
 
         updated_color = dbsession.query(Color)[0]
         assert updated_color.id == self.color.id
@@ -175,7 +178,7 @@ class TestColorUpdate:
         with pytest.raises(Called):
             ColorAction(dbsession).update(self.color)
 
-    def test_update_right_record(self, dbsession):
+    def test_update_right_record(self, dbsession, event_off):
         color2 = Color(name='Red')
         dbsession.add(color2)
 
@@ -209,7 +212,7 @@ class TestGenderUpdate:
         self.gender = Gender(name='female')
         dbsession.add(self.gender)
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         new_name = 'male'
         assert new_name != self.gender.name
 
@@ -220,6 +223,7 @@ class TestGenderUpdate:
         assert ok
         assert gender == self.gender
         assert dbsession.query(Gender).count() == 1
+        event_off.assert_called_once()
 
         updated_gender = dbsession.query(Gender)[0]
         assert updated_gender.id == self.gender.id
@@ -237,7 +241,7 @@ class TestGenderUpdate:
         with pytest.raises(Called):
             GenderAction(dbsession).update(self.gender)
 
-    def test_update_right_record(self, dbsession):
+    def test_update_right_record(self, dbsession, event_off):
         gender2 = Gender(name='male')
         dbsession.add(gender2)
 
@@ -271,7 +275,7 @@ class TestSpeciesUpdate:
         self.species = Species(name='Canine')
         dbsession.add(self.species)
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         new_name = 'Fenine'
         assert new_name != self.species.name
 
@@ -282,6 +286,7 @@ class TestSpeciesUpdate:
         assert ok
         assert species == self.species
         assert dbsession.query(Species).count() == 1
+        event_off.assert_called_once()
 
         updated_species = dbsession.query(Species)[0]
         assert updated_species.id == self.species.id
@@ -299,7 +304,7 @@ class TestSpeciesUpdate:
         with pytest.raises(Called):
             SpeciesAction(dbsession).update(self.species)
 
-    def test_update_right_record(self, dbsession):
+    def test_update_right_record(self, dbsession, event_off):
         species2 = Species(name='Fenine')
         dbsession.add(species2)
 
@@ -333,7 +338,7 @@ class TestWeightUnitUpdate:
         self.weight_unit = WeightUnit(name='kg')
         dbsession.add(self.weight_unit)
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         new_name = 'lb'
         assert new_name != self.weight_unit.name
 
@@ -344,6 +349,7 @@ class TestWeightUnitUpdate:
         assert ok
         assert unit == self.weight_unit
         assert dbsession.query(WeightUnit).count() == 1
+        event_off.assert_called_once()
 
         updated_unit = dbsession.query(WeightUnit)[0]
         assert updated_unit.id == self.weight_unit.id
@@ -361,7 +367,7 @@ class TestWeightUnitUpdate:
         with pytest.raises(Called):
             WeightUnitAction(dbsession).update(self.weight_unit)
 
-    def test_update_right_record(self, dbsession):
+    def test_update_right_record(self, dbsession, event_off):
         unit2 = WeightUnit(name='lb')
         dbsession.add(unit2)
 

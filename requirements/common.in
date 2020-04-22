@@ -1,3 +1,5 @@
 sqlalchemy
 alembic
 mysqlclient
+google-cloud-pubsub
+sentry-sdk

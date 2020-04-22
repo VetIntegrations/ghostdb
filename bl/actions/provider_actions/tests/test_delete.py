@@ -12,11 +12,12 @@ class TestProviderDelete:
         self.provider = Provider(first_name='John', last_name='Doe')
         dbsession.add(self.provider)
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         assert dbsession.query(Provider).count() == 1
         _, ok = ProviderAction(dbsession).delete(self.provider)
         assert ok
         assert dbsession.query(Provider).count() == 0
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
@@ -30,7 +31,7 @@ class TestProviderDelete:
         with pytest.raises(Called):
             ProviderAction(dbsession).delete(self.provider)
 
-    def test_delete_right_record(self, dbsession):
+    def test_delete_right_record(self, dbsession, event_off):
         provider2 = Provider(first_name='Jane', last_name='Doe')
         dbsession.add(provider2)
 
@@ -56,11 +57,12 @@ class TestProviderContactDelete:
         dbsession.add(self.contact)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         assert dbsession.query(ProviderContact).count() == 1
         _, ok = ProviderAction(dbsession).remove_contact(self.provider, self.contact)
         assert ok
         assert dbsession.query(ProviderContact).count() == 0
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
@@ -74,7 +76,7 @@ class TestProviderContactDelete:
         with pytest.raises(Called):
             ProviderAction(dbsession).remove_contact(self.provider, self.contact)
 
-    def test_delete_right_record(self, dbsession):
+    def test_delete_right_record(self, dbsession, event_off):
         contact2 = ProviderContact(
             provider=self.provider,
             kind=ContactKind.phone,
@@ -97,11 +99,12 @@ class TestProviderKindDelete:
         self.kind = ProviderKind(name='Doctor')
         dbsession.add(self.kind)
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         assert dbsession.query(ProviderKind).count() == 1
         _, ok = ProviderKindAction(dbsession).delete(self.kind)
         assert ok
         assert dbsession.query(ProviderKind).count() == 0
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
@@ -115,7 +118,7 @@ class TestProviderKindDelete:
         with pytest.raises(Called):
             ProviderKindAction(dbsession).delete(self.kind)
 
-    def test_delete_right_record(self, dbsession):
+    def test_delete_right_record(self, dbsession, event_off):
         kind2 = ProviderKind(name='Groomer')
         dbsession.add(kind2)
 

@@ -1,0 +1,6 @@
+class EventException(Exception):
+    ...
+
+
+class MissingEventBusException(EventException):
+    ...
