@@ -2,8 +2,19 @@ import uuid
 import pytest
 from collections import namedtuple
 
+from ghostdb.bl.actions.utils.base import BaseAction
+from ghostdb.bl.actions import (
+    appointment, business, client,
+    code, order, pet, provider,
+)
+
 from ..bus import BaseEventBus
-from ..event import BaseEvent, InternalEvent
+from ..event import (
+    BaseEvent, InternalEvent,
+    EVENT_RECORD_CREATE,
+    EVENT_RECORD_UPDATE,
+    EVENT_RECORD_DELETE,
+)
 from ..exceptions import MissingEventBusException
 
 
@@ -104,3 +115,73 @@ class TestInternalEvent:
             },
             'data': {'id': obj.id, 'name': obj.name},
         }
+
+
+class TestEvents:
+
+    client_related_action_names = (
+        'add_contact',
+        'update_contact',
+        'remove_contact',
+        'add_address',
+        'update_address',
+        'remove_address'
+    )
+
+    @pytest.mark.parametrize(
+        'actionset_class',
+        (
+            appointment.AppointmentAction,
+            appointment.AppointmentSourceAction,
+            appointment.AppointmentKindAction,
+            business.BusinessAction,
+            client.ClientAction,
+            code.RevenueCenterAction,
+            code.DepartmentAction,
+            code.CategoryAction,
+            code.ClassAction,
+            code.SubClassAction,
+            code.ServiceTypeAction,
+            code.ServiceAction,
+            order.OrderAction,
+            pet.PetAction,
+            pet.BreedAction,
+            pet.ColorAction,
+            pet.GenderAction,
+            pet.SpeciesAction,
+            pet.WeightUnitAction,
+            provider.ProviderAction,
+            provider.ProviderKindAction,
+        )
+    )
+    def test_event_name(self, actionset_class):
+        actionset = actionset_class(None, None)
+
+        # filter magic methods
+        methods_name = [method_name for method_name in dir(actionset) if method_name[:2] != '__']
+
+        for method_name in methods_name:
+            action = getattr(actionset, method_name)
+            if isinstance(action, BaseAction) and isinstance(action._event, BaseEvent):
+                action_name = action.__class__.__name__
+                event_name = action._event.name
+                if 'Create' in action_name:
+                    assert event_name == EVENT_RECORD_CREATE
+                elif 'Update' in action_name:
+                    assert event_name == EVENT_RECORD_UPDATE
+                elif 'Delete' in action_name:
+                    assert event_name == EVENT_RECORD_DELETE
+                else:
+                    assert False, f'{action} must have Create, Update or Delete in the name'
+
+    @pytest.mark.parametrize(
+        'actionset_class, action_names, expected_data_dumper',
+        (
+            (client.ClientAction, client_related_action_names, client.ClientRelatedDataDumper),
+        ),
+    )
+    def test_event_data_dumper(self, actionset_class, action_names, expected_data_dumper):
+        actionset = actionset_class(None, None)
+        for action_name in action_names:
+            action = getattr(actionset, action_name)
+            assert action._event.data_dumper == expected_data_dumper

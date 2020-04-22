@@ -34,7 +34,7 @@ class TestAppointmentUpdate:
         dbsession.add(self.appointment)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         new_duration = 45
         assert new_duration != self.appointment.duration
 
@@ -45,6 +45,7 @@ class TestAppointmentUpdate:
         assert ok
         assert appointment == self.appointment
         assert dbsession.query(Appointment).count() == 1
+        event_off.assert_called_once()
 
         updated_appointment = dbsession.query(Appointment)[0]
         assert updated_appointment.id == self.appointment.id
@@ -62,7 +63,7 @@ class TestAppointmentUpdate:
         with pytest.raises(Called):
             AppointmentAction(dbsession).update(self.appointment)
 
-    def test_update_right_record(self, dbsession):
+    def test_update_right_record(self, dbsession, event_off):
         appointment2 = Appointment(
             business=self.business,
             pet=self.pet,
@@ -114,7 +115,14 @@ class TestAppointmentRelatedModelsUpdate:
         self.obj = model(name='FooBar')
         dbsession.add(self.obj)
 
-    def test_ok(self, model, action_class, actionset_class, dbsession):
+    def test_ok(
+        self,
+        model,
+        action_class,
+        actionset_class,
+        dbsession,
+        event_off
+    ):
         new_name = 'FooBazz'
         assert new_name != self.obj.name
 
@@ -125,6 +133,7 @@ class TestAppointmentRelatedModelsUpdate:
         assert ok
         assert obj == self.obj
         assert dbsession.query(model).count() == 1
+        event_off.assert_called_once()
 
         updated_obj = dbsession.query(model)[0]
         assert updated_obj.id == self.obj.id
@@ -149,7 +158,14 @@ class TestAppointmentRelatedModelsUpdate:
         with pytest.raises(Called):
             actionset_class(dbsession).update(self.obj)
 
-    def test_update_right_record(self, model, action_class, actionset_class, dbsession):
+    def test_update_right_record(
+        self,
+        model,
+        action_class,
+        actionset_class,
+        dbsession,
+        event_off
+    ):
         obj = model(name='BarBaz')
         dbsession.add(obj)
 

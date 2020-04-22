@@ -1,10 +1,12 @@
 import os
 import warnings
 import pytest
+from unittest.mock import Mock
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, session
 
 from ghostdb.db import meta
+from ghostdb.core.event import event
 
 
 class MockDB:
@@ -70,3 +72,11 @@ def default_database(db_connection):
     transaction.rollback()
     session.close_all_sessions()
     del meta.DATABASES['default']
+
+
+@pytest.fixture(scope='function')
+def event_off(monkeypatch):
+    event_mock = Mock()
+    monkeypatch.setattr(event.InternalEvent, 'trigger', event_mock)
+
+    yield event_mock

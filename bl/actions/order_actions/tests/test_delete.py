@@ -32,11 +32,12 @@ class TestOrderDelete:
         dbsession.add(self.order)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         assert dbsession.query(Order).count() == 1
         _, ok = OrderAction(dbsession).delete(self.order)
         assert ok
         assert dbsession.query(Order).count() == 0
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
@@ -50,7 +51,7 @@ class TestOrderDelete:
         with pytest.raises(Called):
             OrderAction(dbsession).delete(self.order)
 
-    def test_delete_right_record(self, dbsession):
+    def test_delete_right_record(self, dbsession, event_off):
         pet2 = Pet(name='Ricky')
         order2 = Order(
             corporation=self.corporation,
@@ -99,11 +100,12 @@ class TestOrderItemDelete:
         dbsession.add(self.order_item)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         assert dbsession.query(OrderItem).count() == 1
         _, ok = OrderAction(dbsession).remove_item(self.order_item, self.order)
         assert ok
         assert dbsession.query(OrderItem).count() == 0
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
@@ -117,7 +119,7 @@ class TestOrderItemDelete:
         with pytest.raises(Called):
             OrderAction(dbsession).remove_item(self.order_item, self.order)
 
-    def test_delete_right_record(self, dbsession):
+    def test_delete_right_record(self, dbsession, event_off):
         order_item2 = OrderItem(
             order_id=self.order.id,
             quantity=50,

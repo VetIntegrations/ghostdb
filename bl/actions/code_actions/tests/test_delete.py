@@ -32,11 +32,19 @@ class TestCodeRelatedModelsDelete:
         self.obj = model(name='FooBar')
         dbsession.add(self.obj)
 
-    def test_ok(self, model, action_class, actionset, dbsession):
+    def test_ok(
+        self,
+        model,
+        action_class,
+        actionset,
+        dbsession,
+        event_off
+    ):
         assert dbsession.query(model).count() == 1
         _, ok = actionset(dbsession).delete(self.obj)
         assert ok
         assert dbsession.query(model).count() == 0
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(
         self,
@@ -57,7 +65,14 @@ class TestCodeRelatedModelsDelete:
         with pytest.raises(Called):
             actionset(dbsession).delete(self.obj)
 
-    def test_delete_right_record(self, model, action_class, actionset, dbsession):
+    def test_delete_right_record(
+        self,
+        model,
+        action_class,
+        actionset,
+        dbsession,
+        event_off
+    ):
         obj = model(name='BarBaz')
         dbsession.add(obj)
 
@@ -76,11 +91,12 @@ class TestServiceDelete:
         self.service = Service(name='FooBar', kind=ServiceKind.SERVICE)
         dbsession.add(self.service)
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         assert dbsession.query(Service).count() == 1
         _, ok = ServiceAction(dbsession).delete(self.service)
         assert ok
         assert dbsession.query(Service).count() == 0
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         from ghostdb.bl.actions.code import ServiceAction
@@ -96,7 +112,7 @@ class TestServiceDelete:
         with pytest.raises(Called):
             ServiceAction(dbsession).delete(self.service)
 
-    def test_delete_right_record(self, dbsession):
+    def test_delete_right_record(self, dbsession, event_off):
         service = Service(name='FooBaz', kind=ServiceKind.PRODUCT)
         dbsession.add(service)
 

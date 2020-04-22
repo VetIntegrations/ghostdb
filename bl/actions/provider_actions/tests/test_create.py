@@ -7,7 +7,7 @@ from ..create import ProviderCreate, ContactCreate, ProviderKindCreate
 
 class TestProviderCreate:
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         provider = Provider(first_name='John', last_name='Doe')
 
         assert dbsession.query(Provider).count() == 0
@@ -15,6 +15,7 @@ class TestProviderCreate:
         assert ok
         assert new_provider == provider
         assert dbsession.query(Provider).count() == 1
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
@@ -38,7 +39,7 @@ class TestProviderContactCreate:
         dbsession.add(self.provider)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         contact = ProviderContact(
             provider_id=self.provider.id,
             kind=ContactKind.phone,
@@ -50,8 +51,9 @@ class TestProviderContactCreate:
         assert ok
         assert new_contact == contact
         assert dbsession.query(ProviderContact).count() == 1
+        event_off.assert_called_once()
 
-    def test_prefill_provider(self, dbsession):
+    def test_prefill_provider(self, dbsession, event_off):
         contact = ProviderContact(
             kind=ContactKind.phone,
             value='+487329478932'
@@ -90,7 +92,7 @@ class TestProviderContactCreate:
 
 class TestProviderKindCreate:
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         kind = ProviderKind(name='Doctor')
 
         assert dbsession.query(ProviderKind).count() == 0
@@ -98,6 +100,7 @@ class TestProviderKindCreate:
         assert ok
         assert new_kind == kind
         assert dbsession.query(ProviderKind).count() == 1
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):

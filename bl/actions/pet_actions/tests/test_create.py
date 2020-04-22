@@ -14,7 +14,7 @@ from ..create import (
 
 class TestPetCreate:
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         pet = Pet(name='Ricky')
 
         assert dbsession.query(Pet).count() == 0
@@ -22,6 +22,7 @@ class TestPetCreate:
         assert ok
         assert new_pet == pet
         assert dbsession.query(Pet).count() == 1
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
@@ -47,7 +48,7 @@ class TestpetOwnerCreate:
         dbsession.add(self.pet)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         owner = PetOwner(
             client_id=self.client.id,
             pet_id=self.pet.id,
@@ -59,6 +60,7 @@ class TestpetOwnerCreate:
         assert ok
         assert new_owner == owner
         assert dbsession.query(PetOwner).count() == 1
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
@@ -80,7 +82,7 @@ class TestpetOwnerCreate:
 
 class TestBreedCreate:
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         breed = Breed(name='Beagle')
 
         assert dbsession.query(Breed).count() == 0
@@ -88,6 +90,7 @@ class TestBreedCreate:
         assert ok
         assert new_breed == breed
         assert dbsession.query(Breed).count() == 1
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
@@ -105,7 +108,7 @@ class TestBreedCreate:
 
 class TestColorCreate:
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         color = Color(name='Black')
 
         assert dbsession.query(Color).count() == 0
@@ -113,6 +116,7 @@ class TestColorCreate:
         assert ok
         assert new_color == color
         assert dbsession.query(Color).count() == 1
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
@@ -130,7 +134,7 @@ class TestColorCreate:
 
 class TestGenderCreate:
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         gender = Gender(name='female')
 
         assert dbsession.query(Gender).count() == 0
@@ -138,6 +142,7 @@ class TestGenderCreate:
         assert ok
         assert new_gender == gender
         assert dbsession.query(Gender).count() == 1
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
@@ -155,7 +160,7 @@ class TestGenderCreate:
 
 class TestSpeciesCreate:
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         species = Species(name='Canine')
 
         assert dbsession.query(Species).count() == 0
@@ -163,6 +168,7 @@ class TestSpeciesCreate:
         assert ok
         assert new_species == species
         assert dbsession.query(Species).count() == 1
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
@@ -180,7 +186,7 @@ class TestSpeciesCreate:
 
 class TestWeightUnitCreate:
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         unit = WeightUnit(name='kg')
 
         assert dbsession.query(WeightUnit).count() == 0
@@ -188,6 +194,7 @@ class TestWeightUnitCreate:
         assert ok
         assert new_unit == unit
         assert dbsession.query(WeightUnit).count() == 1
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):

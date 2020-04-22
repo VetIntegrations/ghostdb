@@ -27,7 +27,7 @@ class TestAppointmentCreate:
         dbsession.add(self.pet)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         appointment = Appointment(
             business_id=self.business.id,
             pet_id=self.pet.id,
@@ -35,9 +35,11 @@ class TestAppointmentCreate:
         )
 
         assert dbsession.query(Appointment).count() == 0
-        new_appointment, ok = AppointmentAction(dbsession).create(appointment)
+        new_appointment, ok = AppointmentAction(dbsession, None).create(appointment)
         assert ok
         assert new_appointment == appointment
+
+        event_off.assert_called_once()
         assert dbsession.query(Appointment).count() == 1
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
@@ -55,7 +57,7 @@ class TestAppointmentCreate:
             duration=30
         )
         with pytest.raises(Called):
-            AppointmentAction(dbsession).create(appointment)
+            AppointmentAction(dbsession, None).create(appointment)
 
 
 @pytest.mark.parametrize(
@@ -67,7 +69,14 @@ class TestAppointmentCreate:
 )
 class TestAppointmentRelatedModelsCreate:
 
-    def test_ok(self, model, action_class, actionset_class, dbsession):
+    def test_ok(
+        self,
+        model,
+        action_class,
+        actionset_class,
+        dbsession,
+        event_off
+    ):
         obj = model(name='FooBar')
 
         assert dbsession.query(model).count() == 0

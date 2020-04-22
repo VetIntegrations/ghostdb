@@ -12,7 +12,7 @@ class TestCorporationUpdate:
         self.corp = Corporation(name='Test Corporation')
         dbsession.add(self.corp)
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         new_name = 'John Doe Inc.'
         assert new_name != self.corp.name
 
@@ -23,6 +23,7 @@ class TestCorporationUpdate:
         assert ok
         assert corp == self.corp
         assert dbsession.query(Corporation).count() == 1
+        event_off.assert_called_once()
 
         updated_corp = dbsession.query(Corporation)[0]
         assert updated_corp.id == self.corp.id
@@ -40,7 +41,7 @@ class TestCorporationUpdate:
         with pytest.raises(Called):
             CorporationAction(dbsession).update(self.corp)
 
-    def test_update_right_record(self, dbsession):
+    def test_update_right_record(self, dbsession, event_off):
         corp = Corporation(name='Stay Corp.')
         dbsession.add(corp)
 

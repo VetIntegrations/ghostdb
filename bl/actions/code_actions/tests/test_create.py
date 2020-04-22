@@ -27,7 +27,14 @@ from ..create import (
 )
 class TestCodeRelatedModelsCreate:
 
-    def test_ok(self, model, action_class, actionset, dbsession):
+    def test_ok(
+        self,
+        model,
+        action_class,
+        actionset,
+        dbsession,
+        event_off
+    ):
         obj = model(name='FooBar')
 
         assert dbsession.query(model).count() == 0
@@ -36,13 +43,16 @@ class TestCodeRelatedModelsCreate:
         assert new_obj == obj
         assert dbsession.query(model).filter(model.name == 'FooBar').count() == 1
 
+        event_off.assert_called_once()
+
     def test_action_class_use_right_action(
         self,
         model,
         action_class,
         actionset,
         dbsession,
-        monkeypatch
+        monkeypatch,
+        event_off
     ):
         class Called(Exception):
             ...
@@ -59,7 +69,7 @@ class TestCodeRelatedModelsCreate:
 
 class TestServiceCreate:
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         service = Service(name='FooBar', kind=ServiceKind.PRODUCT)
 
         assert dbsession.query(Service).count() == 0
@@ -67,6 +77,7 @@ class TestServiceCreate:
         assert ok
         assert new_service == service
         assert dbsession.query(Service).count() == 1
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):

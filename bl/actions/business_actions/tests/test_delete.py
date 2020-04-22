@@ -19,11 +19,12 @@ class TestBusinessDelete:
         dbsession.add(self.corp)
         dbsession.add(self.business)
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         assert dbsession.query(Business).count() == 1
         _, ok = BusinessAction(dbsession).delete(self.business)
         assert ok
         assert dbsession.query(Business).count() == 0
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
@@ -37,7 +38,7 @@ class TestBusinessDelete:
         with pytest.raises(Called):
             BusinessAction(dbsession).delete(self.business)
 
-    def test_delete_right_record(self, dbsession):
+    def test_delete_right_record(self, dbsession, event_off):
         business2 = Business(
             corporation=self.corp,
             name='Wet Nose',
@@ -72,7 +73,7 @@ class TestBusinessContactDelete:
         dbsession.add(self.business)
         dbsession.add(self.contact)
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         assert dbsession.query(BusinessContact).count() == 1
         _, ok = BusinessAction(dbsession).remove_contact(self.contact, self.business)
         assert ok
@@ -90,7 +91,7 @@ class TestBusinessContactDelete:
         with pytest.raises(Called):
             BusinessAction(dbsession).remove_contact(self.contact, self.business)
 
-    def test_delete_right_record(self, dbsession):
+    def test_delete_right_record(self, dbsession, event_off):
         contact2 = BusinessContact(
             business=self.business,
             kind=ContactKind.phone,

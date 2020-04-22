@@ -34,11 +34,12 @@ class TestAppointmentDelete:
         dbsession.add(self.appointment)
         dbsession.commit()
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         assert dbsession.query(Appointment).count() == 1
         _, ok = AppointmentAction(dbsession).delete(self.appointment)
         assert ok
         assert dbsession.query(Appointment).count() == 0
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
@@ -52,7 +53,7 @@ class TestAppointmentDelete:
         with pytest.raises(Called):
             AppointmentAction(dbsession).delete(self.appointment)
 
-    def test_delete_right_record(self, dbsession):
+    def test_delete_right_record(self, dbsession, event_off):
         appointment2 = Appointment(
             business=self.business,
             pet=self.pet,
@@ -83,7 +84,14 @@ class TestAppointmentRelatedModelsDelete:
         self.obj = model(name='FooBar')
         dbsession.add(self.obj)
 
-    def test_ok(self, model, action_class, actionset_class, dbsession):
+    def test_ok(
+        self,
+        model,
+        action_class,
+        actionset_class,
+        dbsession,
+        event_off
+    ):
         assert dbsession.query(model).count() == 1
         _, ok = actionset_class(dbsession).delete(self.obj)
         assert ok
@@ -108,7 +116,14 @@ class TestAppointmentRelatedModelsDelete:
         with pytest.raises(Called):
             actionset_class(dbsession).delete(self.obj)
 
-    def test_delete_right_record(self, model, action_class, actionset_class, dbsession):
+    def test_delete_right_record(
+        self,
+        model,
+        action_class,
+        actionset_class,
+        dbsession,
+        event_off
+    ):
         obj = model(name='BarBaz')
         dbsession.add(obj)
 

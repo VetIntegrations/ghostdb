@@ -7,7 +7,7 @@ from ..create import Create
 
 class TestCorporationCreate:
 
-    def test_ok(self, dbsession):
+    def test_ok(self, dbsession, event_off):
         corp = Corporation(name='Test Corp 1')
 
         assert dbsession.query(Corporation).count() == 0
@@ -15,6 +15,7 @@ class TestCorporationCreate:
         assert ok
         assert new_corp == corp
         assert dbsession.query(Corporation).count() == 1
+        event_off.assert_called_once()
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
