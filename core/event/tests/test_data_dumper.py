@@ -3,7 +3,7 @@ from collections import namedtuple
 from ghostdb.db.models.pet import Pet
 from ghostdb.db.models.corporation import Corporation
 from ghostdb.db.models.business import Business
-from ..data_dumper import GenericDataDumper
+from ..data_dumper import GenericDataDumper, RelationDataDumper
 
 
 class TestGenericDataDumper:
@@ -82,3 +82,18 @@ class TestGenericDataDumper:
         data_dump = GenericDataDumper(pet).get_data_dump()
         modified_data.update(pms_ids_data)
         assert data_dump == modified_data
+
+
+class TestRelationDataDumper:
+
+    def test_dump_relation(self, dbsession):
+        corporation = Corporation(name='FooBar Inc')
+        business = Business(name='BarBaz', corporation=corporation, display_name='BarBaz')
+        dbsession.add(corporation)
+        dbsession.add(business)
+        dbsession.commit()
+
+        business.name = 'FooBaz'
+        dump = RelationDataDumper(business, pk_fields=('corporation', )).get_data_dump()
+
+        assert dump == {'name': 'FooBaz', 'corporation': corporation.id.hex}

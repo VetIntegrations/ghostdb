@@ -1,4 +1,5 @@
 import abc
+import typing
 
 from sqlalchemy import inspect
 from sqlalchemy.orm.base import PASSIVE_OFF
@@ -42,3 +43,31 @@ class GenericDataDumper(BaseDataDumper):
         keys = {attr.key for attr in state.attrs}
         unmodified_keys = state.unmodified
         return keys ^ unmodified_keys
+
+
+class RelationDataDumper(GenericDataDumper):
+    """Extend GenericDataDumper with ability to always get relation IDs
+
+    How to use:
+    from functools import partial
+
+    xxxEvent(
+        'name of event',
+        data_dumper=partial(
+            RelationDataDumper,
+            pk_fields=('field1', 'field2', )
+        )
+    )
+    """
+
+    def __init__(self, obj, *, pk_fields: typing.Iterable[str]):
+        super().__init__(obj)
+        self.pk_fields = pk_fields
+
+    def get_data_dump(self) -> dict:
+        data_dump = super().get_data_dump()
+
+        for field_name in self.pk_fields:
+            data_dump[field_name] = getattr(self.obj, '{}_id'.format(field_name)).hex
+
+        return data_dump
