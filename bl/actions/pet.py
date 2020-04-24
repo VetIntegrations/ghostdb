@@ -1,4 +1,6 @@
-from ghostdb.core.event import event
+from functools import partial
+
+from ghostdb.core.event import event, data_dumper
 from .utils import base
 from .pet_actions import (
     create as create_act, update as update_act, delete as delete_act
@@ -30,7 +32,10 @@ class PetAction(base.BaseActionSet):
         create_act.OwnerCreate,
         event_factory=base.EventFactory(
             event_name=event.EVENT_RECORD_CREATE,
-            # TODO [DEV-148]: create data_dumper
+            data_dumper=partial(
+                data_dumper.RelationDataDumper,
+                pk_fields=("owners", )
+            )
         )
     )
 

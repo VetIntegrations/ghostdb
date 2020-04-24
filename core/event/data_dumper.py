@@ -1,5 +1,6 @@
 import abc
 import typing
+from collections.abc import Iterable
 
 from sqlalchemy import inspect
 from sqlalchemy.orm.base import PASSIVE_OFF
@@ -68,6 +69,11 @@ class RelationDataDumper(GenericDataDumper):
         data_dump = super().get_data_dump()
 
         for field_name in self.pk_fields:
-            data_dump[field_name] = getattr(self.obj, '{}_id'.format(field_name)).hex
+            field_value = getattr(self.obj, field_name)
+            if isinstance(field_value, Iterable):
+                # many to many case
+                data_dump[field_name] = [getattr(rel, "id").hex for rel in field_value]
+            else:
+                data_dump[field_name] = field_value.hex
 
         return data_dump

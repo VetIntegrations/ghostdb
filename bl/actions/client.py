@@ -1,17 +1,10 @@
+from functools import partial
+
 from ghostdb.core.event import event, data_dumper
 from .utils import base
 from .client_actions import (
     create as create_act, update as update_act, delete as delete_act
 )
-
-
-class ClientRelatedDataDumper(data_dumper.GenericDataDumper):
-
-    def get_data_dump(self) -> dict:
-        data = super().get_data_dump()
-        data['client_id'] = self.obj.client_id.hex
-
-        return data
 
 
 class ClientAction(base.BaseActionSet):
@@ -39,21 +32,30 @@ class ClientAction(base.BaseActionSet):
         create_act.ContactCreate,
         event_factory=base.EventFactory(
             event_name=event.EVENT_RECORD_CREATE,
-            data_dumper=ClientRelatedDataDumper
+            data_dumper=partial(
+                data_dumper.RelationDataDumper,
+                pk_fields=("client_id", )
+            )
         )
     )
     update_contact = base.ActionFactory(
         update_act.ContactUpdate,
         event_factory=base.EventFactory(
             event_name=event.EVENT_RECORD_UPDATE,
-            data_dumper=ClientRelatedDataDumper
+            data_dumper=partial(
+                data_dumper.RelationDataDumper,
+                pk_fields=("client_id", )
+            )
         )
     )
     remove_contact = base.ActionFactory(
         delete_act.ContactDelete,
         event_factory=base.EventFactory(
             event_name=event.EVENT_RECORD_DELETE,
-            data_dumper=ClientRelatedDataDumper
+            data_dumper=partial(
+                data_dumper.RelationDataDumper,
+                pk_fields=("client_id", )
+            )
         )
     )
 
@@ -61,20 +63,29 @@ class ClientAction(base.BaseActionSet):
         create_act.AddressCreate,
         event_factory=base.EventFactory(
             event_name=event.EVENT_RECORD_CREATE,
-            data_dumper=ClientRelatedDataDumper
+            data_dumper=partial(
+                data_dumper.RelationDataDumper,
+                pk_fields=("client_id", )
+            )
         )
     )
     update_address = base.ActionFactory(
         update_act.AddressUpdate,
         event_factory=base.EventFactory(
             event_name=event.EVENT_RECORD_UPDATE,
-            data_dumper=ClientRelatedDataDumper
+            data_dumper=partial(
+                data_dumper.RelationDataDumper,
+                pk_fields=("client_id", )
+            )
         )
     )
     remove_address = base.ActionFactory(
         delete_act.AddressDelete,
         event_factory=base.EventFactory(
             event_name=event.EVENT_RECORD_DELETE,
-            data_dumper=ClientRelatedDataDumper
+            data_dumper=partial(
+                data_dumper.RelationDataDumper,
+                pk_fields=("client_id", )
+            )
         )
     )

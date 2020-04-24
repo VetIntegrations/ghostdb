@@ -128,6 +128,10 @@ class TestEvents:
         'remove_address'
     )
 
+    pet_related_action_names = (
+        'add_owner',
+    )
+
     @pytest.mark.parametrize(
         'actionset_class',
         (
@@ -175,13 +179,15 @@ class TestEvents:
                     assert False, f'{action} must have Create, Update or Delete in the name'
 
     @pytest.mark.parametrize(
-        'actionset_class, action_names, expected_data_dumper',
+        'actionset_class, action_names, relatited_pk_fields',
         (
-            (client.ClientAction, client_related_action_names, client.ClientRelatedDataDumper),
+            (client.ClientAction, client_related_action_names, ("client_id", )),
+            (pet.PetAction, pet_related_action_names, ("owners", )),
         ),
     )
-    def test_event_data_dumper(self, actionset_class, action_names, expected_data_dumper):
+    def test_event_data_dumper(self, actionset_class, action_names, relatited_pk_fields):
         actionset = actionset_class(None, None)
         for action_name in action_names:
             action = getattr(actionset, action_name)
-            assert action._event.data_dumper == expected_data_dumper
+            data_dumper = action._event.data_dumper(None)
+            assert data_dumper.pk_fields == relatited_pk_fields
