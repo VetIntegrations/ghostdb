@@ -1,6 +1,7 @@
 from collections import namedtuple
 
-from ghostdb.db.models.pet import Pet
+from ghostdb.db.models.client import Client
+from ghostdb.db.models.pet import Pet, PetOwner
 from ghostdb.db.models.corporation import Corporation
 from ghostdb.db.models.business import Business
 from ..data_dumper import GenericDataDumper, RelationDataDumper
@@ -86,7 +87,7 @@ class TestGenericDataDumper:
 
 class TestRelationDataDumper:
 
-    def test_dump_relation(self, dbsession):
+    def test_dump_relation_one_to_one(self, dbsession):
         corporation = Corporation(name='FooBar Inc')
         business = Business(name='BarBaz', corporation=corporation, display_name='BarBaz')
         dbsession.add(corporation)
@@ -94,6 +95,26 @@ class TestRelationDataDumper:
         dbsession.commit()
 
         business.name = 'FooBaz'
-        dump = RelationDataDumper(business, pk_fields=('corporation', )).get_data_dump()
+        dump = RelationDataDumper(business, pk_fields=('corporation_id', )).get_data_dump()
 
-        assert dump == {'name': 'FooBaz', 'corporation': corporation.id.hex}
+        assert dump == {'name': 'FooBaz', 'corporation_id': corporation.id.hex}
+
+    def test_dump_relation_many_to_many(self, dbsession):
+        client1 = Client(first_name="A")
+        client2 = Client(first_name="B")
+
+        pet = Pet(name="Bobik")
+
+        pet_owner_1 = PetOwner(pet=pet, client=client1)
+        pet_owner_2 = PetOwner(pet=pet, client=client2)
+
+        dbsession.add(client1)
+        dbsession.add(client2)
+        dbsession.add(pet)
+        dbsession.add(pet_owner_1)
+        dbsession.add(pet_owner_2)
+        dbsession.commit()
+
+        dump = RelationDataDumper(pet, pk_fields=('owners', )).get_data_dump()
+
+        assert sorted(dump["owners"]) == sorted([client1.id.hex, client2.id.hex, ])
