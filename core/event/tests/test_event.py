@@ -125,11 +125,17 @@ class TestEvents:
         'remove_contact',
         'add_address',
         'update_address',
-        'remove_address'
+        'remove_address',
     )
 
     pet_related_action_names = (
         'add_owner',
+    )
+
+    order_related_action_names = (
+        'add_item',
+        'update_item',
+        'remove_item',
     )
 
     @pytest.mark.parametrize(
@@ -182,7 +188,8 @@ class TestEvents:
         'actionset_class, action_names, relatited_pk_fields',
         (
             (client.ClientAction, client_related_action_names, ("client_id", )),
-            (pet.PetAction, pet_related_action_names, ("owners", )),
+            (pet.PetAction, pet_related_action_names, ("client_id", "pet_id", )),
+            (order.OrderAction, order_related_action_names, ("order_id", )),
         ),
     )
     def test_event_data_dumper(self, actionset_class, action_names, relatited_pk_fields):
