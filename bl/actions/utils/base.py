@@ -1,6 +1,7 @@
 import abc
 import typing
 from collections import OrderedDict
+from contextlib import contextmanager
 from sqlalchemy.orm import session
 
 from ghostdb.core.event import event, bus, data_dumper
@@ -35,6 +36,7 @@ class BaseAction(abc.ABC):
         self._validators = validators
         self._pre_processors = pre_processors
         self._post_processors = post_processors
+        self.__event_processing = True
 
     def validate(self, obj: typing.Any) -> bool:
         for validator in self._validators:
@@ -49,17 +51,24 @@ class BaseAction(abc.ABC):
         for processor in self._pre_processors:
             ret[processor] = processor(obj, self)
 
-        self._event.register('NetSuite', obj)
+        if self.__event_processing:
+            self._event.register('NetSuite', obj)
 
         obj, ret['process'] = self.process(obj, *args, **kwargs)
 
-        if ret['process']:
+        if ret['process'] and self.__event_processing:
             self._event.trigger()
 
         for processor in self._post_processors:
             ret[processor] = processor(obj, self)
 
         return (obj, all(ret.values()))
+
+    @contextmanager
+    def discard_event(self):
+        self.__event_processing = False
+        yield self
+        self.__event_processing = True
 
     @abc.abstractmethod
     def process(self, obj: typing.Any, *args, **kwargs) -> typing.Tuple[typing.Any, bool]:

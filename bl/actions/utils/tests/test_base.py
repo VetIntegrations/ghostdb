@@ -95,3 +95,35 @@ class TestBaseAction:
         assert len(log) == 0
         false_action(obj)
         assert len(log) == 0
+
+    def test_discarding_event(self):
+        log = []
+        obj = {'name': 'Test'}
+        new_obj = {'name', 'Test 2'}
+        customer = 'test_customer'
+        validators = [lambda obj: ...]
+        pre_processors = [lambda obj, act: ...]
+        post_processors = [lambda obj, act: ..., lambda obj, act: ...]
+
+        class FakeEvent(BaseEvent):
+            def register(self, customer: str, obj):
+                self.messages.append((customer, obj))
+
+            def trigger(self):
+                return log.append(('event trigger', (customer, obj)))
+
+        fake_event = FakeEvent(customer, obj)
+
+        class FakeAction(BaseAction):
+            def process(self, obj):
+                return (new_obj, True)
+
+        action = FakeAction(None, fake_event, validators, pre_processors, post_processors)
+
+        assert len(log) == 0
+        with action.discard_event() as act:
+            act(obj)
+
+        assert len(log) == 0
+        action(obj)
+        assert len(log) == 1
