@@ -1,4 +1,6 @@
-from ghostdb.core.event import event
+from functools import partial
+
+from ghostdb.core.event import event, data_dumper
 from .utils import base, validators
 from .order_actions import (
     create as create_act, update as update_act, delete as delete_act
@@ -35,20 +37,29 @@ class OrderAction(base.BaseActionSet):
         create_act.ItemCreate,
         event_factory=base.EventFactory(
             event_name=event.EVENT_RECORD_CREATE,
-            # TODO [DEV-148]: create data_dumper
+            data_dumper=partial(
+                data_dumper.RelationDataDumper,
+                pk_fields=("order_id", )
+            )
         )
     )
     update_item = base.ActionFactory(
         update_act.ItemUpdate,
         event_factory=base.EventFactory(
             event_name=event.EVENT_RECORD_UPDATE,
-            # TODO [DEV-148]: create data_dumper
+            data_dumper=partial(
+                data_dumper.RelationDataDumper,
+                pk_fields=("order_id",)
+            )
         )
     )
     remove_item = base.ActionFactory(
         delete_act.ItemDelete,
         event_factory=base.EventFactory(
             event_name=event.EVENT_RECORD_DELETE,
-            # TODO [DEV-148]: create data_dumper
+            data_dumper=partial(
+                data_dumper.RelationDataDumper,
+                pk_fields=("order_id",)
+            )
         )
     )

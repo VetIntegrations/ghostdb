@@ -34,7 +34,7 @@ class PetAction(base.BaseActionSet):
             event_name=event.EVENT_RECORD_CREATE,
             data_dumper=partial(
                 data_dumper.RelationDataDumper,
-                pk_fields=("owners", )
+                pk_fields=("client_id", "pet_id", )
             )
         )
     )
