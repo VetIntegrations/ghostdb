@@ -3,3 +3,4 @@
 pytest
 pytest-cov
 pylama
+factory_boy
