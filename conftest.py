@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session, session
 
 from ghostdb.db import meta
 from ghostdb.core.event import event
+from ghostdb.db.tests import common as test_common
 
 
 class MockDB:
@@ -51,10 +52,9 @@ def db_structure(db_connection):
 @pytest.fixture
 def dbsession(db_connection):
     transaction = db_connection.begin()
-    db = Session(bind=db_connection, autocommit=False)
-
+    test_common.Session.configure(bind=db_connection, autocommit=False)
+    db = test_common.Session()
     yield db
-
     transaction.rollback()
     session.close_all_sessions()
 
