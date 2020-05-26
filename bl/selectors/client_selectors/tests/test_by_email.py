@@ -12,7 +12,7 @@ class TestClientSelectByEmail:
         default_database.add(self.client)
 
     def test_ok(self, default_database):
-        selector = ByEmail(default_database, Client)
+        selector = ByEmail(default_database, Client, None)
 
         assert default_database.query(Client).count() == 1
         client, ok = selector(self.client.email)
@@ -37,7 +37,7 @@ class TestClientSelectByEmail:
         client2 = Client(first_name='Jane', last_name='Doe', email='jane@doe.local')
         default_database.add(client2)
 
-        selector = ByEmail(default_database, Client)
+        selector = ByEmail(default_database, Client, None)
 
         assert default_database.query(Client).count() == 2
         client, ok = selector(self.client.email)
