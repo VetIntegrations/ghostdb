@@ -1,36 +1,24 @@
-import pytest
-
-from ghostdb.exceptions import NoDefaultDatabase
-from ..base import BaseSelector, selector_factory
+from ..base import BaseSelectorSet, BaseSelector, SelectorFactory
 
 
-class TestSelectorFactory:
+def test_selector_factory():
+    class Selector(BaseSelector):
+        called = False
 
-    def test_selector_factory(self, mock_default_database):
-        class Selector(BaseSelector):
-            called = False
+        def process(self, *args, **kwargs):
+            self.__class__.called = True
+            return (None, True)
 
-            def process(self, *args, **kwargs):
-                self.called = True
-                return (None, True)
+    class Model:
+        ...
 
-        class Model:
-            ...
+    class SelectorSet(BaseSelectorSet):
+        test_selector = SelectorFactory(Selector, Model)
 
-        selector = selector_factory(Selector, Model)
-        assert not selector.called
-        selector(None)
-        assert selector.called
-
-    def test_no_default_db(self):
-        class Selector(BaseSelector):
-            ...
-
-        class Model:
-            ...
-
-        with pytest.raises(NoDefaultDatabase):
-            selector_factory(Selector, Model)
+    selectorset = SelectorSet(None)
+    assert not selectorset.test_selector.called
+    selectorset.test_selector()
+    assert selectorset.test_selector.called
 
 
 def test_base_selector_workflow():
@@ -42,7 +30,7 @@ def test_base_selector_workflow():
             log.append(('Selector.process', args, kwargs))
             return (None, True)
 
-    selector = Selector(None, None)
+    selector = Selector(None, None, None)
 
     assert len(log) == 0
     selector()

@@ -1,22 +1,22 @@
 from datetime import datetime, timedelta
 
 from ghostdb.db.models.tests import factories
-from .. import discount
+from .. import refund
 from ...kpi import KPISelector
 
 
-class TestPMSDiscountedTransations:
+class TestPMSRefundTransations:
 
-    def test_use_filters(self, dbsession, monkeypatch):
+    def test_process(self, dbsession, monkeypatch):
         log = []
 
         def filter_successful_transactions(order_rel, query):
             log.append('filter_successful_transactions')
             return query
 
-        monkeypatch.setattr(discount, 'filter_successful_transactions', filter_successful_transactions)
+        monkeypatch.setattr(refund, 'filter_successful_transactions', filter_successful_transactions)
 
-        selector = discount.PMSDiscountedTransations(dbsession, None, None)
+        selector = refund.PMSRefundTransactions(dbsession, None, None)
         assert not len(log)
         records, status = selector()
         assert log == [
@@ -39,11 +39,11 @@ class TestPMSDiscountedTransations:
             return query
 
         selectorset = KPISelector(dbsession)
-        monkeypatch.setattr(discount, 'filter_successful_transactions', filter_successful_transactions)
+        monkeypatch.setattr(refund, 'filter_successful_transactions', filter_successful_transactions)
         monkeypatch.setattr(selectorset, 'filter_orderitem_by_corporation', filter_orderitem_by_corporation)
         monkeypatch.setattr(selectorset, 'filter_orderitem_by_timerange', filter_orderitem_by_timerange)
 
-        selector = discount.PMSDiscountedTransations(dbsession, None, selectorset)
+        selector = refund.PMSRefundTransactions(dbsession, None, selectorset)
         assert not len(log)
         corporation = factories.CorporationFactory()
         dt_from = datetime.now().date()
@@ -55,19 +55,44 @@ class TestPMSDiscountedTransations:
             ('filter_transation_timerange', dt_from, dt_to),
         ]
 
-    def test_filter_by_discount_amount(self, dbsession):
+    def test_filter_by_description(self, dbsession):
         order = factories.OrderFactory()
         factories.OrderItemFactory(
-            order=order, quantity=100, unit_price=2, discount_amount=None, created_at=datetime.now()
+            order=order, quantity=100, unit_price=2, amount=-300, description='it is refund transaction'
         )
         factories.OrderItemFactory(
-            order=order, quantity=100, unit_price=5, discount_amount=2, created_at=datetime.now()
+            order=order, quantity=100, unit_price=3, amount=-300, description='Refund'
         )
         factories.OrderItemFactory(
-            order=order, quantity=100, unit_price=7, discount_amount=0, created_at=datetime.now()
+            order=order, quantity=100, unit_price=4, amount=-300, description='Refunded'
         )
 
-        selector = discount.PMSDiscountedTransations(dbsession, None, None)
+        # shouldn't be in a list
+        factories.OrderItemFactory(
+            order=order, quantity=100, unit_price=5, amount=-300, description='Sell of goods'
+        )
+
+        selector = refund.PMSRefundTransactions(dbsession, None, None)
         records, status = selector()
+
+        assert records.count() == 3
+        assert 5 not in [record.unit_price for record in records]
+
+    def test_filter_by_amount(self, dbsession):
+        order = factories.OrderFactory()
+        factories.OrderItemFactory(
+            order=order, quantity=100, unit_price=2, amount=-300, description='Refund'
+        )
+        # shouldn't be in a list
+        factories.OrderItemFactory(
+            order=order, quantity=100, unit_price=3, amount=300, description='Refund'
+        )
+        factories.OrderItemFactory(
+            order=order, quantity=100, unit_price=4, amount=0, description='Refund'
+        )
+
+        selector = refund.PMSRefundTransactions(dbsession, None, None)
+        records, status = selector()
+
         assert records.count() == 1
-        assert records[0].unit_price == 5
+        assert records[0].unit_price == 2

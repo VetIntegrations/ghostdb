@@ -1,16 +1,9 @@
+import typing
 from datetime import datetime
 from sqlalchemy import or_, orm
+from sqlalchemy.orm.util import aliased
+
 from ghostdb.db.models import order, corporation
-
-
-def filter_transation_corporation(
-    order_relation: orm.util.AliasedClass,
-    query: orm.query.Query,
-    corp: corporation.Corporation
-) -> orm.query.Query:
-    return query.filter(
-        order_relation.corporation == corp
-    )
 
 
 def filter_successful_transactions(
@@ -28,12 +21,18 @@ def filter_successful_transactions(
     )
 
 
-def filter_transation_timerange(
-    query: orm.query.Query,
-    datetime_from: datetime,
-    datetime_to: datetime
-) -> orm.query.Query:
-    return query.filter(
-        order.OrderItem.created_at >= datetime_from,
-        order.OrderItem.created_at < datetime_to,
-    )
+class KPISelectorGenericFilterMixin:
+
+    def with_all_filters(
+        self,
+        corp: corporation.Corporation,
+        datetime_from: datetime,
+        datetime_to: datetime
+    ) -> typing.Tuple[typing.Iterable[order.OrderItem], bool]:
+        order_rel = aliased(order.Order)
+
+        query, ok = self.process(order_rel=order_rel)
+        query = self.selectorset.filter_orderitem_by_corporation(order_rel, query, corp)
+        query = self.selectorset.filter_orderitem_by_timerange(query, datetime_from, datetime_to)
+
+        return (query, True)

@@ -16,9 +16,10 @@ class BaseSelectorSet:
 
 class BaseSelector(abc.ABC):
 
-    def __init__(self, db: session.Session, model: meta.Base):
+    def __init__(self, db: session.Session, model: meta.Base, selectorset: BaseSelectorSet):
         self.db = db
         self.model = model
+        self.selectorset = selectorset
 
     def __call__(self, *args, **kwargs) -> typing.Tuple[typing.Any, bool]:
         """Selector runner
@@ -42,7 +43,8 @@ class SelectorFactory:
 
         return self.selector_class(
             selectorset.db,
-            self.model
+            self.model,
+            selectorset
         )
 
 
