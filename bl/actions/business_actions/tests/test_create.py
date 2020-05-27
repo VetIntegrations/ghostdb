@@ -22,7 +22,8 @@ class TestBusinessCreate:
         )
 
         assert dbsession.query(Business).count() == 0
-        new_business, ok = BusinessAction(dbsession).create(business)
+        action = BusinessAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        new_business, ok = action.create(business)
         assert ok
         assert new_business == business
         assert dbsession.query(Business).count() == 1
@@ -42,8 +43,9 @@ class TestBusinessCreate:
             name='Antlers and Hooves',
             display_name='Antlers and Hooves'
         )
+        action = BusinessAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            BusinessAction(dbsession).create(business)
+            action.create(business)
 
 
 class TestBusinessContactCreate:
@@ -68,7 +70,8 @@ class TestBusinessContactCreate:
         )
 
         assert dbsession.query(BusinessContact).count() == 0
-        new_contact, ok = BusinessAction(dbsession).add_contact(contact, self.business)
+        action = BusinessAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        new_contact, ok = action.add_contact(contact, self.business)
         assert ok
         assert new_contact == contact
         assert dbsession.query(BusinessContact).count() == 1
@@ -81,7 +84,8 @@ class TestBusinessContactCreate:
         )
 
         assert dbsession.query(BusinessContact).count() == 0
-        new_contact, ok = BusinessAction(dbsession).add_contact(contact, self.business)
+        action = BusinessAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        new_contact, ok = action.add_contact(contact, self.business)
         assert ok
         assert new_contact == contact
         assert new_contact.business_id == self.business.id
@@ -107,5 +111,6 @@ class TestBusinessContactCreate:
             kind=ContactKind.email,
             value='aah@tcorp.local'
         )
+        action = BusinessAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            BusinessAction(dbsession).add_contact(contact, self.business)
+            action.add_contact(contact, self.business)

@@ -26,7 +26,8 @@ class TestBusinessUpdate:
         self.business.name = new_name
 
         assert dbsession.query(Business).count() == 1
-        business, ok = BusinessAction(dbsession).update(self.business)
+        action = BusinessAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        business, ok = action.update(self.business)
         assert ok
         assert business == self.business
         assert dbsession.query(Business).count() == 1
@@ -45,8 +46,9 @@ class TestBusinessUpdate:
 
         monkeypatch.setattr(BusinessUpdate, 'process', process)
 
+        action = BusinessAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            BusinessAction(dbsession).update(self.business)
+            action.update(self.business)
 
     def test_update_right_record(self, dbsession, event_off):
         business2 = Business(
@@ -62,7 +64,8 @@ class TestBusinessUpdate:
         self.business.name = new_name
 
         assert dbsession.query(Business).count() == 2
-        _, ok = BusinessAction(dbsession).update(self.business)
+        action = BusinessAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update(self.business)
         assert ok
         assert dbsession.query(Business).count() == 2
 
@@ -105,7 +108,8 @@ class TestBusinessContactUpdate:
         self.contact.value = new_value
 
         assert dbsession.query(BusinessContact).count() == 1
-        contact, ok = BusinessAction(dbsession).update_contact(self.contact, self.business)
+        action = BusinessAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        contact, ok = action.update_contact(self.contact, self.business)
         assert ok
         assert contact == self.contact
         assert dbsession.query(BusinessContact).count() == 1
@@ -124,8 +128,9 @@ class TestBusinessContactUpdate:
 
         monkeypatch.setattr(ContactUpdate, 'process', process)
 
+        action = BusinessAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            BusinessAction(dbsession).update_contact(self.contact, self.business)
+            action.update_contact(self.contact, self.business)
 
     def test_update_right_record(self, dbsession, event_off):
         contact2 = BusinessContact(
@@ -141,7 +146,8 @@ class TestBusinessContactUpdate:
         self.contact.value = new_value
 
         assert dbsession.query(BusinessContact).count() == 2
-        _, ok = BusinessAction(dbsession).update_contact(self.contact, self.business)
+        action = BusinessAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update_contact(self.contact, self.business)
         assert ok
         assert dbsession.query(BusinessContact).count() == 2
 

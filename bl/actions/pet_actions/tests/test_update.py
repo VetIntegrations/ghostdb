@@ -25,7 +25,8 @@ class TestPetUpdate:
         self.pet.name = new_name
 
         assert dbsession.query(Pet).count() == 1
-        pet, ok = PetAction(dbsession).update(self.pet)
+        action = PetAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        pet, ok = action.update(self.pet)
         assert ok
         assert pet == self.pet
         assert dbsession.query(Pet).count() == 1
@@ -46,8 +47,9 @@ class TestPetUpdate:
 
         monkeypatch.setattr(PetUpdate, 'process', process)
 
+        action = PetAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            PetAction(dbsession).update(self.pet)
+            action.update(self.pet)
 
     def test_update_right_record(self, dbsession, event_off):
         pet2 = Pet(name='Buch')
@@ -59,7 +61,8 @@ class TestPetUpdate:
         self.pet.name = new_name
 
         assert dbsession.query(Pet).count() == 2
-        _, ok = PetAction(dbsession).update(self.pet)
+        action = PetAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update(self.pet)
         assert ok
         assert dbsession.query(Pet).count() == 2
 
@@ -91,7 +94,8 @@ class TestBreedUpdate:
         self.breed.name = new_name
 
         assert dbsession.query(Breed).count() == 1
-        breed, ok = BreedAction(dbsession).update(self.breed)
+        action = BreedAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        breed, ok = action.update(self.breed)
         assert ok
         assert breed == self.breed
         assert dbsession.query(Breed).count() == 1
@@ -112,8 +116,9 @@ class TestBreedUpdate:
 
         monkeypatch.setattr(BreedUpdate, 'process', process)
 
+        action = BreedAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            BreedAction(dbsession).update(self.breed)
+            action.update(self.breed)
 
     def test_update_right_record(self, dbsession, event_off):
         breed2 = Breed(name='American Staffordshire Terrier')
@@ -125,7 +130,8 @@ class TestBreedUpdate:
         self.breed.name = new_name
 
         assert dbsession.query(Breed).count() == 2
-        _, ok = BreedAction(dbsession).update(self.breed)
+        action = BreedAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update(self.breed)
         assert ok
         assert dbsession.query(Breed).count() == 2
 
@@ -156,7 +162,8 @@ class TestColorUpdate:
         self.color.name = new_name
 
         assert dbsession.query(Color).count() == 1
-        color, ok = ColorAction(dbsession).update(self.color)
+        action = ColorAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        color, ok = action.update(self.color)
         assert ok
         assert color == self.color
         assert dbsession.query(Color).count() == 1
@@ -175,8 +182,9 @@ class TestColorUpdate:
 
         monkeypatch.setattr(ColorUpdate, 'process', process)
 
+        action = ColorAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            ColorAction(dbsession).update(self.color)
+            action.update(self.color)
 
     def test_update_right_record(self, dbsession, event_off):
         color2 = Color(name='Red')
@@ -188,7 +196,8 @@ class TestColorUpdate:
         self.color.name = new_name
 
         assert dbsession.query(Color).count() == 2
-        _, ok = ColorAction(dbsession).update(self.color)
+        action = ColorAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update(self.color)
         assert ok
         assert dbsession.query(Color).count() == 2
 
@@ -219,7 +228,8 @@ class TestGenderUpdate:
         self.gender.name = new_name
 
         assert dbsession.query(Gender).count() == 1
-        gender, ok = GenderAction(dbsession).update(self.gender)
+        action = GenderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        gender, ok = action.update(self.gender)
         assert ok
         assert gender == self.gender
         assert dbsession.query(Gender).count() == 1
@@ -238,8 +248,9 @@ class TestGenderUpdate:
 
         monkeypatch.setattr(GenderUpdate, 'process', process)
 
+        action = GenderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            GenderAction(dbsession).update(self.gender)
+            action.update(self.gender)
 
     def test_update_right_record(self, dbsession, event_off):
         gender2 = Gender(name='male')
@@ -251,7 +262,8 @@ class TestGenderUpdate:
         self.gender.name = new_name
 
         assert dbsession.query(Gender).count() == 2
-        _, ok = GenderAction(dbsession).update(self.gender)
+        action = GenderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update(self.gender)
         assert ok
         assert dbsession.query(Gender).count() == 2
 
@@ -282,7 +294,8 @@ class TestSpeciesUpdate:
         self.species.name = new_name
 
         assert dbsession.query(Species).count() == 1
-        species, ok = SpeciesAction(dbsession).update(self.species)
+        action = SpeciesAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        species, ok = action.update(self.species)
         assert ok
         assert species == self.species
         assert dbsession.query(Species).count() == 1
@@ -301,8 +314,9 @@ class TestSpeciesUpdate:
 
         monkeypatch.setattr(SpeciesUpdate, 'process', process)
 
+        action = SpeciesAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            SpeciesAction(dbsession).update(self.species)
+            action.update(self.species)
 
     def test_update_right_record(self, dbsession, event_off):
         species2 = Species(name='Fenine')
@@ -314,7 +328,8 @@ class TestSpeciesUpdate:
         self.species.name = new_name
 
         assert dbsession.query(Species).count() == 2
-        _, ok = SpeciesAction(dbsession).update(self.species)
+        action = SpeciesAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update(self.species)
         assert ok
         assert dbsession.query(Species).count() == 2
 
@@ -345,7 +360,8 @@ class TestWeightUnitUpdate:
         self.weight_unit.name = new_name
 
         assert dbsession.query(WeightUnit).count() == 1
-        unit, ok = WeightUnitAction(dbsession).update(self.weight_unit)
+        action = WeightUnitAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        unit, ok = action.update(self.weight_unit)
         assert ok
         assert unit == self.weight_unit
         assert dbsession.query(WeightUnit).count() == 1
@@ -364,8 +380,9 @@ class TestWeightUnitUpdate:
 
         monkeypatch.setattr(WeightUnitUpdate, 'process', process)
 
+        action = WeightUnitAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            WeightUnitAction(dbsession).update(self.weight_unit)
+            action.update(self.weight_unit)
 
     def test_update_right_record(self, dbsession, event_off):
         unit2 = WeightUnit(name='lb')
@@ -377,7 +394,8 @@ class TestWeightUnitUpdate:
         self.weight_unit.name = new_name
 
         assert dbsession.query(WeightUnit).count() == 2
-        _, ok = WeightUnitAction(dbsession).update(self.weight_unit)
+        action = WeightUnitAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update(self.weight_unit)
         assert ok
         assert dbsession.query(WeightUnit).count() == 2
 

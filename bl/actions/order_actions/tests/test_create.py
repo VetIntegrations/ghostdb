@@ -35,7 +35,8 @@ class TestOrderCreate:
 
         with dbsession.no_autoflush:
             assert dbsession.query(Order).count() == 0
-        new_order, ok = OrderAction(dbsession).create(order)
+        action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        new_order, ok = action.create(order)
         assert ok
         assert new_order == order
         with dbsession.no_autoflush:
@@ -57,14 +58,16 @@ class TestOrderCreate:
             pet=self.pet,
             provider=self.provider
         )
+        action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            OrderAction(dbsession).create(order)
+            action.create(order)
 
     def test_validate_required_fields(self, dbsession, event_off):
         order = Order()
 
+        action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(ValidationError, match='Empty required fields: corporation, client'):
-            OrderAction(dbsession).create(order)
+            action.create(order)
 
 
 class TestOrderItemCreate:
@@ -98,7 +101,8 @@ class TestOrderItemCreate:
         )
 
         assert dbsession.query(OrderItem).count() == 0
-        new_order_item, ok = OrderAction(dbsession).add_item(order_item, self.order)
+        action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        new_order_item, ok = action.add_item(order_item, self.order)
         assert ok
         assert new_order_item == order_item
         assert dbsession.query(OrderItem).count() == 1
@@ -112,7 +116,8 @@ class TestOrderItemCreate:
         )
 
         assert dbsession.query(OrderItem).count() == 0
-        new_order_item, ok = OrderAction(dbsession).add_item(order_item, self.order)
+        action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        new_order_item, ok = action.add_item(order_item, self.order)
         assert ok
         assert new_order_item == order_item
         assert new_order_item.order_id == self.order.id
@@ -138,5 +143,6 @@ class TestOrderItemCreate:
             quantity=1,
             unit_price=3.14
         )
+        action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            OrderAction(dbsession).add_item(order_item, self.order)
+            action.add_item(order_item, self.order)

@@ -11,7 +11,8 @@ class TestCorporationCreate:
         corp = Corporation(name='Test Corp 1')
 
         assert dbsession.query(Corporation).count() == 0
-        new_corp, ok = CorporationAction(dbsession).create(corp)
+        action = CorporationAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        new_corp, ok = action.create(corp)
         assert ok
         assert new_corp == corp
         assert dbsession.query(Corporation).count() == 1
@@ -27,5 +28,6 @@ class TestCorporationCreate:
         monkeypatch.setattr(Create, 'process', process)
 
         corp = Corporation(name='Test Corp 1')
+        action = CorporationAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            CorporationAction(dbsession).create(corp)
+            action.create(corp)

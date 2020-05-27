@@ -34,7 +34,8 @@ class TestOrderDelete:
 
     def test_ok(self, dbsession, event_off):
         assert dbsession.query(Order).count() == 1
-        _, ok = OrderAction(dbsession).delete(self.order)
+        action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.order)
         assert ok
         assert dbsession.query(Order).count() == 0
         event_off.assert_called_once()
@@ -48,8 +49,9 @@ class TestOrderDelete:
 
         monkeypatch.setattr(OrderDelete, 'process', process)
 
+        action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            OrderAction(dbsession).delete(self.order)
+            action.delete(self.order)
 
     def test_delete_right_record(self, dbsession, event_off):
         pet2 = Pet(name='Ricky')
@@ -64,7 +66,8 @@ class TestOrderDelete:
         dbsession.add(order2)
 
         assert dbsession.query(Order).count() == 2
-        _, ok = OrderAction(dbsession).delete(self.order)
+        action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.order)
         assert ok
         assert dbsession.query(Order).count() == 1
 
@@ -102,7 +105,8 @@ class TestOrderItemDelete:
 
     def test_ok(self, dbsession, event_off):
         assert dbsession.query(OrderItem).count() == 1
-        _, ok = OrderAction(dbsession).remove_item(self.order_item, self.order)
+        action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.remove_item(self.order_item, self.order)
         assert ok
         assert dbsession.query(OrderItem).count() == 0
         event_off.assert_called_once()
@@ -116,8 +120,9 @@ class TestOrderItemDelete:
 
         monkeypatch.setattr(ItemDelete, 'process', process)
 
+        action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            OrderAction(dbsession).remove_item(self.order_item, self.order)
+            action.remove_item(self.order_item, self.order)
 
     def test_delete_right_record(self, dbsession, event_off):
         order_item2 = OrderItem(
@@ -128,7 +133,8 @@ class TestOrderItemDelete:
         dbsession.add(order_item2)
 
         assert dbsession.query(OrderItem).count() == 2
-        _, ok = OrderAction(dbsession).remove_item(self.order_item, self.order)
+        action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.remove_item(self.order_item, self.order)
         assert ok
         assert dbsession.query(OrderItem).count() == 1
 

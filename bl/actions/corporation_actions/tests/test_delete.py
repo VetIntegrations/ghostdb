@@ -14,7 +14,8 @@ class TestCorporationDelete:
 
     def test_ok(self, dbsession, event_off):
         assert dbsession.query(Corporation).count() == 1
-        _, ok = CorporationAction(dbsession).delete(self.corp)
+        action = CorporationAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.corp)
         assert ok
         assert dbsession.query(Corporation).count() == 0
         event_off.assert_called_once()
@@ -28,15 +29,17 @@ class TestCorporationDelete:
 
         monkeypatch.setattr(Delete, 'process', process)
 
+        action = CorporationAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            CorporationAction(dbsession).delete(self.corp)
+            action.delete(self.corp)
 
     def test_delete_right_record(self, dbsession, event_off):
         corp = Corporation(name='Test Corporation Stay')
         dbsession.add(corp)
 
         assert dbsession.query(Corporation).count() == 2
-        _, ok = CorporationAction(dbsession).delete(self.corp)
+        action = CorporationAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.corp)
         assert ok
         assert dbsession.query(Corporation).count() == 1
 

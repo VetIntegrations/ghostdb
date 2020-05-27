@@ -11,7 +11,8 @@ class TestProviderCreate:
         provider = Provider(first_name='John', last_name='Doe')
 
         assert dbsession.query(Provider).count() == 0
-        new_provider, ok = ProviderAction(dbsession).create(provider)
+        action = ProviderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        new_provider, ok = action.create(provider)
         assert ok
         assert new_provider == provider
         assert dbsession.query(Provider).count() == 1
@@ -27,8 +28,9 @@ class TestProviderCreate:
         monkeypatch.setattr(ProviderCreate, 'process', process)
 
         provider = Provider(first_name='John', last_name='Doe')
+        action = ProviderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            ProviderAction(dbsession).create(provider)
+            action.create(provider)
 
 
 class TestProviderContactCreate:
@@ -47,7 +49,8 @@ class TestProviderContactCreate:
         )
 
         assert dbsession.query(ProviderContact).count() == 0
-        new_contact, ok = ProviderAction(dbsession).add_contact(contact, self.provider)
+        action = ProviderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        new_contact, ok = action.add_contact(contact, self.provider)
         assert ok
         assert new_contact == contact
         assert dbsession.query(ProviderContact).count() == 1
@@ -60,7 +63,8 @@ class TestProviderContactCreate:
         )
 
         assert dbsession.query(ProviderContact).count() == 0
-        new_contact, ok = ProviderAction(dbsession).add_contact(contact, self.provider)
+        action = ProviderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        new_contact, ok = action.add_contact(contact, self.provider)
         assert ok
         assert new_contact == contact
         assert new_contact.provider_id == self.provider.id
@@ -86,8 +90,9 @@ class TestProviderContactCreate:
             kind=ContactKind.phone,
             value='+327489327'
         )
+        action = ProviderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            ProviderAction(dbsession).add_contact(contact, self.provider)
+            action.add_contact(contact, self.provider)
 
 
 class TestProviderKindCreate:
@@ -96,7 +101,8 @@ class TestProviderKindCreate:
         kind = ProviderKind(name='Doctor')
 
         assert dbsession.query(ProviderKind).count() == 0
-        new_kind, ok = ProviderKindAction(dbsession).create(kind)
+        action = ProviderKindAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        new_kind, ok = action.create(kind)
         assert ok
         assert new_kind == kind
         assert dbsession.query(ProviderKind).count() == 1
@@ -112,5 +118,6 @@ class TestProviderKindCreate:
         monkeypatch.setattr(ProviderKindCreate, 'process', process)
 
         kind = ProviderKind(name='Doctor')
+        action = ProviderKindAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            ProviderKindAction(dbsession).create(kind)
+            action.create(kind)

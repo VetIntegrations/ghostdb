@@ -12,7 +12,7 @@ class TestClientCreate:
     def test_ok(self, dbsession, event_off):
         client = Client(first_name='John', last_name='Doe')
 
-        act = ClientAction(dbsession, None)
+        act = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
 
         assert len(act.create._event.messages) == 0
         assert dbsession.query(Client).count() == 0
@@ -33,8 +33,9 @@ class TestClientCreate:
         monkeypatch.setattr(ClientCreate, 'process', process)
 
         client = Client(first_name='John', last_name='Doe')
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            ClientAction(dbsession).create(client)
+            action.create(client)
 
 
 class TestClientContactCreate:
@@ -52,7 +53,7 @@ class TestClientContactCreate:
             value='+4783294432'
         )
 
-        act = ClientAction(dbsession, None)
+        act = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
 
         assert len(act.create._event.messages) == 0
         assert dbsession.query(ClientContact).count() == 0
@@ -70,7 +71,8 @@ class TestClientContactCreate:
         )
 
         assert dbsession.query(ClientContact).count() == 0
-        new_contact, ok = ClientAction(dbsession).add_contact(contact, self.client)
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        new_contact, ok = action.add_contact(contact, self.client)
         assert ok
         assert new_contact == contact
         assert new_contact.client_id == self.client.id
@@ -96,8 +98,9 @@ class TestClientContactCreate:
             kind=ContactKind.HOME,
             value='+327489327'
         )
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            ClientAction(dbsession).add_contact(contact, self.client)
+            action.add_contact(contact, self.client)
 
 
 class TestClientAddressCreate:
@@ -116,7 +119,8 @@ class TestClientAddressCreate:
         )
 
         assert dbsession.query(ClientAddress).count() == 0
-        new_address, ok = ClientAction(dbsession).add_address(address, self.client)
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        new_address, ok = action.add_address(address, self.client)
         assert ok
         assert new_address == address
         assert dbsession.query(ClientAddress).count() == 1
@@ -128,7 +132,8 @@ class TestClientAddressCreate:
         )
 
         assert dbsession.query(ClientAddress).count() == 0
-        new_address, ok = ClientAction(dbsession).add_address(address, self.client)
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        new_address, ok = action.add_address(address, self.client)
         assert ok
         assert new_address == address
         assert new_address.client_id == self.client.id
@@ -154,5 +159,6 @@ class TestClientAddressCreate:
             kind=AddressKind.home,
             zip_code='00001'
         )
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            ClientAction(dbsession).add_address(address, self.client)
+            action.add_address(address, self.client)

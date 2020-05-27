@@ -50,6 +50,12 @@ class Client(meta.Base):
 
     pets = association_proxy('client_pets', 'pet')
 
+    def __repr__(self):
+        return '<Client fist_name={} last_name={}>'.format(
+            self.first_name,
+            self.last_name
+        )
+
 
 family_union = (
     select([Family.c.from_client_id, Family.c.to_client_id, ])

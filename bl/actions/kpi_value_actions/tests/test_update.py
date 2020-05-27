@@ -22,7 +22,8 @@ class TestKPIValueUpdate:
         self.kpi.value = new_value
 
         assert dbsession.query(KPIValue).count() == 1
-        kpi, ok = KPIValueAction(dbsession).update(self.kpi)
+        action = KPIValueAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        kpi, ok = action.update(self.kpi)
         assert ok
         assert kpi == self.kpi
         assert dbsession.query(KPIValue).count() == 1
@@ -42,8 +43,9 @@ class TestKPIValueUpdate:
 
         monkeypatch.setattr(KPIValueUpdate, 'process', process)
 
+        action = KPIValueAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            KPIValueAction(dbsession).update(self.kpi)
+            action.update(self.kpi)
 
     def test_update_right_record(self, dbsession, event_off):
         kpi2 = KPIValue(
@@ -58,7 +60,8 @@ class TestKPIValueUpdate:
         self.kpi.value = new_value
 
         assert dbsession.query(KPIValue).count() == 2
-        _, ok = KPIValueAction(dbsession).update(self.kpi)
+        action = KPIValueAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update(self.kpi)
         assert ok
         assert dbsession.query(KPIValue).count() == 2
 

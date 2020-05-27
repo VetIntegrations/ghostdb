@@ -1,4 +1,5 @@
 from functools import partial
+from unittest.mock import Mock
 
 from ghostdb.core.event.event import BaseEvent
 from ..base import BaseAction
@@ -35,11 +36,12 @@ class TestBaseAction:
         fake_event = FakeEvent(customer, obj)
 
         action = Action(
-            None,
-            fake_event,
-            (validator, ),
-            (partial(coprocessor, 'pre_1'), partial(coprocessor, 'pre_2')),
-            (partial(coprocessor, 'post_1'), partial(coprocessor, 'post_2')),
+            db=None,
+            event=fake_event,
+            validators=(validator, ),
+            pre_processors=(partial(coprocessor, 'pre_1'), partial(coprocessor, 'pre_2')),
+            post_processors=(partial(coprocessor, 'post_1'), partial(coprocessor, 'post_2')),
+            actionset=Mock(customer_name='test-consolidator'),
         )
 
         assert len(log) == 0
@@ -76,7 +78,14 @@ class TestBaseAction:
             def process(self, obj):
                 return (new_obj, True)
 
-        true_action = ActionTrue(None, fake_event, validators, pre_processors, post_processors)
+        true_action = ActionTrue(
+            db=None,
+            event=fake_event,
+            validators=validators,
+            pre_processors=pre_processors,
+            post_processors=post_processors,
+            actionset=Mock(customer_name='test-consolidator')
+        )
 
         assert len(log) == 0
         true_action(obj)
@@ -90,7 +99,14 @@ class TestBaseAction:
             def process(self, obj):
                 return (new_obj, False)
 
-        false_action = ActionFalse(None, fake_event, validators, pre_processors, post_processors)
+        false_action = ActionFalse(
+            db=None,
+            event=fake_event,
+            validators=validators,
+            pre_processors=pre_processors,
+            post_processors=post_processors,
+            actionset=Mock(customer_name='test-consolidator')
+        )
 
         assert len(log) == 0
         false_action(obj)
@@ -118,7 +134,14 @@ class TestBaseAction:
             def process(self, obj):
                 return (new_obj, True)
 
-        action = FakeAction(None, fake_event, validators, pre_processors, post_processors)
+        action = FakeAction(
+            db=None,
+            event=fake_event,
+            validators=validators,
+            pre_processors=pre_processors,
+            post_processors=post_processors,
+            actionset=Mock(customer_name='test-consolidator')
+        )
 
         assert len(log) == 0
         with action.discard_event() as act:

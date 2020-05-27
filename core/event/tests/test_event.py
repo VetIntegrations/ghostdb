@@ -165,7 +165,7 @@ class TestEvents:
         )
     )
     def test_event_name(self, actionset_class):
-        actionset = actionset_class(None, None)
+        actionset = actionset_class(None, None, None)
 
         # filter magic methods
         methods_name = [method_name for method_name in dir(actionset) if method_name[:2] != '__']
@@ -193,7 +193,7 @@ class TestEvents:
         ),
     )
     def test_event_data_dumper(self, actionset_class, action_names, relatited_pk_fields):
-        actionset = actionset_class(None, None)
+        actionset = actionset_class(None, None, None)
         for action_name in action_names:
             action = getattr(actionset, action_name)
             data_dumper = action._event.data_dumper(None)
