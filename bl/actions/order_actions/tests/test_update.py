@@ -40,7 +40,8 @@ class TestOrderUpdate:
         self.order.status = new_status
 
         assert dbsession.query(Order).count() == 1
-        order, ok = OrderAction(dbsession).update(self.order)
+        action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        order, ok = action.update(self.order)
         assert ok
         assert order == self.order
         assert dbsession.query(Order).count() == 1
@@ -59,8 +60,9 @@ class TestOrderUpdate:
 
         monkeypatch.setattr(OrderUpdate, 'process', process)
 
+        action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            OrderAction(dbsession).update(self.order)
+            action.update(self.order)
 
     def test_update_right_record(self, dbsession, event_off):
         pet2 = Pet(name='Ricky')
@@ -80,7 +82,8 @@ class TestOrderUpdate:
         self.order.status = new_status
 
         assert dbsession.query(Order).count() == 2
-        _, ok = OrderAction(dbsession).update(self.order)
+        action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update(self.order)
         assert ok
         assert dbsession.query(Order).count() == 2
 
@@ -101,8 +104,9 @@ class TestOrderUpdate:
     def test_validate_required_fields(self, dbsession, event_off):
         self.order.client = None
 
+        action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(ValidationError, match='Empty required fields: client'):
-            OrderAction(dbsession).create(self.order)
+            action.create(self.order)
 
 
 class TestOrderItemUpdate:
@@ -141,7 +145,8 @@ class TestOrderItemUpdate:
         self.order_item.quantity = new_quantity
 
         assert dbsession.query(OrderItem).count() == 1
-        order_item, ok = OrderAction(dbsession).update_item(self.order_item, self.order)
+        action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        order_item, ok = action.update_item(self.order_item, self.order)
         assert ok
         assert order_item == self.order_item
         assert dbsession.query(OrderItem).count() == 1
@@ -159,8 +164,9 @@ class TestOrderItemUpdate:
 
         monkeypatch.setattr(ItemUpdate, 'process', process)
 
+        action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            OrderAction(dbsession).update_item(self.order_item, self.order)
+            action.update_item(self.order_item, self.order)
 
     def test_update_right_record(self, dbsession, event_off):
         order_item2 = OrderItem(
@@ -176,7 +182,8 @@ class TestOrderItemUpdate:
         self.order_item.quantity = new_quantity
 
         assert dbsession.query(OrderItem).count() == 2
-        _, ok = OrderAction(dbsession).update_item(self.order_item, self.order)
+        action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update_item(self.order_item, self.order)
         assert ok
         assert dbsession.query(OrderItem).count() == 2
 

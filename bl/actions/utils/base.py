@@ -15,10 +15,12 @@ class BaseActionSet:
     def __init__(
         self,
         db: session.Session,
-        event_bus: bus.BaseEventBus = None
+        event_bus: bus.BaseEventBus,
+        customer_name: str
     ):
         self.db = db
         self.event_bus = event_bus
+        self.customer_name = customer_name
 
 
 class BaseAction(abc.ABC):
@@ -29,9 +31,11 @@ class BaseAction(abc.ABC):
         event: typing.Callable,
         validators: typing.Tuple[typing.Callable],
         pre_processors: typing.Tuple[CoProcessor],
-        post_processors: typing.Tuple[CoProcessor]
+        post_processors: typing.Tuple[CoProcessor],
+        actionset: BaseActionSet
     ):
         self.db = db
+        self.actionset = actionset
         self._event = event
         self._validators = validators
         self._pre_processors = pre_processors
@@ -52,7 +56,7 @@ class BaseAction(abc.ABC):
             ret[processor] = processor(obj, self)
 
         if self.__event_processing:
-            self._event.register('NetSuite', obj)
+            self._event.register(self.actionset.customer_name, obj)
 
         obj, ret['process'] = self.process(obj, *args, **kwargs)
 
@@ -114,9 +118,10 @@ class ActionFactory:
         event.set_event_bus(actionset.event_bus)
 
         return self.action_class(
-            actionset.db,
-            event,
-            self.validators,
-            self.pre_processors,
-            self.post_processors
+            db=actionset.db,
+            event=event,
+            validators=self.validators,
+            pre_processors=self.pre_processors,
+            post_processors=self.post_processors,
+            actionset=actionset
         )

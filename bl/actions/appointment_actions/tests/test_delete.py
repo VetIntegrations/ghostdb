@@ -36,7 +36,8 @@ class TestAppointmentDelete:
 
     def test_ok(self, dbsession, event_off):
         assert dbsession.query(Appointment).count() == 1
-        _, ok = AppointmentAction(dbsession).delete(self.appointment)
+        action = AppointmentAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.appointment)
         assert ok
         assert dbsession.query(Appointment).count() == 0
         event_off.assert_called_once()
@@ -50,8 +51,9 @@ class TestAppointmentDelete:
 
         monkeypatch.setattr(AppointmentDelete, 'process', process)
 
+        action = AppointmentAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            AppointmentAction(dbsession).delete(self.appointment)
+            action.delete(self.appointment)
 
     def test_delete_right_record(self, dbsession, event_off):
         appointment2 = Appointment(
@@ -63,7 +65,8 @@ class TestAppointmentDelete:
         dbsession.add(appointment2)
 
         assert dbsession.query(Appointment).count() == 2
-        _, ok = AppointmentAction(dbsession).delete(self.appointment)
+        action = AppointmentAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.appointment)
         assert ok
         assert dbsession.query(Appointment).count() == 1
 
@@ -93,7 +96,8 @@ class TestAppointmentRelatedModelsDelete:
         event_off
     ):
         assert dbsession.query(model).count() == 1
-        _, ok = actionset_class(dbsession).delete(self.obj)
+        action = actionset_class(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.obj)
         assert ok
         assert dbsession.query(model).count() == 0
 
@@ -113,8 +117,9 @@ class TestAppointmentRelatedModelsDelete:
 
         monkeypatch.setattr(action_class, 'process', process)
 
+        action = actionset_class(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            actionset_class(dbsession).delete(self.obj)
+            action.delete(self.obj)
 
     def test_delete_right_record(
         self,
@@ -128,7 +133,8 @@ class TestAppointmentRelatedModelsDelete:
         dbsession.add(obj)
 
         assert dbsession.query(model).count() == 2
-        _, ok = actionset_class(dbsession).delete(self.obj)
+        action = actionset_class(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.obj)
         assert ok
         assert dbsession.query(model).count() == 1
 

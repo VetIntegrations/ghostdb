@@ -21,7 +21,8 @@ class TestClientUpdate:
         self.client.last_name = new_last_name
 
         assert dbsession.query(Client).count() == 1
-        client, ok = ClientAction(dbsession).update(self.client)
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        client, ok = action.update(self.client)
         assert ok
         assert client == self.client
         assert dbsession.query(Client).count() == 1
@@ -40,8 +41,9 @@ class TestClientUpdate:
 
         monkeypatch.setattr(ClientUpdate, 'process', process)
 
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            ClientAction(dbsession).update(self.client)
+            action.update(self.client)
 
     def test_update_right_record(self, dbsession, event_off):
         client = Client(first_name='Jane', last_name='Doe')
@@ -53,7 +55,8 @@ class TestClientUpdate:
         self.client.last_name = new_last_name
 
         assert dbsession.query(Client).count() == 2
-        _, ok = ClientAction(dbsession).update(self.client)
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update(self.client)
         assert ok
         assert dbsession.query(Client).count() == 2
 
@@ -91,7 +94,8 @@ class TestClientContactUpdate:
         self.contact.value = new_value
 
         assert dbsession.query(ClientContact).count() == 1
-        contact, ok = ClientAction(dbsession).update_contact(self.contact, self.client)
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        contact, ok = action.update_contact(self.contact, self.client)
         assert ok
         assert contact == self.contact
         assert dbsession.query(ClientContact).count() == 1
@@ -109,8 +113,9 @@ class TestClientContactUpdate:
 
         monkeypatch.setattr(ContactUpdate, 'process', process)
 
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            ClientAction(dbsession).update_contact(self.contact, self.client)
+            action.update_contact(self.contact, self.client)
 
     def test_update_right_record(self, dbsession, event_off):
         contact2 = ClientContact(
@@ -126,7 +131,8 @@ class TestClientContactUpdate:
         self.contact.value = new_value
 
         assert dbsession.query(ClientContact).count() == 2
-        _, ok = ClientAction(dbsession).update_contact(self.contact, self.client)
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update_contact(self.contact, self.client)
         assert ok
         assert dbsession.query(ClientContact).count() == 2
 
@@ -164,7 +170,8 @@ class TestClientAddressUpdate:
         self.address.zip_code = new_zip_code
 
         assert dbsession.query(ClientAddress).count() == 1
-        address, ok = ClientAction(dbsession).update_address(self.address, self.client)
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        address, ok = action.update_address(self.address, self.client)
         assert ok
         assert address == self.address
         assert dbsession.query(ClientAddress).count() == 1
@@ -182,8 +189,9 @@ class TestClientAddressUpdate:
 
         monkeypatch.setattr(AddressUpdate, 'process', process)
 
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            ClientAction(dbsession).update_address(self.address, self.client)
+            action.update_address(self.address, self.client)
 
     def test_update_right_record(self, dbsession, event_off):
         address2 = ClientAddress(
@@ -199,7 +207,8 @@ class TestClientAddressUpdate:
         self.address.zip_code = new_zip_code
 
         assert dbsession.query(ClientAddress).count() == 2
-        _, ok = ClientAction(dbsession).update_address(self.address, self.client)
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update_address(self.address, self.client)
         assert ok
         assert dbsession.query(ClientAddress).count() == 2
 

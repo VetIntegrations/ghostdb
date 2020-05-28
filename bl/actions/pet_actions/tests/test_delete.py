@@ -20,7 +20,8 @@ class TestPetDelete:
 
     def test_ok(self, dbsession, event_off):
         assert dbsession.query(Pet).count() == 1
-        _, ok = PetAction(dbsession).delete(self.pet)
+        action = PetAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.pet)
         assert ok
         assert dbsession.query(Pet).count() == 0
         event_off.assert_called_once()
@@ -36,15 +37,17 @@ class TestPetDelete:
 
         monkeypatch.setattr(PetDelete, 'process', process)
 
+        action = PetAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            PetAction(dbsession).delete(self.pet)
+            action.delete(self.pet)
 
     def test_delete_right_record(self, dbsession, event_off):
         pet = Pet(name='Buch')
         dbsession.add(pet)
 
         assert dbsession.query(Pet).count() == 2
-        _, ok = PetAction(dbsession).delete(self.pet)
+        action = PetAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.pet)
         assert ok
         assert dbsession.query(Pet).count() == 1
 
@@ -60,7 +63,8 @@ class TestBreedDelete:
 
     def test_ok(self, dbsession, event_off):
         assert dbsession.query(Breed).count() == 1
-        _, ok = BreedAction(dbsession).delete(self.breed)
+        action = BreedAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.breed)
         assert ok
         assert dbsession.query(Breed).count() == 0
         event_off.assert_called_once()
@@ -74,15 +78,17 @@ class TestBreedDelete:
 
         monkeypatch.setattr(BreedDelete, 'process', process)
 
+        action = BreedAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            BreedAction(dbsession).delete(self.breed)
+            action.delete(self.breed)
 
     def test_delete_right_record(self, dbsession, event_off):
         breed = Breed(name='American Staffordshire Terrier')
         dbsession.add(breed)
 
         assert dbsession.query(Breed).count() == 2
-        _, ok = BreedAction(dbsession).delete(self.breed)
+        action = BreedAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.breed)
         assert ok
         assert dbsession.query(Breed).count() == 1
         event_off.assert_called_once()
@@ -99,7 +105,8 @@ class TestColorDelete:
 
     def test_ok(self, dbsession, event_off):
         assert dbsession.query(Color).count() == 1
-        _, ok = ColorAction(dbsession).delete(self.color)
+        action = ColorAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.color)
         assert ok
         assert dbsession.query(Color).count() == 0
         event_off.assert_called_once()
@@ -113,15 +120,17 @@ class TestColorDelete:
 
         monkeypatch.setattr(ColorDelete, 'process', process)
 
+        action = ColorAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            ColorAction(dbsession).delete(self.color)
+            action.delete(self.color)
 
     def test_delete_right_record(self, dbsession, event_off):
         color = Color(name='Red')
         dbsession.add(color)
 
         assert dbsession.query(Color).count() == 2
-        _, ok = ColorAction(dbsession).delete(self.color)
+        action = ColorAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.color)
         assert ok
         assert dbsession.query(Color).count() == 1
         event_off.assert_called_once()
@@ -138,7 +147,8 @@ class TestGenderDelete:
 
     def test_ok(self, dbsession, event_off):
         assert dbsession.query(Gender).count() == 1
-        _, ok = GenderAction(dbsession).delete(self.gender)
+        action = GenderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.gender)
         assert ok
         assert dbsession.query(Gender).count() == 0
         event_off.assert_called_once()
@@ -152,15 +162,17 @@ class TestGenderDelete:
 
         monkeypatch.setattr(GenderDelete, 'process', process)
 
+        action = GenderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            GenderAction(dbsession).delete(self.gender)
+            action.delete(self.gender)
 
     def test_delete_right_record(self, dbsession, event_off):
         gender = Gender(name='male')
         dbsession.add(gender)
 
         assert dbsession.query(Gender).count() == 2
-        _, ok = GenderAction(dbsession).delete(self.gender)
+        action = GenderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.gender)
         assert ok
         assert dbsession.query(Gender).count() == 1
         event_off.assert_called_once()
@@ -177,7 +189,8 @@ class TestSpeciesDelete:
 
     def test_ok(self, dbsession, event_off):
         assert dbsession.query(Species).count() == 1
-        _, ok = SpeciesAction(dbsession).delete(self.species)
+        action = SpeciesAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.species)
         assert ok
         assert dbsession.query(Species).count() == 0
         event_off.assert_called_once()
@@ -191,15 +204,17 @@ class TestSpeciesDelete:
 
         monkeypatch.setattr(SpeciesDelete, 'process', process)
 
+        action = SpeciesAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            SpeciesAction(dbsession).delete(self.species)
+            action.delete(self.species)
 
     def test_delete_right_record(self, dbsession, event_off):
         species = Species(name='Fenine')
         dbsession.add(species)
 
         assert dbsession.query(Species).count() == 2
-        _, ok = SpeciesAction(dbsession).delete(self.species)
+        action = SpeciesAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.species)
         assert ok
         assert dbsession.query(Species).count() == 1
 
@@ -215,7 +230,8 @@ class TestWeightUnitDelete:
 
     def test_ok(self, dbsession, event_off):
         assert dbsession.query(WeightUnit).count() == 1
-        _, ok = WeightUnitAction(dbsession).delete(self.weight_unit)
+        action = WeightUnitAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.weight_unit)
         assert ok
         assert dbsession.query(WeightUnit).count() == 0
         event_off.assert_called_once()
@@ -229,15 +245,17 @@ class TestWeightUnitDelete:
 
         monkeypatch.setattr(WeightUnitDelete, 'process', process)
 
+        action = WeightUnitAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            WeightUnitAction(dbsession).delete(self.weight_unit)
+            action.delete(self.weight_unit)
 
     def test_delete_right_record(self, dbsession, event_off):
         unit = WeightUnit(name='Fenine')
         dbsession.add(unit)
 
         assert dbsession.query(WeightUnit).count() == 2
-        _, ok = WeightUnitAction(dbsession).delete(self.weight_unit)
+        action = WeightUnitAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.weight_unit)
         assert ok
         assert dbsession.query(WeightUnit).count() == 1
 

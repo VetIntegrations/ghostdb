@@ -19,7 +19,8 @@ class TestProviderUpdate:
         self.provider.last_name = new_last_name
 
         assert dbsession.query(Provider).count() == 1
-        provider, ok = ProviderAction(dbsession).update(self.provider)
+        action = ProviderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        provider, ok = action.update(self.provider)
         assert ok
         assert provider == self.provider
         assert dbsession.query(Provider).count() == 1
@@ -38,8 +39,9 @@ class TestProviderUpdate:
 
         monkeypatch.setattr(ProviderUpdate, 'process', process)
 
+        action = ProviderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            ProviderAction(dbsession).update(self.provider)
+            action.update(self.provider)
 
     def test_update_right_record(self, dbsession, event_off):
         provider2 = Provider(first_name='Jane', last_name='Doe')
@@ -51,7 +53,8 @@ class TestProviderUpdate:
         self.provider.last_name = new_last_name
 
         assert dbsession.query(Provider).count() == 2
-        _, ok = ProviderAction(dbsession).update(self.provider)
+        action = ProviderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update(self.provider)
         assert ok
         assert dbsession.query(Provider).count() == 2
 
@@ -89,7 +92,8 @@ class TestProviderContactUpdate:
         self.contact.value = new_value
 
         assert dbsession.query(ProviderContact).count() == 1
-        contact, ok = ProviderAction(dbsession).update_contact(self.contact, self.provider)
+        action = ProviderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        contact, ok = action.update_contact(self.contact, self.provider)
         assert ok
         assert contact == self.contact
         assert dbsession.query(ProviderContact).count() == 1
@@ -108,8 +112,9 @@ class TestProviderContactUpdate:
 
         monkeypatch.setattr(ContactUpdate, 'process', process)
 
+        action = ProviderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            ProviderAction(dbsession).update_contact(self.contact, self.provider)
+            action.update_contact(self.contact, self.provider)
 
     def test_update_right_record(self, dbsession, event_off):
         contact2 = ProviderContact(
@@ -125,7 +130,8 @@ class TestProviderContactUpdate:
         self.contact.value = new_value
 
         assert dbsession.query(ProviderContact).count() == 2
-        _, ok = ProviderAction(dbsession).update_contact(self.contact, self.provider)
+        action = ProviderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update_contact(self.contact, self.provider)
         assert ok
         assert dbsession.query(ProviderContact).count() == 2
 
@@ -156,7 +162,8 @@ class TestProviderKindUpdate:
         self.kind.name = new_name
 
         assert dbsession.query(ProviderKind).count() == 1
-        kind, ok = ProviderKindAction(dbsession).update(self.kind)
+        action = ProviderKindAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        kind, ok = action.update(self.kind)
         assert ok
         assert kind == self.kind
         assert dbsession.query(ProviderKind).count() == 1
@@ -175,8 +182,9 @@ class TestProviderKindUpdate:
 
         monkeypatch.setattr(ProviderKindUpdate, 'process', process)
 
+        action = ProviderKindAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            ProviderKindAction(dbsession).update(self.kind)
+            action.update(self.kind)
 
     def test_update_right_record(self, dbsession, event_off):
         kind2 = ProviderKind(name='Masseur')
@@ -188,7 +196,8 @@ class TestProviderKindUpdate:
         self.kind.name = new_name
 
         assert dbsession.query(ProviderKind).count() == 2
-        _, ok = ProviderKindAction(dbsession).update(self.kind)
+        action = ProviderKindAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update(self.kind)
         assert ok
         assert dbsession.query(ProviderKind).count() == 2
 

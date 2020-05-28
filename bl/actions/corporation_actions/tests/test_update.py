@@ -19,7 +19,8 @@ class TestCorporationUpdate:
         self.corp.name = new_name
 
         assert dbsession.query(Corporation).count() == 1
-        corp, ok = CorporationAction(dbsession).update(self.corp)
+        action = CorporationAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        corp, ok = action.update(self.corp)
         assert ok
         assert corp == self.corp
         assert dbsession.query(Corporation).count() == 1
@@ -38,8 +39,9 @@ class TestCorporationUpdate:
 
         monkeypatch.setattr(Update, 'process', process)
 
+        action = CorporationAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            CorporationAction(dbsession).update(self.corp)
+            action.update(self.corp)
 
     def test_update_right_record(self, dbsession, event_off):
         corp = Corporation(name='Stay Corp.')
@@ -51,7 +53,8 @@ class TestCorporationUpdate:
         self.corp.name = new_name
 
         assert dbsession.query(Corporation).count() == 2
-        _, ok = CorporationAction(dbsession).update(self.corp)
+        action = CorporationAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update(self.corp)
         assert ok
         assert dbsession.query(Corporation).count() == 2
 

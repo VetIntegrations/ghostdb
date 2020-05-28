@@ -35,7 +35,8 @@ class TestAppointmentCreate:
         )
 
         assert dbsession.query(Appointment).count() == 0
-        new_appointment, ok = AppointmentAction(dbsession, None).create(appointment)
+        action = AppointmentAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        new_appointment, ok = action.create(appointment)
         assert ok
         assert new_appointment == appointment
 
@@ -56,8 +57,9 @@ class TestAppointmentCreate:
             pet_id=self.pet.id,
             duration=30
         )
+        action = AppointmentAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            AppointmentAction(dbsession, None).create(appointment)
+            action.create(appointment)
 
 
 @pytest.mark.parametrize(
@@ -80,7 +82,8 @@ class TestAppointmentRelatedModelsCreate:
         obj = model(name='FooBar')
 
         assert dbsession.query(model).count() == 0
-        new_obj, ok = actionset_class(dbsession).create(obj)
+        action = actionset_class(dbsession, event_bus=None, customer_name='test-cosolidator')
+        new_obj, ok = action.create(obj)
         assert ok
         assert new_obj == obj
         assert dbsession.query(model).filter(model.name == 'FooBar').count() == 1
@@ -102,5 +105,6 @@ class TestAppointmentRelatedModelsCreate:
         monkeypatch.setattr(action_class, 'process', process)
 
         obj = model(name='FooBar')
+        action = actionset_class(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            actionset_class(dbsession).create(obj)
+            action.create(obj)

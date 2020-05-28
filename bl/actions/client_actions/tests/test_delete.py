@@ -16,7 +16,8 @@ class TestClientDelete:
 
     def test_ok(self, dbsession, event_off):
         assert dbsession.query(Client).count() == 1
-        _, ok = ClientAction(dbsession).delete(self.client)
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.client)
         assert ok
         assert dbsession.query(Client).count() == 0
         event_off.assert_called_once()
@@ -30,15 +31,17 @@ class TestClientDelete:
 
         monkeypatch.setattr(ClientDelete, 'process', process)
 
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            ClientAction(dbsession).delete(self.client)
+            action.delete(self.client)
 
     def test_delete_right_record(self, dbsession, event_off):
         client = Client(first_name='Jane', last_name='Doe')
         dbsession.add(client)
 
         assert dbsession.query(Client).count() == 2
-        _, ok = ClientAction(dbsession).delete(self.client)
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.client)
         assert ok
         assert dbsession.query(Client).count() == 1
 
@@ -61,7 +64,8 @@ class TestClientContactDelete:
 
     def test_ok(self, dbsession, event_off):
         assert dbsession.query(ClientContact).count() == 1
-        _, ok = ClientAction(dbsession).remove_contact(self.contact, self.client)
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.remove_contact(self.contact, self.client)
         assert ok
         assert dbsession.query(ClientContact).count() == 0
 
@@ -74,8 +78,9 @@ class TestClientContactDelete:
 
         monkeypatch.setattr(ContactDelete, 'process', process)
 
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            ClientAction(dbsession).remove_contact(self.contact, self.client)
+            action.remove_contact(self.contact, self.client)
 
     def test_delete_right_record(self, dbsession, event_off):
         contact2 = ClientContact(
@@ -86,7 +91,8 @@ class TestClientContactDelete:
         dbsession.add(contact2)
 
         assert dbsession.query(ClientContact).count() == 2
-        _, ok = ClientAction(dbsession).remove_contact(self.contact, self.client)
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.remove_contact(self.contact, self.client)
         assert ok
         assert dbsession.query(ClientContact).count() == 1
 
@@ -109,7 +115,8 @@ class TestClientAddressDelete:
 
     def test_ok(self, dbsession, event_off):
         assert dbsession.query(ClientAddress).count() == 1
-        _, ok = ClientAction(dbsession).remove_address(self.address, self.client)
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.remove_address(self.address, self.client)
         assert ok
         assert dbsession.query(ClientAddress).count() == 0
 
@@ -122,8 +129,9 @@ class TestClientAddressDelete:
 
         monkeypatch.setattr(AddressDelete, 'process', process)
 
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            ClientAction(dbsession).remove_address(self.address, self.client)
+            action.remove_address(self.address, self.client)
 
     def test_delete_right_record(self, dbsession, event_off):
         address2 = ClientAddress(
@@ -134,7 +142,8 @@ class TestClientAddressDelete:
         dbsession.add(address2)
 
         assert dbsession.query(ClientAddress).count() == 2
-        _, ok = ClientAction(dbsession).remove_address(self.address, self.client)
+        action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.remove_address(self.address, self.client)
         assert ok
         assert dbsession.query(ClientAddress).count() == 1
 

@@ -46,7 +46,8 @@ class TestCodeRelatedModelsUpdate:
         self.obj.name = new_name
 
         assert dbsession.query(model).count() == 1
-        obj, ok = actionset(dbsession).update(self.obj)
+        action = actionset(dbsession, event_bus=None, customer_name='test-cosolidator')
+        obj, ok = action.update(self.obj)
         assert ok
         assert obj == self.obj
         assert dbsession.query(model).count() == 1
@@ -72,8 +73,9 @@ class TestCodeRelatedModelsUpdate:
 
         monkeypatch.setattr(action_class, 'process', process)
 
+        action = actionset(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            actionset(dbsession).update(self.obj)
+            action.update(self.obj)
 
     def test_update_right_record(
         self,
@@ -92,7 +94,8 @@ class TestCodeRelatedModelsUpdate:
         self.obj.name = new_name
 
         assert dbsession.query(model).count() == 2
-        _, ok = actionset(dbsession).update(self.obj)
+        action = actionset(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update(self.obj)
         assert ok
         assert dbsession.query(model).count() == 2
 
@@ -123,7 +126,8 @@ class TestServiceUpdate:
         self.service.name = new_name
 
         assert dbsession.query(Service).count() == 1
-        service, ok = ServiceAction(dbsession).update(self.service)
+        action = ServiceAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        service, ok = action.update(self.service)
         assert ok
         assert service == self.service
         assert dbsession.query(Service).count() == 1
@@ -142,8 +146,9 @@ class TestServiceUpdate:
 
         monkeypatch.setattr(ServiceUpdate, 'process', process)
 
+        action = ServiceAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            ServiceAction(dbsession).update(self.service)
+            action.update(self.service)
 
     def test_update_right_record(self, dbsession, event_off):
         service = Service(name='FooBaz', kind=ServiceKind.PRODUCT)
@@ -155,7 +160,8 @@ class TestServiceUpdate:
         self.service.name = new_name
 
         assert dbsession.query(Service).count() == 2
-        _, ok = ServiceAction(dbsession).update(self.service)
+        action = ServiceAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update(self.service)
         assert ok
         assert dbsession.query(Service).count() == 2
 

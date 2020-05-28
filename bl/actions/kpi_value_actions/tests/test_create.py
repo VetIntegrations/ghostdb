@@ -14,7 +14,8 @@ class TestKPIValueCreate:
         )
 
         assert dbsession.query(KPIValue).count() == 0
-        new_kpi, ok = KPIValueAction(dbsession).create(kpi)
+        action = KPIValueAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        new_kpi, ok = action.create(kpi)
         assert ok
         assert new_kpi == kpi
         assert dbsession.query(KPIValue).count() == 1
@@ -33,5 +34,6 @@ class TestKPIValueCreate:
             kind=KPIKind.FINANCIAL_NET_PROFIT,
             value=95
         )
+        action = KPIValueAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            KPIValueAction(dbsession).create(kpi)
+            action.create(kpi)

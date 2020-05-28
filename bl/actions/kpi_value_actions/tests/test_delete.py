@@ -17,7 +17,8 @@ class TestKPIValueDelete:
 
     def test_ok(self, dbsession, event_off):
         assert dbsession.query(KPIValue).count() == 1
-        _, ok = KPIValueAction(dbsession).delete(self.kpi)
+        action = KPIValueAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.kpi)
         assert ok
         assert dbsession.query(KPIValue).count() == 0
         event_off.assert_called_once()
@@ -32,8 +33,9 @@ class TestKPIValueDelete:
 
         monkeypatch.setattr(KPIValueDelete, 'process', process)
 
+        action = KPIValueAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            KPIValueAction(dbsession).delete(self.kpi)
+            action.delete(self.kpi)
 
     def test_delete_right_record(self, dbsession, event_off):
         kpi2 = KPIValue(
@@ -43,7 +45,8 @@ class TestKPIValueDelete:
         dbsession.add(kpi2)
 
         assert dbsession.query(KPIValue).count() == 2
-        _, ok = KPIValueAction(dbsession).delete(self.kpi)
+        action = KPIValueAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.kpi)
         assert ok
         assert dbsession.query(KPIValue).count() == 1
 

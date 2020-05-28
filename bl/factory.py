@@ -28,7 +28,8 @@ class BLFactory:
     def action(self):
         act = self.get_action_class()(
             db=self.dbsession,
-            event_bus=self.event_bus
+            event_bus=self.event_bus,
+            customer_name=self.customer
         )
         # TODO: set customer for event DEV-225
 

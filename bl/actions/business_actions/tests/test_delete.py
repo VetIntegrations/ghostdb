@@ -21,7 +21,8 @@ class TestBusinessDelete:
 
     def test_ok(self, dbsession, event_off):
         assert dbsession.query(Business).count() == 1
-        _, ok = BusinessAction(dbsession).delete(self.business)
+        action = BusinessAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.business)
         assert ok
         assert dbsession.query(Business).count() == 0
         event_off.assert_called_once()
@@ -35,8 +36,9 @@ class TestBusinessDelete:
 
         monkeypatch.setattr(BusinessDelete, 'process', process)
 
+        action = BusinessAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            BusinessAction(dbsession).delete(self.business)
+            action.delete(self.business)
 
     def test_delete_right_record(self, dbsession, event_off):
         business2 = Business(
@@ -47,7 +49,8 @@ class TestBusinessDelete:
         dbsession.add(business2)
 
         assert dbsession.query(Business).count() == 2
-        _, ok = BusinessAction(dbsession).delete(self.business)
+        action = BusinessAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.business)
         assert ok
         assert dbsession.query(Business).count() == 1
 
@@ -75,7 +78,8 @@ class TestBusinessContactDelete:
 
     def test_ok(self, dbsession, event_off):
         assert dbsession.query(BusinessContact).count() == 1
-        _, ok = BusinessAction(dbsession).remove_contact(self.contact, self.business)
+        action = BusinessAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.remove_contact(self.contact, self.business)
         assert ok
         assert dbsession.query(BusinessContact).count() == 0
 
@@ -88,8 +92,9 @@ class TestBusinessContactDelete:
 
         monkeypatch.setattr(ContactDelete, 'process', process)
 
+        action = BusinessAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            BusinessAction(dbsession).remove_contact(self.contact, self.business)
+            action.remove_contact(self.contact, self.business)
 
     def test_delete_right_record(self, dbsession, event_off):
         contact2 = BusinessContact(
@@ -100,7 +105,8 @@ class TestBusinessContactDelete:
         dbsession.add(contact2)
 
         assert dbsession.query(BusinessContact).count() == 2
-        _, ok = BusinessAction(dbsession).remove_contact(self.contact, self.business)
+        action = BusinessAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.remove_contact(self.contact, self.business)
         assert ok
         assert dbsession.query(BusinessContact).count() == 1
 

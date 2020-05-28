@@ -41,7 +41,8 @@ class TestCodeRelatedModelsDelete:
         event_off
     ):
         assert dbsession.query(model).count() == 1
-        _, ok = actionset(dbsession).delete(self.obj)
+        action = actionset(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.obj)
         assert ok
         assert dbsession.query(model).count() == 0
         event_off.assert_called_once()
@@ -62,8 +63,9 @@ class TestCodeRelatedModelsDelete:
 
         monkeypatch.setattr(action_class, 'process', process)
 
+        action = actionset(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            actionset(dbsession).delete(self.obj)
+            action.delete(self.obj)
 
     def test_delete_right_record(
         self,
@@ -77,7 +79,8 @@ class TestCodeRelatedModelsDelete:
         dbsession.add(obj)
 
         assert dbsession.query(model).count() == 2
-        _, ok = actionset(dbsession).delete(self.obj)
+        action = actionset(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.obj)
         assert ok
         assert dbsession.query(model).count() == 1
 
@@ -93,7 +96,8 @@ class TestServiceDelete:
 
     def test_ok(self, dbsession, event_off):
         assert dbsession.query(Service).count() == 1
-        _, ok = ServiceAction(dbsession).delete(self.service)
+        action = ServiceAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.service)
         assert ok
         assert dbsession.query(Service).count() == 0
         event_off.assert_called_once()
@@ -109,15 +113,17 @@ class TestServiceDelete:
 
         monkeypatch.setattr(ServiceDelete, 'process', process)
 
+        action = ServiceAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            ServiceAction(dbsession).delete(self.service)
+            action.delete(self.service)
 
     def test_delete_right_record(self, dbsession, event_off):
         service = Service(name='FooBaz', kind=ServiceKind.PRODUCT)
         dbsession.add(service)
 
         assert dbsession.query(Service).count() == 2
-        _, ok = ServiceAction(dbsession).delete(self.service)
+        action = ServiceAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.delete(self.service)
         assert ok
         assert dbsession.query(Service).count() == 1
 

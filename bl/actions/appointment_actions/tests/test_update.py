@@ -41,7 +41,8 @@ class TestAppointmentUpdate:
         self.appointment.duration = new_duration
 
         assert dbsession.query(Appointment).count() == 1
-        appointment, ok = AppointmentAction(dbsession).update(self.appointment)
+        action = AppointmentAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        appointment, ok = action.update(self.appointment)
         assert ok
         assert appointment == self.appointment
         assert dbsession.query(Appointment).count() == 1
@@ -60,8 +61,9 @@ class TestAppointmentUpdate:
 
         monkeypatch.setattr(AppointmentUpdate, 'process', process)
 
+        action = AppointmentAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            AppointmentAction(dbsession).update(self.appointment)
+            action.update(self.appointment)
 
     def test_update_right_record(self, dbsession, event_off):
         appointment2 = Appointment(
@@ -78,7 +80,8 @@ class TestAppointmentUpdate:
         self.appointment.duration = new_duration
 
         assert dbsession.query(Appointment).count() == 2
-        _, ok = AppointmentAction(dbsession).update(self.appointment)
+        action = AppointmentAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update(self.appointment)
         assert ok
         assert dbsession.query(Appointment).count() == 2
 
@@ -129,7 +132,8 @@ class TestAppointmentRelatedModelsUpdate:
         self.obj.name = new_name
 
         assert dbsession.query(model).count() == 1
-        obj, ok = actionset_class(dbsession).update(self.obj)
+        action = actionset_class(dbsession, event_bus=None, customer_name='test-cosolidator')
+        obj, ok = action.update(self.obj)
         assert ok
         assert obj == self.obj
         assert dbsession.query(model).count() == 1
@@ -155,8 +159,9 @@ class TestAppointmentRelatedModelsUpdate:
 
         monkeypatch.setattr(action_class, 'process', process)
 
+        action = actionset_class(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            actionset_class(dbsession).update(self.obj)
+            action.update(self.obj)
 
     def test_update_right_record(
         self,
@@ -175,7 +180,8 @@ class TestAppointmentRelatedModelsUpdate:
         self.obj.name = new_name
 
         assert dbsession.query(model).count() == 2
-        _, ok = actionset_class(dbsession).update(self.obj)
+        action = actionset_class(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.update(self.obj)
         assert ok
         assert dbsession.query(model).count() == 2
 

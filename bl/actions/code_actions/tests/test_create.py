@@ -38,7 +38,8 @@ class TestCodeRelatedModelsCreate:
         obj = model(name='FooBar')
 
         assert dbsession.query(model).count() == 0
-        new_obj, ok = actionset(dbsession).create(obj)
+        action = actionset(dbsession, event_bus=None, customer_name='test-cosolidator')
+        new_obj, ok = action.create(obj)
         assert ok
         assert new_obj == obj
         assert dbsession.query(model).filter(model.name == 'FooBar').count() == 1
@@ -63,8 +64,9 @@ class TestCodeRelatedModelsCreate:
         monkeypatch.setattr(action_class, 'process', process)
 
         obj = model(name='FooBar')
+        action = actionset(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            actionset(dbsession).create(obj)
+            action.create(obj)
 
 
 class TestServiceCreate:
@@ -73,7 +75,8 @@ class TestServiceCreate:
         service = Service(name='FooBar', kind=ServiceKind.PRODUCT)
 
         assert dbsession.query(Service).count() == 0
-        new_service, ok = ServiceAction(dbsession).create(service)
+        action = ServiceAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        new_service, ok = action.create(service)
         assert ok
         assert new_service == service
         assert dbsession.query(Service).count() == 1
@@ -89,5 +92,6 @@ class TestServiceCreate:
         monkeypatch.setattr(ServiceCreate, 'process', process)
 
         service = Service(name='FooBar', kind=ServiceKind.SERVICE)
+        action = ServiceAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            ServiceAction(dbsession).create(service)
+            action.create(service)

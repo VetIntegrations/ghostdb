@@ -109,6 +109,11 @@ class Pet(meta.Base):
     species = relationship('Species')
     weight_unit = relationship('WeightUnit')
 
+    def __repr__(self):
+        return '<Pet name={}>'.format(
+            self.name
+        )
+
 
 class PetOwner(meta.Base):
     __tablename__ = 'pet_owners'
