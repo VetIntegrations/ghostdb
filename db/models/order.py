@@ -72,6 +72,8 @@ class OrderItem(meta.Base):
     is_voided = Column(Boolean)
     is_depletion_only = Column(Boolean)
     description = Column(Text)
+
+    is_inventory = Column(Boolean)
     pms_ids = Column(JSON)
 
     created_at = Column(DateTime, server_default=func.now())
