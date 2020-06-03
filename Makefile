@@ -1,8 +1,9 @@
 test:
 	GHOSTDB_DB_DSN='mysql://vis:vis@localhost:3306/vis_test' python -m pytest  \
 		--pylama \
-		--ignore=./alembic --ignore=create_records.py \
+		--ignore=./ghostdb/alembic --ignore=create_records.py \
 		-s \
+		ghostdb/
 
 
 deps-compile:
