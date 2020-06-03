@@ -51,10 +51,10 @@ jobs:
             . ../venv/bin/activate
             python -m pytest \
               --pylama \
-              --ignore=./alembic \
+              --ignore=./ghostdb/alembic \
               --junitxml=../tests_artifacts/junit.xml \
               --cov=. --cov-report=xml:../tests_artifacts/coverage.xml --cov-report=html:../tests_artifacts/coverage/ \
-              .
+              ghostdb/
       - store_test_results:
           path: ../tests_artifacts/
           destination: tests_artifacts
