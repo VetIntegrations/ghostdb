@@ -30,7 +30,7 @@ class TestKPIValueUpdate:
         event_off.assert_called_once()
 
         updated_kpi = dbsession.query(KPIValue)[0]
-        assert updated_kpi.pk == self.kpi.pk
+        assert updated_kpi.id == self.kpi.id
         assert updated_kpi.value == new_value
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
@@ -66,14 +66,14 @@ class TestKPIValueUpdate:
         assert dbsession.query(KPIValue).count() == 2
 
         updated_kpi = dbsession.query(KPIValue).filter(
-            KPIValue.pk == self.kpi.pk,
+            KPIValue.id == self.kpi.id,
 
             KPIValue.value == new_value
         )
         assert updated_kpi.count() == 1
 
         stay_kpi = dbsession.query(KPIValue).filter(
-            KPIValue.pk == kpi2.pk,
+            KPIValue.id == kpi2.id,
             KPIValue.value == kpi2.value,
             KPIValue.kind == KPIKind.FINANCIAL_NET_REVENUE
         )

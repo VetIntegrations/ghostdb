@@ -34,13 +34,13 @@ class TestPMSInventoryTransations:
             log.append(('filter_transation_timerange', datetime_from, datetime_to))
             return query
 
-        def filter_orderitem_by_corporation(order_rel, query, corp):
+        def filter_orderitem_by_business(order_rel, query, corp):
             log.append(('filter_transation_corporation', corp))
             return query
 
         selectorset = KPISelector(dbsession)
         monkeypatch.setattr(inventory, 'filter_successful_transactions', filter_successful_transactions)
-        monkeypatch.setattr(selectorset, 'filter_orderitem_by_corporation', filter_orderitem_by_corporation)
+        monkeypatch.setattr(selectorset, 'filter_orderitem_by_business', filter_orderitem_by_business)
         monkeypatch.setattr(selectorset, 'filter_orderitem_by_timerange', filter_orderitem_by_timerange)
 
         selector = inventory.PMSInventoryTransations(dbsession, None, selectorset)

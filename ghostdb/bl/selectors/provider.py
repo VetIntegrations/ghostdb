@@ -4,6 +4,7 @@ from .utils import base, generic
 
 class ProviderSelector(base.BaseSelectorSet):
 
+    # all = base.SelectorFactory(generic.)
     by_id = base.SelectorFactory(generic.ByID, provider.Provider)
 
 

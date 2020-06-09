@@ -16,5 +16,8 @@ class PMSGrossRevenueTransations(KPISelectorGenericFilterMixin, base.BaseSelecto
             order_rel = aliased(order.Order)
         query = self.db.query(order.OrderItem).join(order_rel)
         query = filter_successful_transactions(order_rel, query)
+        query = query.filter(
+            ~order.OrderItem.is_inventory.is_(True)
+        )
 
         return (query, True)
