@@ -29,7 +29,8 @@ class Order(meta.Base):
     corporation_id = Column(sqltypes.UUID, ForeignKey('corporations.id'), nullable=False)
     client_id = Column(sqltypes.UUID, ForeignKey('clients.id'), nullable=False)
     pet_id = Column(sqltypes.UUID, ForeignKey('pets.id'))
-    provider_id = Column(sqltypes.UUID, ForeignKey('providers.id'))
+    business_id = Column(sqltypes.UUID, ForeignKey('businesses.id'))
+    provider_id = Column(sqltypes.UUID, ForeignKey('providers.id'), nullable=True)
     invoice_date = Column(DateTime)
     is_posted = Column(Boolean)
     note = Column(Text)
@@ -45,6 +46,7 @@ class Order(meta.Base):
     corporation = relationship('Corporation', backref=backref('orders'))
     client = relationship('Client', backref=backref('orders'))
     pet = relationship('Pet', backref=backref('orders'))
+    business = relationship('Business', backref=backref('orders'))
     provider = relationship('Provider', backref=backref('orders'))
 
 
@@ -61,12 +63,12 @@ class OrderItem(meta.Base):
     # subclass_id = Column(sqltypes.UUID, ForeignKey('glcode_subclass.id'))
     # servicetype_id = Column(sqltypes.UUID, ForeignKey('glcode_servicetype.id'))
     service_id = Column(sqltypes.UUID, ForeignKey('glcode_service.id'))
-    quantity = Column(Numeric)
-    unit_price = Column(Numeric)
-    amount = Column(Numeric)
-    discount_amount = Column(Numeric)
-    paid_doses = Column(Numeric)  # int or float
-    free_doses = Column(Numeric)  # int or float
+    quantity = Column(Numeric(16, 2))
+    unit_price = Column(Numeric(16, 2))
+    amount = Column(Numeric(16, 2))
+    discount_amount = Column(Numeric(16, 2))
+    paid_doses = Column(Numeric(16, 2))  # int or float
+    free_doses = Column(Numeric(16, 2))  # int or float
     is_hidden_on_invoice = Column(Boolean)
     is_posted = Column(Boolean)
     is_voided = Column(Boolean)

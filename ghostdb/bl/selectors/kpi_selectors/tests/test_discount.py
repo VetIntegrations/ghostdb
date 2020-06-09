@@ -34,13 +34,13 @@ class TestPMSDiscountedTransations:
             log.append(('filter_transation_timerange', datetime_from, datetime_to))
             return query
 
-        def filter_orderitem_by_corporation(order_rel, query, corp):
-            log.append(('filter_transation_corporation', corp))
+        def filter_orderitem_by_business(order_rel, query, corp):
+            log.append(('filter_transation_business', corp))
             return query
 
         selectorset = KPISelector(dbsession)
         monkeypatch.setattr(discount, 'filter_successful_transactions', filter_successful_transactions)
-        monkeypatch.setattr(selectorset, 'filter_orderitem_by_corporation', filter_orderitem_by_corporation)
+        monkeypatch.setattr(selectorset, 'filter_orderitem_by_business', filter_orderitem_by_business)
         monkeypatch.setattr(selectorset, 'filter_orderitem_by_timerange', filter_orderitem_by_timerange)
 
         selector = discount.PMSDiscountedTransations(dbsession, None, selectorset)
@@ -51,7 +51,7 @@ class TestPMSDiscountedTransations:
         records, status = selector.with_all_filters(corporation, dt_from, dt_to)
         assert log == [
             'filter_successful_transactions',
-            ('filter_transation_corporation', corporation),
+            ('filter_transation_business', corporation),
             ('filter_transation_timerange', dt_from, dt_to),
         ]
 

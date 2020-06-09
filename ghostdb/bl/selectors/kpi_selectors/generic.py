@@ -27,12 +27,28 @@ class KPISelectorGenericFilterMixin:
         self,
         corp: corporation.Corporation,
         datetime_from: datetime,
-        datetime_to: datetime
+        datetime_to: datetime,
+        **kwargs
     ) -> typing.Tuple[typing.Iterable[order.OrderItem], bool]:
-        order_rel = aliased(order.Order)
+        if not kwargs.get('order_rel'):
+            kwargs['order_rel'] = aliased(order.Order)
 
-        query, ok = self.process(order_rel=order_rel)
-        query = self.selectorset.filter_orderitem_by_corporation(order_rel, query, corp)
+        query, ok = self.process(**kwargs)
+        query = self.selectorset.filter_orderitem_by_business(kwargs['order_rel'], query, corp)
+        query = self.selectorset.filter_orderitem_by_timerange(query, datetime_from, datetime_to)
+
+        return (query, True)
+
+    def with_timerange_filter(
+        self,
+        datetime_from: datetime,
+        datetime_to: datetime,
+        **kwargs
+    ) -> typing.Tuple[typing.Iterable[order.OrderItem], bool]:
+        if not kwargs.get('order_rel'):
+            kwargs['order_rel'] = aliased(order.Order)
+
+        query, ok = self.process(**kwargs)
         query = self.selectorset.filter_orderitem_by_timerange(query, datetime_from, datetime_to)
 
         return (query, True)

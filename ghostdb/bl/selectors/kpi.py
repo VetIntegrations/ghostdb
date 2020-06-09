@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy import orm
 
-from ghostdb.db.models import order, corporation
+from ghostdb.db.models import order, corporation, business as business_model
 from .utils import base
 from .kpi_selectors.revenue import PMSGrossRevenueTransations
 from .kpi_selectors.discount import PMSDiscountedTransations
@@ -35,4 +35,14 @@ class KPISelector(base.BaseSelectorSet):
         return query.filter(
             order.OrderItem.created_at >= datetime_from,
             order.OrderItem.created_at < datetime_to,
+        )
+
+    @staticmethod
+    def filter_orderitem_by_business(
+        order_relation: orm.util.AliasedClass,
+        query: orm.query.Query,
+        business: business_model.Business
+    ) -> orm.query.Query:
+        return query.filter(
+            order_relation.business == business
         )

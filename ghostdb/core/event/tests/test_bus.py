@@ -25,6 +25,9 @@ class TestGCPPubSubEventBus:
 
         class FakePubSub:
 
+            def __init__(self, **kwargs):
+                pass
+
             def topic_path(self, *args):
                 return ''
 
@@ -49,6 +52,9 @@ class TestGCPPubSubEventBus:
                 raise PublishError('Test')
 
         class FakePubSub:
+
+            def __init__(self, **kwargs):
+                pass
 
             def topic_path(self, *args):
                 return ''
@@ -76,6 +82,9 @@ class TestGCPPubSubEventBus:
         )
 
         class FakePubSub:
+
+            def __init__(self, **kwargs):
+                pass
 
             def topic_path(self, *args):
                 return ''
@@ -106,6 +115,9 @@ class TestGCPPubSubEventBus:
         publish_result_mock.result.side_effect = TimeoutError('Test')
 
         class FakePubSub:
+
+            def __init__(self, **kwargs):
+                pass
 
             def topic_path(self, *args):
                 return ''

@@ -12,10 +12,10 @@ class KPIKind(enum.Enum):
 class KPIValue(meta.Base):
     __tablename__ = 'kpi_value'
 
-    pk = Column('id', Integer, primary_key=True)
+    id = Column('id', Integer, primary_key=True)
 
     kind = Column(Enum(KPIKind))
-    value = Column(Numeric)
+    value = Column(Numeric(16, 2))
     date = Column(Date)
 
     corporation_id = Column(sqltypes.UUID, ForeignKey('corporations.id'), nullable=True)

@@ -18,8 +18,8 @@ class BaseEventBus(abc.ABC):
 class GCPPubSubEventBus(BaseEventBus):
     REPUBLISH_MAX_TRIES = 5
 
-    def __init__(self, gcp_project_id: str, topic: str):
-        self.client = pubsub_v1.PublisherClient()
+    def __init__(self, gcp_project_id: str, topic: str, credentials: dict = None):
+        self.client = pubsub_v1.PublisherClient(credentials=credentials)
         self.topic = self.client.topic_path(gcp_project_id, topic)
 
     def publish(self, msg: message.BaseMessage) -> bool:
