@@ -17,7 +17,8 @@ class PMSGrossRevenueTransations(KPISelectorGenericFilterMixin, base.BaseSelecto
         query = self.db.query(order.OrderItem).join(order_rel)
         query = filter_successful_transactions(order_rel, query)
         query = query.filter(
-            ~order.OrderItem.is_inventory.is_(True)
+            ~order.OrderItem.is_inventory.is_(True),
+            ~order.OrderItem.description.ilike('%Refund%')
         )
 
         return (query, True)
