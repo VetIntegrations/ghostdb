@@ -1,5 +1,6 @@
 import enum
 from sqlalchemy import Column, Integer, Numeric, Date, ForeignKey, Enum
+from sqlalchemy.orm import relationship
 
 from .. import meta, sqltypes
 
@@ -33,6 +34,10 @@ class KPIValue(meta.Base):
     class_id = Column(sqltypes.UUID, ForeignKey('glcode_class.id'))
     subclass_id = Column(sqltypes.UUID, ForeignKey('glcode_subclass.id'))
     servicetype_id = Column(sqltypes.UUID, ForeignKey('glcode_servicetype.id'))
+
+    corporation = relationship('Corporation')
+    business = relationship('Business')
+    provider = relationship('Provider')
 
     def __repr__(self):
         return '<KPI Value {}={} {}>'.format(self.kind, self.value, self.date)

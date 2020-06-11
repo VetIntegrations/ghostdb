@@ -1,5 +1,6 @@
 import uuid
 import typing
+from functools import partial
 from sqlalchemy import func
 
 from . import base
@@ -28,3 +29,22 @@ class ByIName(base.BaseSelector):
         obj = query.first()
 
         return (obj, obj is not None)
+
+
+class ByCustomField(base.BaseSelector):
+
+    def __init__(self, *, filter_field: str, **kwargs):
+        super().__init__(**kwargs)
+        self.filter_field = filter_field
+
+    def process(self, value: typing.Any, query=None) -> typing.Tuple[typing.Any, bool]:
+        if query is None:
+            query = self.db.query(self.model)
+
+        query = query.filter(self.filter_field == value)
+
+        return (query, True)
+
+    @classmethod
+    def factory(cls, filter_field: str) -> 'ByCustomField':
+        return partial(cls, filter_field=filter_field)

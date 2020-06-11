@@ -1,12 +1,28 @@
 from datetime import datetime
 from sqlalchemy import orm
 
-from ghostdb.db.models import order, corporation, business as business_model
-from .utils import base
+from ghostdb.db.models import order, corporation, business as business_model, kpi as kpi_model
+from .utils import base, generic
 from .kpi_selectors.revenue import PMSGrossRevenueTransations
 from .kpi_selectors.discount import PMSDiscountedTransations
 from .kpi_selectors.refund import PMSRefundTransactions
 from .kpi_selectors.inventory import PMSInventoryTransations
+
+
+class KPIValueSelector(base.BaseSelectorSet):
+
+    by_corporation = base.SelectorFactory(
+        generic.ByCustomField.factory(filter_field=kpi_model.KPIValue.corporation_id),
+        kpi_model.KPIValue
+    )
+    by_business = base.SelectorFactory(
+        generic.ByCustomField.factory(filter_field=kpi_model.KPIValue.business_id),
+        kpi_model.KPIValue
+    )
+    by_provider = base.SelectorFactory(
+        generic.ByCustomField.factory(filter_field=kpi_model.KPIValue.provider_id),
+        kpi_model.KPIValue
+    )
 
 
 class KPISelector(base.BaseSelectorSet):

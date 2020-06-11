@@ -1,7 +1,8 @@
 import factory
+from datetime import date
 
 from ghostdb.db.tests import common
-from .. import corporation, client, order, business, provider
+from .. import corporation, client, order, business, provider, kpi
 
 
 class CorporationFactory(factory.alchemy.SQLAlchemyModelFactory):
@@ -63,3 +64,15 @@ class OrderItemFactory(factory.alchemy.SQLAlchemyModelFactory):
         sqlalchemy_session = common.Session
 
     order = factory.SubFactory(OrderFactory)
+
+
+class KPIValueFactory(factory.alchemy.SQLAlchemyModelFactory):
+
+    class Meta:
+        model = kpi.KPIValue
+        sqlalchemy_session = common.Session
+
+    corporation = factory.SubFactory(CorporationFactory)
+    kind = kpi.KPIKind.FINANCIAL_NET_PROFIT
+    value = 1
+    date = factory.LazyFunction(date.today)
