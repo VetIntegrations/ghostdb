@@ -42,9 +42,9 @@ class SelectorFactory:
         assert issubclass(_type, BaseSelectorSet)
 
         return self.selector_class(
-            selectorset.db,
-            self.model,
-            selectorset
+            db=selectorset.db,
+            model=self.model,
+            selectorset=selectorset
         )
 
 
