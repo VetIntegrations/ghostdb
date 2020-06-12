@@ -10,11 +10,17 @@ class KPIKind(enum.Enum):
     FINANCIAL_NET_PROFIT = 'financial_net_profit'
 
 
+class KPIDataSource(enum.Enum):
+    PIMS = 'pims'
+    ERP = 'erp'
+
+
 class KPIValue(meta.Base):
     __tablename__ = 'kpi_value'
 
     id = Column('id', Integer, primary_key=True)
 
+    data_source = Column(Enum(KPIDataSource))
     kind = Column(Enum(KPIKind))
     value = Column(Numeric(16, 2))
     date = Column(Date)
