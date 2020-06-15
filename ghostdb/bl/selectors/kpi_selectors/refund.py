@@ -14,7 +14,7 @@ class PMSRefundTransactions(KPISelectorGenericFilterMixin, base.BaseSelector):
     ) -> typing.Tuple[typing.Iterable[order.OrderItem], bool]:
         if order_rel is None:
             order_rel = aliased(order.Order)
-        query = self.db.query(order.OrderItem)
+        query = self.db.query(order.OrderItem).join(order_rel)
         query = filter_successful_transactions(order_rel, query)
         query = query.filter(
             order.OrderItem.amount < 0,
