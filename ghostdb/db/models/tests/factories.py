@@ -2,7 +2,7 @@ import factory
 from datetime import date
 
 from ghostdb.db.tests import common
-from .. import corporation, client, order, business, provider, kpi
+from .. import corporation, client, pet, order, business, provider, kpi
 
 
 class CorporationFactory(factory.alchemy.SQLAlchemyModelFactory):
@@ -11,7 +11,7 @@ class CorporationFactory(factory.alchemy.SQLAlchemyModelFactory):
         model = corporation.Corporation
         sqlalchemy_session = common.Session
 
-    name = factory.Sequence(lambda n: "Test Corp %03d" % n)
+    name = factory.Faker('company')
 
 
 class ClientFactory(factory.alchemy.SQLAlchemyModelFactory):
@@ -23,6 +23,17 @@ class ClientFactory(factory.alchemy.SQLAlchemyModelFactory):
     first_name = factory.Faker('first_name')
     first_name = factory.Faker('last_name')
     email = factory.Faker('email')
+
+
+class PetFactory(factory.alchemy.SQLAlchemyModelFactory):
+
+    class Meta:
+        model = pet.Pet
+        sqlalchemy_session = common.Session
+
+    name = factory.Faker('first_name')
+    registration_date = factory.Faker('date_between', start_date='-10y')
+    birthdate = factory.Faker('date_of_birth', minimum_age=1, maximum_age=10)
 
 
 class BusinessFactory(factory.alchemy.SQLAlchemyModelFactory):

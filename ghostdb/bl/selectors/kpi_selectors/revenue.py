@@ -1,5 +1,5 @@
 import typing
-from sqlalchemy import orm
+from sqlalchemy import orm, or_
 from sqlalchemy.orm.util import aliased
 
 from ghostdb.db.models import order
@@ -18,7 +18,10 @@ class PMSGrossRevenueTransations(KPISelectorGenericFilterMixin, base.BaseSelecto
         query = filter_successful_transactions(order_rel, query)
         query = query.filter(
             ~order.OrderItem.is_inventory.is_(True),
-            ~order.OrderItem.description.ilike('%Refund%')
+            or_(
+                ~order.OrderItem.description.ilike('%Refund%'),
+                order.OrderItem.description.is_(None)
+            )
         )
 
         return (query, True)
