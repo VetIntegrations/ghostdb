@@ -8,6 +8,12 @@ from .. import meta, sqltypes
 class KPIKind(enum.Enum):
     FINANCIAL_NET_REVENUE = 'financial_net_revenue'
     FINANCIAL_NET_PROFIT = 'financial_net_profit'
+    FINANCIAL_ACCOUNTS_RECEIVABLE = 'financial_ar'
+    FINANCIAL_ACCOUNT_PAYABLE = 'financial_ap'
+    FINANCIAL_COGS = 'financial_cogs'
+    FINANCIAL_EBITDA = 'financial_ebitda'
+    FINANCIAL_CAPEX = 'financial_capex'
+    FINANCIAL_OPEX = 'financial_opex'
 
 
 class KPIDataSource(enum.Enum):
