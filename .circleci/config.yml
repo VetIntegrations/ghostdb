@@ -77,7 +77,7 @@ jobs:
             echo -e "[distutils]" >> ~/.pypirc
             echo -e "index-servers = vis" >> ~/.pypirc
             echo -e "[vis]" >> ~/.pypirc
-            echo -e "repository = http://35.202.197.198:8080/" >> ~/.pypirc
+            echo -e "repository = $VIS_PYPI_URL" >> ~/.pypirc
             echo -e "username = ghostdb" >> ~/.pypirc
             echo -e "password = $GHOSTDB_PYPI_PASSWORD" >> ~/.pypirc
       - run:
