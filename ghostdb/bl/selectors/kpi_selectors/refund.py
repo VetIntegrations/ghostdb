@@ -18,7 +18,7 @@ class PMSRefundTransactions(KPISelectorGenericFilterMixin, base.BaseSelector):
         query = filter_successful_transactions(order_rel, query)
         query = query.filter(
             order.OrderItem.amount < 0,
-            order.OrderItem.description.ilike('%Refund%')
+            order.OrderItem.is_refund.is_(True)
         )
 
         return (query, True)

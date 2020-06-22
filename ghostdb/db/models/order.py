@@ -76,6 +76,7 @@ class OrderItem(meta.Base):
     description = Column(Text)
 
     is_inventory = Column(Boolean)
+    is_refund = Column(Boolean)
     pms_ids = Column(JSON)
 
     created_at = Column(DateTime, server_default=func.now())
