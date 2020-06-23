@@ -55,44 +55,20 @@ class TestPMSRefundTransations:
             ('filter_transation_timerange', dt_from, dt_to),
         ]
 
-    def test_filter_by_description(self, dbsession):
+    def test_filter_by_refund(self, dbsession):
         order = factories.OrderFactory()
         factories.OrderItemFactory(
-            order=order, quantity=100, unit_price=2, amount=-300, description='it is refund transaction'
-        )
-        factories.OrderItemFactory(
-            order=order, quantity=100, unit_price=3, amount=-300, description='Refund'
-        )
-        factories.OrderItemFactory(
-            order=order, quantity=100, unit_price=4, amount=-300, description='Refunded'
+            order=order, quantity=100, unit_price=1, amount=-300, is_refund=True, description='it is refund transaction'
         )
 
         # shouldn't be in a list
         factories.OrderItemFactory(
-            order=order, quantity=100, unit_price=5, amount=-300, description='Sell of goods'
-        )
-
-        selector = refund.PMSRefundTransactions(dbsession, None, None)
-        records, status = selector()
-
-        assert records.count() == 3
-        assert 5 not in [record.unit_price for record in records]
-
-    def test_filter_by_amount(self, dbsession):
-        order = factories.OrderFactory()
-        factories.OrderItemFactory(
-            order=order, quantity=100, unit_price=2, amount=-300, description='Refund'
-        )
-        # shouldn't be in a list
-        factories.OrderItemFactory(
-            order=order, quantity=100, unit_price=3, amount=300, description='Refund'
-        )
-        factories.OrderItemFactory(
-            order=order, quantity=100, unit_price=4, amount=0, description='Refund'
+            order=order, quantity=100, unit_price=5, amount=300, description='Sell of goods'
         )
 
         selector = refund.PMSRefundTransactions(dbsession, None, None)
         records, status = selector()
 
         assert records.count() == 1
-        assert records[0].unit_price == 2
+        assert records[0].unit_price == 1
+        assert records[0].amount == -300

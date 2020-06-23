@@ -1,5 +1,5 @@
 import typing
-from sqlalchemy import orm, or_
+from sqlalchemy import orm
 from sqlalchemy.orm.util import aliased
 
 from ghostdb.db.models import order
