@@ -23,7 +23,7 @@ class TestPMSDiscountedTransations:
             'filter_successful_transactions',
         ]
 
-    def test_with_all_filters(self, dbsession, monkeypatch):
+    def test_orderitem_with_all_filters(self, dbsession, monkeypatch):
         log = []
 
         def filter_successful_transactions(order_rel, query):
@@ -48,7 +48,7 @@ class TestPMSDiscountedTransations:
         corporation = factories.CorporationFactory()
         dt_from = datetime.now().date()
         dt_to = datetime.now().date() + timedelta(days=1)
-        records, status = selector.with_all_filters(corporation, dt_from, dt_to)
+        records, status = selector.orderitem_with_all_filters(corporation, dt_from, dt_to)
         assert log == [
             'filter_successful_transactions',
             ('filter_transation_business', corporation),

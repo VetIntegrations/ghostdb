@@ -2,7 +2,7 @@ import factory
 from datetime import date
 
 from ghostdb.db.tests import common
-from .. import corporation, client, pet, order, business, provider, kpi
+from .. import corporation, client, pet, order, business, provider, kpi, payment
 
 
 class CorporationFactory(factory.alchemy.SQLAlchemyModelFactory):
@@ -87,3 +87,14 @@ class KPIValueFactory(factory.alchemy.SQLAlchemyModelFactory):
     kind = kpi.KPIKind.FINANCIAL_NET_PROFIT
     value = 1
     date = factory.LazyFunction(date.today)
+
+
+class PaymentFactory(factory.alchemy.SQLAlchemyModelFactory):
+
+    class Meta:
+        model = payment.Payment
+        sqlalchemy_session = common.Session
+
+    corporation = factory.SubFactory(CorporationFactory)
+    business = factory.SubFactory(BusinessFactory)
+    provider = factory.SubFactory(ProviderFactory)
