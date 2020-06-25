@@ -78,7 +78,6 @@ def upgrade():
                existing_type=mysql.TINYINT(display_width=1),
                type_=sa.Boolean(),
                existing_nullable=True)
-    op.drop_column('kpi_value', 'value1')
     op.add_column('order_items', sa.Column('is_refund', sa.Boolean(), nullable=True))
     op.alter_column('order_items', 'is_depletion_only',
                existing_type=mysql.TINYINT(display_width=1),
@@ -238,7 +237,6 @@ def downgrade():
                type_=mysql.TINYINT(display_width=1),
                existing_nullable=True)
     op.drop_column('order_items', 'is_refund')
-    op.add_column('kpi_value', sa.Column('value1', mysql.DECIMAL(precision=15, scale=2), nullable=True))
     op.alter_column('glcode_subclass', 'is_vis_default',
                existing_type=sa.Boolean(),
                type_=mysql.TINYINT(display_width=1),
