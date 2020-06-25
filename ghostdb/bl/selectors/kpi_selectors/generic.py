@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import or_, orm
 from sqlalchemy.orm.util import aliased
 
-from ghostdb.db.models import order, corporation
+from ghostdb.db.models import order, corporation, payment
 
 
 def filter_successful_transactions(
@@ -23,7 +23,7 @@ def filter_successful_transactions(
 
 class KPISelectorGenericFilterMixin:
 
-    def with_all_filters(
+    def orderitem_with_all_filters(
         self,
         corp: corporation.Corporation,
         datetime_from: datetime,
@@ -39,7 +39,7 @@ class KPISelectorGenericFilterMixin:
 
         return (query, True)
 
-    def with_timerange_filter(
+    def orderitem_with_timerange_filter(
         self,
         datetime_from: datetime,
         datetime_to: datetime,
@@ -50,5 +50,19 @@ class KPISelectorGenericFilterMixin:
 
         query, ok = self.process(**kwargs)
         query = self.selectorset.filter_orderitem_by_timerange(query, datetime_from, datetime_to)
+
+        return (query, True)
+
+    def payments_with_all_filters(
+        self,
+        corp: corporation.Corporation,
+        datetime_from: datetime,
+        datetime_to: datetime,
+        **kwargs
+    ) -> typing.Tuple[typing.Iterable[payment.Payment], bool]:
+
+        query, ok = self.process(**kwargs)
+        query = self.selectorset.filter_payments_by_business(query, corp)
+        query = self.selectorset.filter_payments_by_timerange(query, datetime_from, datetime_to)
 
         return (query, True)
