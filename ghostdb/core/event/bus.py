@@ -2,8 +2,6 @@ import abc
 import json
 import time
 import sentry_sdk
-from google.cloud import pubsub_v1
-from google.cloud.pubsub_v1.publisher.exceptions import PublishError, TimeoutError
 
 from . import message
 
@@ -19,10 +17,14 @@ class GCPPubSubEventBus(BaseEventBus):
     REPUBLISH_MAX_TRIES = 5
 
     def __init__(self, gcp_project_id: str, topic: str, credentials: dict = None):
+        from google.cloud import pubsub_v1
+
         self.client = pubsub_v1.PublisherClient(credentials=credentials)
         self.topic = self.client.topic_path(gcp_project_id, topic)
 
     def publish(self, msg: message.BaseMessage) -> bool:
+        from google.cloud.pubsub_v1.publisher.exceptions import PublishError, TimeoutError
+
         result = False
         tries = self.REPUBLISH_MAX_TRIES
         while True:

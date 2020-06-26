@@ -1,7 +1,8 @@
 from unittest.mock import Mock
+from google.cloud import pubsub_v1
 from google.cloud.pubsub_v1.publisher.exceptions import PublishError, TimeoutError
 
-from ..bus import GCPPubSubEventBus, pubsub_v1, time
+from ..bus import GCPPubSubEventBus, time
 
 
 class FakeMessage:
