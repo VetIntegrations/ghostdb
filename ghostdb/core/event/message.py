@@ -24,11 +24,11 @@ class InternalMessage(BaseMessage):
                 'event_name': self.event_name,
                 'obj': {
                     'model': '.'.join((self.obj.__class__.__module__, self.obj.__class__.__name__, )),
-                    'pk': self.obj.id,
+                    'pk': self.obj.id.hex,
                 },
             },
         }
         if self.data:
-            msg['data'] = self.data
+            msg['data'] = self.data.get_data_dump()
 
         return msg

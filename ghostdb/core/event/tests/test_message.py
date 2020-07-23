@@ -1,5 +1,6 @@
 import uuid
 from collections import namedtuple
+from unittest.mock import Mock
 
 from ..message import InternalMessage
 
@@ -25,7 +26,7 @@ class TestMessage:
                 'event_name': 'event.create',
                 'obj': {
                     'model': 'ghostdb.core.event.tests.test_message.DataObj',
-                    'pk': obj.id,
+                    'pk': obj.id.hex,
                 },
             },
         }
@@ -38,7 +39,7 @@ class TestMessage:
             customer='test-customer',
             event_name='event.create',
             obj=obj,
-            data=data
+            data=Mock(**{'get_data_dump.return_value': data})
         )
 
         assert msg.format() == {
@@ -47,7 +48,7 @@ class TestMessage:
                 'event_name': 'event.create',
                 'obj': {
                     'model': 'ghostdb.core.event.tests.test_message.DataObj',
-                    'pk': obj.id,
+                    'pk': obj.id.hex,
                 },
             },
             'data': data,
