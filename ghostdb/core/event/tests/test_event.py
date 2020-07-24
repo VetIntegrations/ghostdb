@@ -1,6 +1,7 @@
 import uuid
 import pytest
 from collections import namedtuple
+from unittest.mock import Mock
 
 from ghostdb.bl.actions.utils.base import BaseAction
 from ghostdb.bl.actions import (
@@ -94,14 +95,18 @@ class TestInternalEvent:
     def test_register(self):
         DataObj = namedtuple('DataObj', 'id, name')
 
-        def fake_data_dumper(obj):
-            return {'id': obj.id, 'name': obj.name}
+        obj = DataObj(uuid.uuid4(), 'foo')
+        data = {'id': obj.id, 'name': obj.name}
 
-        event = InternalEvent('test.2', fake_data_dumper)
+        event = InternalEvent(
+            'test.2',
+            Mock(
+                return_value=Mock(**{'get_data_dump.return_value': data})
+            )
+        )
 
         assert len(event.messages) == 0
 
-        obj = DataObj(uuid.uuid4(), 'foo')
         event.register('test-customer', obj)
         assert len(event.messages) == 1
         assert event.messages[0].format() == {
@@ -110,10 +115,10 @@ class TestInternalEvent:
                 'event_name': 'test.2',
                 'obj': {
                     'model': 'ghostdb.core.event.tests.test_event.DataObj',
-                    'pk': obj.id,
+                    'pk': obj.id.hex,
                 },
             },
-            'data': {'id': obj.id, 'name': obj.name},
+            'data': data,
         }
 
 
