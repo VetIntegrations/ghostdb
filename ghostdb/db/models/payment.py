@@ -1,12 +1,14 @@
-from .. import meta, sqltypes
-from sqlalchemy import Column, Integer, ForeignKey, Numeric, Date
+import uuid
+from sqlalchemy import Column, ForeignKey, Numeric, Date
 from sqlalchemy.orm import relationship
+
+from .. import meta, sqltypes
 
 
 class Payment(meta.Base):
     __tablename__ = 'payments'
 
-    id = Column('id', Integer, primary_key=True)
+    id = Column(sqltypes.UUID, default=uuid.uuid1, primary_key=True)
     corporation_id = Column(sqltypes.UUID, ForeignKey('corporations.id'), nullable=True)
     business_id = Column(sqltypes.UUID, ForeignKey('businesses.id'), nullable=True)
     provider_id = Column(sqltypes.UUID, ForeignKey('providers.id'), nullable=True)

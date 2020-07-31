@@ -17,8 +17,6 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-import os, sys
-sys.path.insert(0, os.path.realpath('..'))
 from ghostdb.db import meta
 meta.initialize()
 target_metadata = meta.Base.metadata
