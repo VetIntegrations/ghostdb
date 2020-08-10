@@ -27,7 +27,7 @@ class Order(meta.Base):
 
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
     corporation_id = Column(sqltypes.UUID, ForeignKey('corporations.id'), nullable=False)
-    client_id = Column(sqltypes.UUID, ForeignKey('clients.id'), nullable=False)
+    client_id = Column(sqltypes.UUID, ForeignKey('clients.id'), nullable=True)
     pet_id = Column(sqltypes.UUID, ForeignKey('pets.id'))
     business_id = Column(sqltypes.UUID, ForeignKey('businesses.id'))
     provider_id = Column(sqltypes.UUID, ForeignKey('providers.id'), nullable=True)
