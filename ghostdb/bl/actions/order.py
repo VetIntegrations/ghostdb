@@ -7,7 +7,7 @@ from .order_actions import (
 )
 
 
-OrderRequiredFields = validators.RequiredFields(('corporation', 'client', ))
+OrderRequiredFields = validators.RequiredFields(('corporation', ))
 
 
 class OrderAction(base.BaseActionSet):
