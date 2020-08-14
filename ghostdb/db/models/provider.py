@@ -46,7 +46,7 @@ class Provider(meta.Base):
         )
 
 
-class ContactKind(enum.Enum):
+class ProviderContactKind(enum.Enum):
     phone = 'Phone'
     email = 'Email'
     website = 'Website'
@@ -57,7 +57,7 @@ class ProviderContact(meta.Base):
 
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
     provider_id = Column(sqltypes.UUID, ForeignKey('providers.id'))
-    kind = Column(Enum(ContactKind))
+    kind = Column(Enum(ProviderContactKind))
     is_primary = Column(Boolean, default=False)
     name = Column(String(50))
     value = Column(String(100))

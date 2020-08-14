@@ -1,5 +1,5 @@
 test:
-	GHOSTDB_DB_DSN='mysql://vis:vis@localhost:3306/vis_test' python -m pytest  \
+	GHOSTDB_DB_DSN='postgresql://vis:vis@localhost:5432/vis_test' python -m pytest  \
 		--pylama \
 		--ignore=./ghostdb/alembic --ignore=create_records.py \
 		-s \

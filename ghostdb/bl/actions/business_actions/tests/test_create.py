@@ -1,7 +1,7 @@
 import pytest
 
 from ghostdb.db.models.corporation import Corporation
-from ghostdb.db.models.business import Business, BusinessContact, ContactKind
+from ghostdb.db.models.business import Business, BusinessContact, BusinessContactKind
 from ghostdb.bl.actions.business import BusinessAction
 from ..create import BusinessCreate, ContactCreate
 
@@ -65,7 +65,7 @@ class TestBusinessContactCreate:
     def test_ok(self, dbsession, event_off):
         contact = BusinessContact(
             business_id=self.business.id,
-            kind=ContactKind.email,
+            kind=BusinessContactKind.email,
             value='aah@tcorp.local'
         )
 
@@ -79,7 +79,7 @@ class TestBusinessContactCreate:
 
     def test_prefill_business(self, dbsession, event_off):
         contact = BusinessContact(
-            kind=ContactKind.email,
+            kind=BusinessContactKind.email,
             value='aah@tcorp.local'
         )
 
@@ -108,7 +108,7 @@ class TestBusinessContactCreate:
 
         contact = BusinessContact(
             business_id=self.business.id,
-            kind=ContactKind.email,
+            kind=BusinessContactKind.email,
             value='aah@tcorp.local'
         )
         action = BusinessAction(dbsession, event_bus=None, customer_name='test-cosolidator')

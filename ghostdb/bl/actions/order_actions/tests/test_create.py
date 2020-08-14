@@ -66,7 +66,7 @@ class TestOrderCreate:
         order = Order()
 
         action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
-        with pytest.raises(ValidationError, match='Empty required fields: corporation, client'):
+        with pytest.raises(ValidationError, match='Empty required fields: corporation'):
             action.create(order)
 
 

@@ -1,6 +1,6 @@
 import pytest
 
-from ghostdb.db.models.provider import Provider, ProviderContact, ContactKind, ProviderKind
+from ghostdb.db.models.provider import Provider, ProviderContact, ProviderContactKind, ProviderKind
 from ghostdb.bl.actions.provider import ProviderAction, ProviderKindAction
 from ..create import ProviderCreate, ContactCreate, ProviderKindCreate
 
@@ -44,7 +44,7 @@ class TestProviderContactCreate:
     def test_ok(self, dbsession, event_off):
         contact = ProviderContact(
             provider_id=self.provider.id,
-            kind=ContactKind.phone,
+            kind=ProviderContactKind.phone,
             value='+4783294432'
         )
 
@@ -58,7 +58,7 @@ class TestProviderContactCreate:
 
     def test_prefill_provider(self, dbsession, event_off):
         contact = ProviderContact(
-            kind=ContactKind.phone,
+            kind=ProviderContactKind.phone,
             value='+487329478932'
         )
 
@@ -87,7 +87,7 @@ class TestProviderContactCreate:
 
         contact = ProviderContact(
             provider_id=self.provider.id,
-            kind=ContactKind.phone,
+            kind=ProviderContactKind.phone,
             value='+327489327'
         )
         action = ProviderAction(dbsession, event_bus=None, customer_name='test-cosolidator')

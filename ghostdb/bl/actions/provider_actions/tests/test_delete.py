@@ -1,6 +1,6 @@
 import pytest
 
-from ghostdb.db.models.provider import Provider, ProviderContact, ContactKind, ProviderKind
+from ghostdb.db.models.provider import Provider, ProviderContact, ProviderContactKind, ProviderKind
 from ghostdb.bl.actions.provider import ProviderAction, ProviderKindAction
 from ..delete import ProviderDelete, ContactDelete, ProviderKindDelete
 
@@ -52,7 +52,7 @@ class TestProviderContactDelete:
         self.provider = Provider(first_name='John', last_name='Doe')
         self.contact = ProviderContact(
             provider=self.provider,
-            kind=ContactKind.phone,
+            kind=ProviderContactKind.phone,
             value='+5874923'
         )
         dbsession.add(self.provider)
@@ -83,7 +83,7 @@ class TestProviderContactDelete:
     def test_delete_right_record(self, dbsession, event_off):
         contact2 = ProviderContact(
             provider=self.provider,
-            kind=ContactKind.phone,
+            kind=ProviderContactKind.phone,
             value='+48329482739'
         )
         dbsession.add(contact2)

@@ -1,7 +1,7 @@
 import pytest
 
 from ghostdb.db.models.client import (
-    Client, ClientContact, ContactKind, ClientAddress, AddressKind
+    Client, ClientContact, ClientContactKind, ClientAddress, AddressKind
 )
 from ghostdb.bl.actions.client import ClientAction
 from ..delete import ClientDelete, ContactDelete, AddressDelete
@@ -55,7 +55,7 @@ class TestClientContactDelete:
         self.client = Client(first_name='John', last_name='Doe')
         self.contact = ClientContact(
             client=self.client,
-            kind=ContactKind.HOME,
+            kind=ClientContactKind.HOME,
             value='+5874923'
         )
         dbsession.add(self.client)
@@ -85,7 +85,7 @@ class TestClientContactDelete:
     def test_delete_right_record(self, dbsession, event_off):
         contact2 = ClientContact(
             client=self.client,
-            kind=ContactKind.HOME,
+            kind=ClientContactKind.HOME,
             value='+48329482739'
         )
         dbsession.add(contact2)

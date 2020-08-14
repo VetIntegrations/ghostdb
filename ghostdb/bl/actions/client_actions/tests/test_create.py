@@ -1,7 +1,7 @@
 import pytest
 
 from ghostdb.db.models.client import (
-    Client, ClientContact, ContactKind, ClientAddress, AddressKind
+    Client, ClientContact, ClientContactKind, ClientAddress, AddressKind
 )
 from ghostdb.bl.actions.client import ClientAction
 from ..create import ClientCreate, ContactCreate, AddressCreate
@@ -49,7 +49,7 @@ class TestClientContactCreate:
     def test_ok(self, dbsession, event_off):
         contact = ClientContact(
             client_id=self.client.id,
-            kind=ContactKind.HOME,
+            kind=ClientContactKind.HOME,
             value='+4783294432'
         )
 
@@ -66,7 +66,7 @@ class TestClientContactCreate:
 
     def test_prefill_client(self, dbsession, event_off):
         contact = ClientContact(
-            kind=ContactKind.HOME,
+            kind=ClientContactKind.HOME,
             value='+487329478932'
         )
 
@@ -95,7 +95,7 @@ class TestClientContactCreate:
 
         contact = ClientContact(
             client_id=self.client.id,
-            kind=ContactKind.HOME,
+            kind=ClientContactKind.HOME,
             value='+327489327'
         )
         action = ClientAction(dbsession, event_bus=None, customer_name='test-cosolidator')
