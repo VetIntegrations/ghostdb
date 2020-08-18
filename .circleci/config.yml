@@ -4,12 +4,11 @@ jobs:
   test:
     docker:
       - image: circleci/python:3.7
-      - image: circleci/mysql:5.7-ram
+      - image: circleci/postgres:12-ram
         environment:
-          MYSQL_ROOT_PASSWORD: rootpwd
-          MYSQL_DATABASE: vis_test
-          MYSQL_USER: vis
-          MYSQL_PASSWORD: vispwd
+          POSTGRES_DB: vis_test
+          POSTGRES_USER: vis
+          POSTGRES_PASSWORD: vis
     working_directory: ~/ghostdb
     steps:
       - checkout
@@ -29,15 +28,15 @@ jobs:
             - ../venv
           key: v1-dependencies-{{ checksum "requirements/ci.txt" }}
       - run:
-          name: Waiting for MySQL to be ready
+          name: Waiting for Postgres to be ready
           command: |
             for i in `seq 1 10`;
             do
-              nc -z 127.0.0.1 3306 && echo Success && exit 0
+              nc -z localhost 5432 && echo Success && exit 0
               echo -n .
               sleep 1
             done
-            echo Failed waiting for MySQL && exit 1
+            echo Failed waiting for Postgres && exit 1
       - run:
           name: Python Version
           command: python -V
@@ -46,7 +45,7 @@ jobs:
           when: always
           environment:
             PYTHONPATH: ..
-            GHOSTDB_DB_DSN: mysql://vis:vispwd@127.0.0.1:3306/vis_test
+            GHOSTDB_DB_DSN: postgresql://vis:vis@localhost:5432/vis_test
           command: |
             . ../venv/bin/activate
             python -m pytest \
