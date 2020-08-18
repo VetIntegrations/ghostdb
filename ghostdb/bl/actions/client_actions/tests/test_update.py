@@ -1,7 +1,7 @@
 import pytest
 
 from ghostdb.db.models.client import (
-    Client, ClientContact, ContactKind, ClientAddress, AddressKind
+    Client, ClientContact, ClientContactKind, ClientAddress, AddressKind
 )
 from ghostdb.bl.actions.client import ClientAction
 from ..update import ClientUpdate, ContactUpdate, AddressUpdate
@@ -80,7 +80,7 @@ class TestClientContactUpdate:
         self.client = Client(first_name='John', last_name='Doe')
         self.contact = ClientContact(
             client=self.client,
-            kind=ContactKind.HOME,
+            kind=ClientContactKind.HOME,
             value='+5874923'
         )
         dbsession.add(self.client)
@@ -120,7 +120,7 @@ class TestClientContactUpdate:
     def test_update_right_record(self, dbsession, event_off):
         contact2 = ClientContact(
             client=self.client,
-            kind=ContactKind.HOME,
+            kind=ClientContactKind.HOME,
             value='+483254794'
         )
         dbsession.add(contact2)

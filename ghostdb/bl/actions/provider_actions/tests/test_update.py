@@ -1,6 +1,6 @@
 import pytest
 
-from ghostdb.db.models.provider import Provider, ProviderContact, ContactKind, ProviderKind
+from ghostdb.db.models.provider import Provider, ProviderContact, ProviderContactKind, ProviderKind
 from ghostdb.bl.actions.provider import ProviderAction, ProviderKindAction
 from ..update import ProviderUpdate, ContactUpdate, ProviderKindUpdate
 
@@ -78,7 +78,7 @@ class TestProviderContactUpdate:
         self.provider = Provider(first_name='John', last_name='Doe')
         self.contact = ProviderContact(
             provider=self.provider,
-            kind=ContactKind.phone,
+            kind=ProviderContactKind.phone,
             value='+5874923'
         )
         dbsession.add(self.provider)
@@ -119,7 +119,7 @@ class TestProviderContactUpdate:
     def test_update_right_record(self, dbsession, event_off):
         contact2 = ProviderContact(
             provider=self.provider,
-            kind=ContactKind.phone,
+            kind=ProviderContactKind.phone,
             value='+483254794'
         )
         dbsession.add(contact2)

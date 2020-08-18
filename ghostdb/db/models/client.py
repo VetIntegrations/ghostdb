@@ -97,7 +97,8 @@ class ClientAddress(meta.Base):
     client = relationship('Client', back_populates='addresses')
 
 
-class ContactKind(enum.Enum):
+class ClientContactKind(enum.Enum):
+
     MOBILE = 'Mobile Phone'
     HOME = 'Home Phone'
     WORK = 'Work Phone'
@@ -111,7 +112,7 @@ class ClientContact(meta.Base):
 
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
     client_id = Column(sqltypes.UUID, ForeignKey('clients.id'))
-    kind = Column(Enum(ContactKind))
+    kind = Column(Enum(ClientContactKind))
     is_primary = Column(Boolean, default=False)
     name = Column(String(50))
     value = Column(String(50))

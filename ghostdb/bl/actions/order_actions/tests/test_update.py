@@ -5,7 +5,6 @@ from ghostdb.db.models.provider import Provider
 from ghostdb.db.models.client import Client
 from ghostdb.db.models.pet import Pet
 from ghostdb.db.models.order import Order, OrderStatus, OrderItem
-from ghostdb.bl.actions.utils.validators import ValidationError
 from ghostdb.bl.actions.order import OrderAction
 from ..update import OrderUpdate, ItemUpdate
 
@@ -100,13 +99,6 @@ class TestOrderUpdate:
             Order.pet == pet2
         )
         assert stay_order.count() == 1
-
-    def test_validate_required_fields(self, dbsession, event_off):
-        self.order.client = None
-
-        action = OrderAction(dbsession, event_bus=None, customer_name='test-cosolidator')
-        with pytest.raises(ValidationError, match='Empty required fields: client'):
-            action.create(self.order)
 
 
 class TestOrderItemUpdate:

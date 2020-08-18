@@ -1,7 +1,7 @@
 import pytest
 
 from ghostdb.db.models.corporation import Corporation
-from ghostdb.db.models.business import Business, BusinessContact, ContactKind
+from ghostdb.db.models.business import Business, BusinessContact, BusinessContactKind
 from ghostdb.bl.actions.business import BusinessAction
 from ..update import BusinessUpdate, ContactUpdate
 
@@ -94,7 +94,7 @@ class TestBusinessContactUpdate:
         )
         self.contact = BusinessContact(
             business=self.business,
-            kind=ContactKind.email,
+            kind=BusinessContactKind.email,
             value='aah@testcorp1.local'
         )
         dbsession.add(self.corp)
@@ -135,7 +135,7 @@ class TestBusinessContactUpdate:
     def test_update_right_record(self, dbsession, event_off):
         contact2 = BusinessContact(
             business=self.business,
-            kind=ContactKind.phone,
+            kind=BusinessContactKind.phone,
             value='+47532895983274'
         )
         dbsession.add(contact2)

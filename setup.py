@@ -8,7 +8,6 @@ setup(
     install_requires=(
         'alembic>=1.3.1,<2',
         # 'google-cloud-pubsub>=1,<2',
-        'mysqlclient>=1.3,<2',
         'sentry-sdk',
     ),
     url='https://github.com/VetIntegrations/ghostdb',

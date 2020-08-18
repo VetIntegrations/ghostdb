@@ -36,7 +36,7 @@ class Business(meta.Base):
         return '<Business {}>'.format(self.name)
 
 
-class ContactKind(enum.Enum):
+class BusinessContactKind(enum.Enum):
     phone = 'Phone'
     email = 'Email'
     website = 'Website'
@@ -47,7 +47,7 @@ class BusinessContact(meta.Base):
 
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
     business_id = Column(sqltypes.UUID, ForeignKey('businesses.id'), nullable=False)
-    kind = Column(Enum(ContactKind))
+    kind = Column(Enum(BusinessContactKind))
     is_primary = Column(Boolean, default=False)
     name = Column(String(50))
     value = Column(String(100), nullable=False)
