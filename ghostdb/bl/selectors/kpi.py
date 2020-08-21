@@ -51,8 +51,8 @@ class KPISelector(base.BaseSelectorSet):
         datetime_to: datetime
     ) -> orm.query.Query:
         return query.filter(
-            order.OrderItem.created_at >= datetime_from,
-            order.OrderItem.created_at < datetime_to,
+            order.OrderItem.date >= datetime_from,
+            order.OrderItem.date < datetime_to,
         )
 
     @staticmethod
@@ -67,9 +67,9 @@ class KPISelector(base.BaseSelectorSet):
 
     @staticmethod
     def filter_payments_by_timerange(
-            query: orm.query.Query,
-            datetime_from: datetime,
-            datetime_to: datetime
+        query: orm.query.Query,
+        datetime_from: datetime,
+        datetime_to: datetime
     ) -> orm.query.Query:
         return query.filter(
             payment.Payment.date >= datetime_from,
@@ -78,8 +78,8 @@ class KPISelector(base.BaseSelectorSet):
 
     @staticmethod
     def filter_payments_by_business(
-            query: orm.query.Query,
-            business: business_model.Business
+        query: orm.query.Query,
+        business: business_model.Business
     ) -> orm.query.Query:
         return query.filter(
             payment.Payment.business == business
