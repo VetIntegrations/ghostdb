@@ -45,6 +45,10 @@ class Provider(meta.Base):
             self.last_name
         )
 
+    @property
+    def full_name(self):
+        return ' '.join(filter(None, (self.first_name, self.last_name)))
+
 
 class ProviderContactKind(enum.Enum):
     phone = 'Phone'

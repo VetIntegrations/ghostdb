@@ -50,6 +50,15 @@ class KPIValue(meta.Base):
     corporation = relationship('Corporation')
     business = relationship('Business')
     provider = relationship('Provider')
+    client = relationship('Client')
+    pet = relationship('Pet')
+
+    revenue_center = relationship('RevenueCenter')
+    department = relationship('Department')
+    category = relationship('Category')
+    klass = relationship('Class')
+    subclass = relationship('SubClass')
+    servicetype = relationship('ServiceType')
 
     def __repr__(self):
         return '<KPI Value {}={} {}>'.format(self.kind, self.value, self.date)
