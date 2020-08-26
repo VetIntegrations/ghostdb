@@ -8,5 +8,5 @@ test:
 
 deps-compile:
 	for name in common ci dev; do \
-		pip-compile requirements/$$name.in; \
+		pip-compile --no-emit-index-url requirements/$$name.in; \
 	done
