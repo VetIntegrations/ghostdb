@@ -1,7 +1,7 @@
 import enum
 import uuid
 from sqlalchemy import (
-    Column, ForeignKey, DateTime, JSON, Boolean, Enum, Text, Date, Numeric, String
+    Column, ForeignKey, DateTime, JSON, Boolean, Enum, Text, Numeric, String
 )
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql import func
@@ -31,7 +31,7 @@ class Order(meta.Base):
     pet_id = Column(sqltypes.UUID, ForeignKey('pets.id'))
     business_id = Column(sqltypes.UUID, ForeignKey('businesses.id'))
     provider_id = Column(sqltypes.UUID, ForeignKey('providers.id'), nullable=True)
-    invoice_date = Column(DateTime)
+    invoice_date = Column(DateTime(timezone=True))
     is_posted = Column(Boolean)
     note = Column(Text)
     status = Column(Enum(OrderStatus))
@@ -55,7 +55,7 @@ class OrderItem(meta.Base):
 
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
     order_id = Column(sqltypes.UUID, ForeignKey('orders.id'), nullable=False)
-    date = Column(Date)
+    date = Column(DateTime(timezone=True))
     # revenue_center_id = Column(sqltypes.UUID, ForeignKey('glcode_revenuecenter.id'))
     # department_id = Column(sqltypes.UUID, ForeignKey('glcode_department.id'))
     # category_id = Column(sqltypes.UUID, ForeignKey('glcode_category.id'))
