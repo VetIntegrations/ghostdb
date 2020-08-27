@@ -15,6 +15,10 @@ from .. import sqltypes
 class FamilyRelation(enum.Enum):
     parent = 'Parent'
     child = 'Child'
+    sibling = 'Sibling'
+    spouse = 'Spouse'
+    partner = 'Partner'
+    other = 'Other'
 
 
 Family = Table(
