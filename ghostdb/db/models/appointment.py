@@ -39,7 +39,7 @@ class Appointment(meta.Base):
     source_id = Column(sqltypes.UUID, ForeignKey('appointment_sources.id'))
     kind_id = Column(sqltypes.UUID, ForeignKey('appointment_kinds.id'))
     duration = Column(Integer)
-    scheduled_time = Column(DateTime)
+    scheduled_time = Column(DateTime(timezone=True))
     status = Column(Enum(Status))
     reason = Column(Text)
     note = Column(Text)
