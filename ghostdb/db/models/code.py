@@ -1,10 +1,10 @@
 import enum
 import uuid
+
 from sqlalchemy import (
     Column, String, ForeignKey, DateTime, JSON, Boolean, Enum, Table, Numeric
 )
 from sqlalchemy.orm import relationship, backref
-from sqlalchemy.sql import func
 
 from .. import meta
 from .. import sqltypes
@@ -18,8 +18,8 @@ class RevenueCenter(meta.Base):
     is_vis_default = Column(Boolean, default=False)
     pms_ids = Column(JSON)
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     def __repr__(self):
         return '<RevenueCenter name={}>'.format(self.name)
@@ -33,8 +33,8 @@ class Department(meta.Base):
     is_vis_default = Column(Boolean, default=False)
     pms_ids = Column(JSON)
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     def __repr__(self):
         return '<Department name={}>'.format(self.name)
@@ -48,8 +48,8 @@ class Category(meta.Base):
     is_vis_default = Column(Boolean, default=False)
     pms_ids = Column(JSON)
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     def __repr__(self):
         return '<Category name={}>'.format(self.name)
@@ -63,8 +63,8 @@ class Class(meta.Base):
     is_vis_default = Column(Boolean, default=False)
     pms_ids = Column(JSON)
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     def __repr__(self):
         return '<Class name={}>'.format(self.name)
@@ -78,8 +78,8 @@ class SubClass(meta.Base):
     is_vis_default = Column(Boolean, default=False)
     pms_ids = Column(JSON)
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     def __repr__(self):
         return '<SubClass name={}>'.format(self.name)
@@ -93,8 +93,8 @@ class ServiceType(meta.Base):
     is_vis_default = Column(Boolean, default=False)
     pms_ids = Column(JSON)
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     def __repr__(self):
         return '<ServiceType name={}>'.format(self.name)
@@ -154,8 +154,8 @@ class Service(meta.Base):
     verified = Column(Boolean)
     pms_ids = Column(JSON)
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     revenue_center = relationship('RevenueCenter', backref=backref('services'))
     department = relationship('Department', backref=backref('services'))

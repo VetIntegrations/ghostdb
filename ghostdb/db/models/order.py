@@ -1,10 +1,10 @@
 import enum
 import uuid
+
 from sqlalchemy import (
     Column, ForeignKey, DateTime, JSON, Boolean, Enum, Text, Numeric, String
 )
 from sqlalchemy.orm import relationship, backref
-from sqlalchemy.sql import func
 
 from .. import meta
 from .. import sqltypes
@@ -40,8 +40,8 @@ class Order(meta.Base):
     transaction_type = Column(String(100))
     source_type = Column(String(50))
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     corporation = relationship('Corporation', backref=backref('orders'))
     client = relationship('Client', backref=backref('orders'))
@@ -79,8 +79,8 @@ class OrderItem(meta.Base):
     is_refund = Column(Boolean)
     pms_ids = Column(JSON)
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     order = relationship('Order', backref=backref('items'))
     # revenue_center = relationship('RevenueCenter', backref=backref('order_items'))

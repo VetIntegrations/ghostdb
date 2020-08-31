@@ -6,7 +6,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.associationproxy import association_proxy
-from sqlalchemy.sql import func
+
 
 from .. import meta
 from .. import sqltypes
@@ -42,8 +42,8 @@ class Client(meta.Base):
 
     # clinic? VetSuccess.practice_id
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     addresses = relationship('ClientAddress', back_populates='client')
     contacts = relationship('ClientContact', back_populates='client')

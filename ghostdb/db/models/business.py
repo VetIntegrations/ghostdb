@@ -1,11 +1,11 @@
 import enum
 import uuid
+
 from sqlalchemy import (
     Column, String, Date, Numeric, DateTime, ForeignKey, JSON, Enum, Boolean,
     Text
 )
 from sqlalchemy.orm import relationship, backref
-from sqlalchemy.sql import func
 
 from .. import meta, sqltypes
 
@@ -28,8 +28,8 @@ class Business(meta.Base):
     address = Column(String(200))
     pms_ids = Column(JSON)
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     corporation = relationship('Corporation', backref=backref('businesses'))
 
