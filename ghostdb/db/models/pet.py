@@ -1,10 +1,10 @@
 import uuid
+
 from sqlalchemy import (
     Column, String, Boolean, ForeignKey, Date, Text, Numeric, DateTime, JSON
 )
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.associationproxy import association_proxy
-from sqlalchemy.sql import func
 
 from .. import meta, sqltypes
 
@@ -15,8 +15,8 @@ class Breed(meta.Base):
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
     name = Column(String(200), unique=True)
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     def __repr__(self):
         return '<Breed {}>'.format(self.name)
@@ -28,8 +28,8 @@ class Color(meta.Base):
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
     name = Column(String(200), unique=True)
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     def __repr__(self):
         return '<Color {}>'.format(self.name)
@@ -41,8 +41,8 @@ class Gender(meta.Base):
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
     name = Column(String(200), unique=True)
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     def __repr__(self):
         return '<Gender {}>'.format(self.name)
@@ -54,8 +54,8 @@ class Species(meta.Base):
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
     name = Column(String(200), unique=True)
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     def __repr__(self):
         return '<Species {}>'.format(self.name)
@@ -67,8 +67,8 @@ class WeightUnit(meta.Base):
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
     name = Column(String(200), unique=True)
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     def __repr__(self):
         return '<WeightUnit {}>'.format(self.name)
@@ -99,8 +99,8 @@ class Pet(meta.Base):
     weight_unit_id = Column(sqltypes.UUID, ForeignKey('weightunits.id'))
     pms_ids = Column(JSON)
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     owners = association_proxy('pet_owners', 'client')
     breed = relationship('Breed')

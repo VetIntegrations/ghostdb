@@ -1,10 +1,10 @@
 import enum
 import uuid
+
 from sqlalchemy import (
     Column, String, DateTime, ForeignKey, Text, Integer, Enum, JSON
 )
 from sqlalchemy.orm import relationship, backref
-from sqlalchemy.sql import func
 
 from .. import meta, sqltypes
 
@@ -45,8 +45,8 @@ class Appointment(meta.Base):
     note = Column(Text)
     pms_ids = Column(JSON, default={})
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     business = relationship('Business', backref=backref('appointments'))
     provider = relationship('Provider', backref=backref('appointments'))
@@ -64,8 +64,8 @@ class AppointmentSource(meta.Base):
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
     name = Column(String(100), unique=True, nullable=False)
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     def __repr__(self):
         return '<AppointmentSource name={}>'.format(self.name)
@@ -77,8 +77,8 @@ class AppointmentKind(meta.Base):
     id = Column(sqltypes.UUID, default=uuid.uuid4, primary_key=True)
     name = Column(String(100), unique=True, nullable=False)
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     def __repr__(self):
         return '<AppointmentKind name={}>'.format(self.name)

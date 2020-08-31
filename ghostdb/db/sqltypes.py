@@ -1,5 +1,8 @@
 import uuid
-from sqlalchemy.types import TypeDecorator, CHAR
+
+from sqlalchemy.sql import expression
+from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.types import TypeDecorator, CHAR, DateTime
 from sqlalchemy.dialects.mysql import BINARY
 from sqlalchemy.dialects.postgresql import UUID as pgUUID
 
@@ -37,3 +40,12 @@ class UUID(TypeDecorator):
                     value = uuid.UUID(value)  # fine for postgresql
 
         return value
+
+
+class UTCNow(expression.FunctionElement):
+    type = DateTime()
+
+
+@compiles(UTCNow, 'postgresql')
+def pg_utcnow(element, compiler, **kw):
+    return "TIMEZONE('utc', CURRENT_TIMESTAMP)"
