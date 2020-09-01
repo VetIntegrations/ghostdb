@@ -1,6 +1,6 @@
 import enum
 
-from sqlalchemy import Column, Integer, Numeric, Date, ForeignKey, Enum
+from sqlalchemy import Column, Integer, Numeric, Date, DateTime, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 
 from .. import meta, sqltypes
@@ -47,6 +47,9 @@ class KPIValue(meta.Base):
     class_id = Column(sqltypes.UUID, ForeignKey('glcode_class.id'))
     subclass_id = Column(sqltypes.UUID, ForeignKey('glcode_subclass.id'))
     servicetype_id = Column(sqltypes.UUID, ForeignKey('glcode_servicetype.id'))
+
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     corporation = relationship('Corporation')
     business = relationship('Business')
