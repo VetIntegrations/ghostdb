@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from sqlalchemy import orm
 
 from ghostdb.db.models import order, corporation, payment, business as business_model, kpi as kpi_model
@@ -24,6 +24,21 @@ class InternalKPIValueSelector(base.BaseSelectorSet):
         generic.ByCustomField.factory(filter_field=kpi_model.InternalKPIValue.provider_id),
         kpi_model.InternalKPIValue
     )
+
+
+class ExternalKPIValueSelector(base.BaseSelectorSet):
+
+    by_business = base.SelectorFactory(
+        generic.ByCustomField.factory(filter_field=kpi_model.ExternalKPIValue.business_id),
+        kpi_model.ExternalKPIValue
+    )
+
+    @staticmethod
+    def filter_by_timerange(
+        query: orm.query.Query,
+        dt: date
+    ) -> orm.query.Query:
+        return query.filter(kpi_model.ExternalKPIValue.date == dt)
 
 
 class KPISelector(base.BaseSelectorSet):
