@@ -6,7 +6,7 @@ from ..utils import base
 
 class KPIValueDelete(base.BaseAction):
 
-    def process(self, _kpi_value: kpi.KPIValue) -> typing.Tuple[kpi.KPIValue, bool]:
+    def process(self, _kpi_value: kpi.AbstactKPIValue) -> typing.Tuple[kpi.AbstactKPIValue, bool]:
         self.db.delete(_kpi_value)
         self.db.commit()
 

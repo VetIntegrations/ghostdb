@@ -10,19 +10,19 @@ from .kpi_selectors.inventory import PMSInventoryTransations
 from .kpi_selectors.cogs import PMSCOGSTransations
 
 
-class KPIValueSelector(base.BaseSelectorSet):
+class InternalKPIValueSelector(base.BaseSelectorSet):
 
     by_corporation = base.SelectorFactory(
-        generic.ByCustomField.factory(filter_field=kpi_model.KPIValue.corporation_id),
-        kpi_model.KPIValue
+        generic.ByCustomField.factory(filter_field=kpi_model.InternalKPIValue.corporation_id),
+        kpi_model.InternalKPIValue
     )
     by_business = base.SelectorFactory(
-        generic.ByCustomField.factory(filter_field=kpi_model.KPIValue.business_id),
-        kpi_model.KPIValue
+        generic.ByCustomField.factory(filter_field=kpi_model.InternalKPIValue.business_id),
+        kpi_model.InternalKPIValue
     )
     by_provider = base.SelectorFactory(
-        generic.ByCustomField.factory(filter_field=kpi_model.KPIValue.provider_id),
-        kpi_model.KPIValue
+        generic.ByCustomField.factory(filter_field=kpi_model.InternalKPIValue.provider_id),
+        kpi_model.InternalKPIValue
     )
 
 

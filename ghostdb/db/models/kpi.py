@@ -2,6 +2,7 @@ import enum
 
 from sqlalchemy import Column, Integer, Numeric, Date, DateTime, ForeignKey, Enum
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative import declared_attr
 
 from .. import meta, sqltypes
 
@@ -22,9 +23,7 @@ class KPIDataSource(enum.Enum):
     ERP = 'erp'
 
 
-class KPIValue(meta.Base):
-    __tablename__ = 'kpi_value'
-
+class AbstactKPIValue:
     id = Column('id', Integer, primary_key=True)
 
     data_source = Column(Enum(KPIDataSource))
@@ -32,37 +31,109 @@ class KPIValue(meta.Base):
     value = Column(Numeric(16, 2))
     date = Column(Date)
 
-    corporation_id = Column(sqltypes.UUID, ForeignKey('corporations.id'), nullable=True)
-    business_id = Column(sqltypes.UUID, ForeignKey('businesses.id'), nullable=True)
-    provider_id = Column(sqltypes.UUID, ForeignKey('providers.id'), nullable=True)
-    # location
-    # practice_type
-
-    client_id = Column(sqltypes.UUID, ForeignKey('clients.id'), nullable=True)
-    pet_id = Column(sqltypes.UUID, ForeignKey('pets.id'), nullable=True)
-
-    revenue_center_id = Column(sqltypes.UUID, ForeignKey('glcode_revenuecenter.id'))
-    department_id = Column(sqltypes.UUID, ForeignKey('glcode_department.id'))
-    category_id = Column(sqltypes.UUID, ForeignKey('glcode_category.id'))
-    class_id = Column(sqltypes.UUID, ForeignKey('glcode_class.id'))
-    subclass_id = Column(sqltypes.UUID, ForeignKey('glcode_subclass.id'))
-    servicetype_id = Column(sqltypes.UUID, ForeignKey('glcode_servicetype.id'))
-
     created_at = Column(DateTime, server_default=sqltypes.UTCNow())
     updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
-    corporation = relationship('Corporation')
-    business = relationship('Business')
-    provider = relationship('Provider')
-    client = relationship('Client')
-    pet = relationship('Pet')
+    @declared_attr
+    def corporation_id(self):
+        return Column(sqltypes.UUID, ForeignKey('corporations.id'), nullable=True)
 
-    revenue_center = relationship('RevenueCenter')
-    department = relationship('Department')
-    category = relationship('Category')
-    klass = relationship('Class')
-    subclass = relationship('SubClass')
-    servicetype = relationship('ServiceType')
+    @declared_attr
+    def business_id(self):
+        return Column(sqltypes.UUID, ForeignKey('businesses.id'), nullable=True)
+
+    @declared_attr
+    def provider_id(self):
+        return Column(sqltypes.UUID, ForeignKey('providers.id'), nullable=True)
+    # location
+    # practice_type
+
+    @declared_attr
+    def client_id(self):
+        return Column(sqltypes.UUID, ForeignKey('clients.id'), nullable=True)
+
+    @declared_attr
+    def pet_id(self):
+        return Column(sqltypes.UUID, ForeignKey('pets.id'), nullable=True)
+
+    @declared_attr
+    def revenue_center_id(self):
+        return Column(sqltypes.UUID, ForeignKey('glcode_revenuecenter.id'))
+
+    @declared_attr
+    def department_id(self):
+        return Column(sqltypes.UUID, ForeignKey('glcode_department.id'))
+
+    @declared_attr
+    def category_id(self):
+        return Column(sqltypes.UUID, ForeignKey('glcode_category.id'))
+
+    @declared_attr
+    def class_id(self):
+        return Column(sqltypes.UUID, ForeignKey('glcode_class.id'))
+
+    @declared_attr
+    def subclass_id(self):
+        return Column(sqltypes.UUID, ForeignKey('glcode_subclass.id'))
+
+    @declared_attr
+    def servicetype_id(self):
+        return Column(sqltypes.UUID, ForeignKey('glcode_servicetype.id'))
+
+    @declared_attr
+    def corporation(self):
+        return relationship('Corporation')
+
+    @declared_attr
+    def business(self):
+        return relationship('Business')
+
+    @declared_attr
+    def provider(self):
+        return relationship('Provider')
+
+    @declared_attr
+    def client(self):
+        return relationship('Client')
+
+    @declared_attr
+    def pet(self):
+        return relationship('Pet')
+
+    @declared_attr
+    def revenue_center(self):
+        return relationship('RevenueCenter')
+
+    @declared_attr
+    def department(self):
+        return relationship('Department')
+
+    @declared_attr
+    def category(self):
+        return relationship('Category')
+
+    @declared_attr
+    def klass(self):
+        return relationship('Class')
+
+    @declared_attr
+    def subclass(self):
+        return relationship('SubClass')
+
+    @declared_attr
+    def servicetype(self):
+        return relationship('ServiceType')
+
+
+class InternalKPIValue(AbstactKPIValue, meta.Base):
+    __tablename__ = 'kpi_value_internal'
+
+    def __repr__(self):
+        return '<KPI Value {}={} {}>'.format(self.kind, self.value, self.date)
+
+
+class ExternalKPIValue(AbstactKPIValue, meta.Base):
+    __tablename__ = 'kpi_value_external'
 
     def __repr__(self):
         return '<KPI Value {}={} {}>'.format(self.kind, self.value, self.date)
