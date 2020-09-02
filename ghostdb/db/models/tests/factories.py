@@ -77,10 +77,10 @@ class OrderItemFactory(factory.alchemy.SQLAlchemyModelFactory):
     order = factory.SubFactory(OrderFactory)
 
 
-class KPIValueFactory(factory.alchemy.SQLAlchemyModelFactory):
+class InternalKPIValueFactory(factory.alchemy.SQLAlchemyModelFactory):
 
     class Meta:
-        model = kpi.KPIValue
+        model = kpi.InternalKPIValue
         sqlalchemy_session = common.Session
 
     corporation = factory.SubFactory(CorporationFactory)
