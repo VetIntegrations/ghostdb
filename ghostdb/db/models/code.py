@@ -2,7 +2,7 @@ import enum
 import uuid
 
 from sqlalchemy import (
-    Column, String, ForeignKey, DateTime, JSON, Boolean, Enum, Table, Numeric
+    Column, String, ForeignKey, DateTime, JSON, Boolean, Enum, Numeric
 )
 from sqlalchemy.orm import relationship, backref
 
@@ -100,22 +100,6 @@ class ServiceType(meta.Base):
         return '<ServiceType name={}>'.format(self.name)
 
 
-subclass_rel_table = Table(
-    'glcode_srv_subclass_rel',
-    meta.Base.metadata,
-    Column('subclass', sqltypes.UUID, ForeignKey('glcode_subclass.id')),
-    Column('service', sqltypes.UUID, ForeignKey('glcode_service.id'))
-)
-
-
-servicetype_rel_table = Table(
-    'glcode_srv_servicetype_rel',
-    meta.Base.metadata,
-    Column('service_type', sqltypes.UUID, ForeignKey('glcode_servicetype.id')),
-    Column('service', sqltypes.UUID, ForeignKey('glcode_service.id'))
-)
-
-
 class ServiceKind(enum.Enum):
     SERVICE = 'Service'
     PRODUCT = 'Product'
@@ -144,6 +128,8 @@ class Service(meta.Base):
     department_id = Column(sqltypes.UUID, ForeignKey('glcode_department.id'))
     category_id = Column(sqltypes.UUID, ForeignKey('glcode_category.id'))
     class_id = Column(sqltypes.UUID, ForeignKey('glcode_class.id'))
+    subclass_id = Column(sqltypes.UUID, ForeignKey('glcode_subclass.id'))
+    servicetype_id = Column(sqltypes.UUID, ForeignKey('glcode_servicetype.id'))
     is_vis_default = Column(Boolean, default=False)
     base_price = Column(Numeric)
     dispensing_fee = Column(Numeric)
@@ -161,8 +147,8 @@ class Service(meta.Base):
     department = relationship('Department', backref=backref('services'))
     category = relationship('Category', backref=backref('services'))
     klass = relationship('Class', backref=backref('services'))
-    subclass = relationship('SubClass', secondary=subclass_rel_table, backref=backref('services'))
-    service_type = relationship('ServiceType', secondary=servicetype_rel_table, backref=backref('services'))
+    subclass = relationship('SubClass', backref=backref('services'))
+    service_type = relationship('ServiceType', backref=backref('services'))
     business = relationship('Business', backref=backref('glcode_services'))
 
     def __repr__(self):
