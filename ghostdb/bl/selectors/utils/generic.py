@@ -19,6 +19,20 @@ class ByID(base.BaseSelector):
         return (obj, obj is not None)
 
 
+class ByPmsID(base.BaseSelector):
+
+    def process(self, pk: uuid.UUID, customer_name: str, pms_name: str) -> typing.Tuple[typing.Any, bool]:
+        query = (
+            self.db.query(self.model).filter(
+                self.model.__table__.c.pms_ids[customer_name][pms_name].as_string() == pk
+            )
+        )
+
+        obj = query.first()
+
+        return (obj, obj is not None)
+
+
 class ByIName(base.BaseSelector):
 
     def process(self, name: str) -> typing.Tuple[typing.Any, bool]:
