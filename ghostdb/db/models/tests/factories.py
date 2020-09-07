@@ -45,6 +45,7 @@ class BusinessFactory(factory.alchemy.SQLAlchemyModelFactory):
     corporation = factory.SubFactory(CorporationFactory)
     name = factory.Faker('company')
     display_name = factory.SelfAttribute('name')
+    timezone = factory.Faker('timezone')
 
 
 class ProviderFactory(factory.alchemy.SQLAlchemyModelFactory):
