@@ -9,6 +9,9 @@ from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
+import ghostdb
+
+
 # revision identifiers, used by Alembic.
 revision = '3cb7539c31cb'
 down_revision = 'de76967e8612'
