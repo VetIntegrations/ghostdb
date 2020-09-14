@@ -5,6 +5,7 @@ from .utils import base, generic
 class PetSelector(base.BaseSelectorSet):
 
     by_id = base.SelectorFactory(generic.ByID, pet.Pet)
+    by_pms_id = base.SelectorFactory(generic.ByPmsID, pet.Pet)
 
 
 class BreedSelector(base.BaseSelectorSet):
