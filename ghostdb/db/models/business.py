@@ -20,7 +20,7 @@ class Business(meta.Base):
     open_date = Column(Date)
     longitude = Column(Numeric)
     latitude = Column(Numeric)
-    timezone = Column(String(20))  # pytz compatible value
+    timezone = Column(String(40))  # pytz compatible value
     zip_code = Column(String(20))
     country = Column(String(50))
     city = Column(String(100))
