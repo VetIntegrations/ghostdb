@@ -1,9 +1,14 @@
+include *.mk
+
+
 test:
-	GHOSTDB_DB_DSN='postgresql://vis:vis@localhost:5432/vis_test' python -m pytest  \
-		--pylama \
-		--ignore=./ghostdb/alembic --ignore=create_records.py \
-		-s \
-		ghostdb/
+	PYTHONPATH=${GHOSTDB_PATH} \
+	GHOSTDB_DB_DSN=${GHOSTDB_DB_DSN_FOR_TEST} \
+		python -m pytest  \
+			--pylama \
+			--ignore=./ghostdb/alembic --ignore=create_records.py \
+			-s \
+			ghostdb/
 
 
 deps-compile:
