@@ -1,9 +1,8 @@
 import os
-import warnings
 import pytest
 from unittest.mock import Mock
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, session
+from sqlalchemy.orm import session
 
 from ghostdb.db import meta
 from ghostdb.core.event import event
@@ -36,6 +35,7 @@ def mock_default_database():
 def db_connection():
     engine = create_engine(os.environ['GHOSTDB_DB_DSN'])
     connection = engine.connect()
+    test_common.Session.configure(bind=connection, autocommit=False)
     yield connection
     connection.close()
 
@@ -52,26 +52,10 @@ def db_structure(db_connection):
 @pytest.fixture
 def dbsession(db_connection):
     transaction = db_connection.begin()
-    test_common.Session.configure(bind=db_connection, autocommit=False)
     db = test_common.Session()
     yield db
     transaction.rollback()
     session.close_all_sessions()
-
-
-@pytest.fixture(scope='function')
-def default_database(db_connection):
-    warnings.warn("migrate to dbsession", DeprecationWarning)
-
-    transaction = db_connection.begin()
-    db = Session(bind=db_connection, autocommit=False)
-    meta.register_dbsession('default', db)
-
-    yield db
-
-    transaction.rollback()
-    session.close_all_sessions()
-    del meta.DATABASES['default']
 
 
 @pytest.fixture(scope='function')
