@@ -49,6 +49,7 @@ class BaseAction(abc.ABC):
         return True
 
     def __call__(self, obj: typing.Any, *args, **kwargs) -> typing.Tuple[typing.Any, bool]:
+        commit = kwargs.pop('commit', True)
         self.validate(obj)
 
         ret = OrderedDict()
@@ -59,6 +60,8 @@ class BaseAction(abc.ABC):
             self._event.register(self.actionset.customer_name, obj)
 
         obj, ret['process'] = self.process(obj, *args, **kwargs)
+        if commit and obj and ret['process']:
+            self.db.commit()
 
         if ret['process'] and self.__event_processing:
             self._event.trigger()

@@ -36,7 +36,7 @@ class TestBaseAction:
         fake_event = FakeEvent(customer, obj)
 
         action = Action(
-            db=None,
+            db=Mock(),
             event=fake_event,
             validators=(validator, ),
             pre_processors=(partial(coprocessor, 'pre_1'), partial(coprocessor, 'pre_2')),
@@ -79,7 +79,7 @@ class TestBaseAction:
                 return (new_obj, True)
 
         true_action = ActionTrue(
-            db=None,
+            db=Mock(),
             event=fake_event,
             validators=validators,
             pre_processors=pre_processors,
@@ -100,7 +100,7 @@ class TestBaseAction:
                 return (new_obj, False)
 
         false_action = ActionFalse(
-            db=None,
+            db=Mock(),
             event=fake_event,
             validators=validators,
             pre_processors=pre_processors,
@@ -135,7 +135,7 @@ class TestBaseAction:
                 return (new_obj, True)
 
         action = FakeAction(
-            db=None,
+            db=Mock(),
             event=fake_event,
             validators=validators,
             pre_processors=pre_processors,
