@@ -20,7 +20,7 @@ class Corporation(meta.Base):
     updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     integrations = relationship('Integration', back_populates='corporation')
-    members = relationship("Member", back_populates="corporation")
+    users = relationship("User", back_populates="corporation")
 
     def __repr__(self):
         return '<Corporation id={} name={}>'.format(self.id, self.name)
