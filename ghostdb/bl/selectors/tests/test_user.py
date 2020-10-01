@@ -9,7 +9,7 @@ class TestByID:
 
     @pytest.fixture(autouse=True)
     def setup_user(self, dbsession):
-        self.user = user_models.User(first_name='Jon')
+        self.user = user_models.User(first_name='Jon', email='test@localhost.com')
         dbsession.add(self.user)
         dbsession.commit()
 
@@ -19,6 +19,7 @@ class TestByID:
         assert ok
         assert user.id == self.user.id
         assert user.first_name == self.user.first_name
+        assert user.email == self.user.email
 
     def test_not_found(self, dbsession):
         user, ok = user_selectors.UserSelector(dbsession).by_id(uuid.uuid4())

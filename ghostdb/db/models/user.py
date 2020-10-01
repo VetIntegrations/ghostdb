@@ -11,7 +11,7 @@ class User(meta.Base):
 
     id = Column(sqltypes.UUID, default=uuid.uuid1, primary_key=True)
     password = Column(String(128))
-    email = Column(String(100), unique=True)
+    email = Column(String(100), nullable=False, unique=True)
     first_name = Column(String(200))
     last_name = Column(String(200))
     is_ghost = Column(Boolean, default=True)  # not validated user
