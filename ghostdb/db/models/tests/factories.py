@@ -2,7 +2,7 @@ import factory
 from datetime import date
 
 from ghostdb.db.tests import common
-from .. import corporation, client, pet, order, business, provider, kpi, payment
+from .. import corporation, client, pet, order, business, provider, kpi, payment, user, security
 
 
 class CorporationFactory(factory.alchemy.SQLAlchemyModelFactory):
@@ -56,7 +56,7 @@ class ProviderFactory(factory.alchemy.SQLAlchemyModelFactory):
 
     business = factory.SubFactory(BusinessFactory)
     first_name = factory.Faker('first_name')
-    first_name = factory.Faker('last_name')
+    last_name = factory.Faker('last_name')
 
 
 class OrderFactory(factory.alchemy.SQLAlchemyModelFactory):
@@ -99,3 +99,22 @@ class PaymentFactory(factory.alchemy.SQLAlchemyModelFactory):
     corporation = factory.SubFactory(CorporationFactory)
     business = factory.SubFactory(BusinessFactory)
     provider = factory.SubFactory(ProviderFactory)
+
+
+class UserFactory(factory.alchemy.SQLAlchemyModelFactory):
+    class Meta:
+        model = user.User
+        sqlalchemy_session = common.Session
+
+    first_name = factory.Faker('first_name')
+    last_name = factory.Faker('last_name')
+    email = factory.Faker('email')
+    corporation = factory.SubFactory(CorporationFactory)
+
+
+class TemporaryTokenFactory(factory.alchemy.SQLAlchemyModelFactory):
+    class Meta:
+        model = security.TemporaryToken
+        sqlalchemy_session = common.Session
+
+    user = factory.SubFactory(UserFactory)
