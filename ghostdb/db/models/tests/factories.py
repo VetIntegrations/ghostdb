@@ -1,5 +1,6 @@
 import factory
 from datetime import date
+from hashlib import sha384
 
 from ghostdb.db.tests import common
 from .. import corporation, client, pet, order, business, provider, kpi, payment, user, security
@@ -117,4 +118,5 @@ class TemporaryTokenFactory(factory.alchemy.SQLAlchemyModelFactory):
         model = security.TemporaryToken
         sqlalchemy_session = common.Session
 
+    token = factory.Sequence(lambda i: sha384('temporary-token-{}'.format(i).encode('utf-8')).hexdigest())
     user = factory.SubFactory(UserFactory)
