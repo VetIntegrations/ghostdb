@@ -1,5 +1,5 @@
 import factory
-from datetime import date
+from datetime import date, datetime
 from hashlib import sha384
 
 from ghostdb.db.tests import common
@@ -119,4 +119,5 @@ class TemporaryTokenFactory(factory.alchemy.SQLAlchemyModelFactory):
         sqlalchemy_session = common.Session
 
     token = factory.Sequence(lambda i: sha384('temporary-token-{}'.format(i).encode('utf-8')).hexdigest())
+    expires_at = datetime.utcnow()
     user = factory.SubFactory(UserFactory)
