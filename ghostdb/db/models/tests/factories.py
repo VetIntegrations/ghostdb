@@ -1,3 +1,4 @@
+import uuid
 import factory
 from datetime import date
 from hashlib import sha384
@@ -107,6 +108,7 @@ class UserFactory(factory.alchemy.SQLAlchemyModelFactory):
         model = user.User
         sqlalchemy_session = common.Session
 
+    id = factory.LazyFunction(uuid.uuid1)
     first_name = factory.Faker('first_name')
     last_name = factory.Faker('last_name')
     email = factory.Faker('email')
