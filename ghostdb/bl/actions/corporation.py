@@ -25,3 +25,10 @@ class CorporationAction(base.BaseActionSet):
             event_name=event.EVENT_RECORD_CREATE
         )
     )
+
+    add_member = base.ActionFactory(
+        create_act.AddMember,
+        event_factory=base.EventFactory(
+            event_name=event.EVENT_RECORD_CREATE
+        )
+    )
