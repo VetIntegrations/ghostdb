@@ -15,6 +15,5 @@ class TemporaryTokenCreate(base.BaseAction):
             token.token = digest.hexdigest()
 
         self.db.add(token)
-        self.db.commit()
 
         return (token, True)
