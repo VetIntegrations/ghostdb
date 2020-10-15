@@ -23,3 +23,18 @@ class FindMemberByUserID(base.BaseSelector):
         member = query.first()
 
         return (member, member is not None)
+
+
+class ByInviteID(base.BaseSelector):
+
+    def process(self, invite_id: str) -> typing.Tuple[corporation.Member, bool]:
+        query = (
+            self.db.query(corporation.Member)
+            .filter(
+                corporation.Member.invite_id == invite_id
+            )
+        )
+
+        member = query.first()
+
+        return (member, member is not None)
