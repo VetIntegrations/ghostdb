@@ -115,6 +115,16 @@ class UserFactory(factory.alchemy.SQLAlchemyModelFactory):
     email = factory.Faker('email')
 
 
+class MemberFactory(factory.alchemy.SQLAlchemyModelFactory):
+    class Meta:
+        model = corporation.Member
+        sqlalchemy_session = common.Session
+
+    id = factory.LazyFunction(uuid.uuid1)
+    corporation = factory.SubFactory(CorporationFactory)
+    user = factory.SubFactory(UserFactory)
+
+
 class TemporaryTokenFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         model = security.TemporaryToken
