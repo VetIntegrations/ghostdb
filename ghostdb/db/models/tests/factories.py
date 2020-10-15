@@ -1,6 +1,6 @@
 import uuid
 import factory
-from datetime import date
+from datetime import date, datetime, timedelta
 from hashlib import sha384
 
 from ghostdb.db.tests import common
@@ -13,6 +13,7 @@ class CorporationFactory(factory.alchemy.SQLAlchemyModelFactory):
         model = corporation.Corporation
         sqlalchemy_session = common.Session
 
+    id = factory.LazyFunction(uuid.uuid1)
     name = factory.Faker('company')
 
 
@@ -121,3 +122,4 @@ class TemporaryTokenFactory(factory.alchemy.SQLAlchemyModelFactory):
 
     token = factory.Sequence(lambda i: sha384('temporary-token-{}'.format(i).encode('utf-8')).hexdigest())
     user = factory.SubFactory(UserFactory)
+    expires_at = factory.LazyFunction(lambda: datetime.utcnow() + timedelta(minutes=10))

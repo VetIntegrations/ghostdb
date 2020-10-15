@@ -32,3 +32,15 @@ class CorporationAction(base.BaseActionSet):
             event_name=event.EVENT_RECORD_CREATE
         )
     )
+    activate_member = base.ActionFactory(
+        update_act.ActivateMember,
+        event_factory=base.EventFactory(
+            event_name=event.EVENT_RECORD_CREATE
+        )
+    )
+    update_member = base.ActionFactory(
+        update_act.UpdateMember,
+        event_factory=base.EventFactory(
+            event_name=event.EVENT_RECORD_CREATE
+        )
+    )

@@ -12,4 +12,5 @@ class CorporationSelector(base.BaseSelectorSet):
 class MemberSelector(base.BaseSelectorSet):
 
     by_id = base.SelectorFactory(generic.ByID, corporation.Member)
+    by_invite_id = base.SelectorFactory(member.ByInviteID, corporation.Member)
     in_corporation_by_user_id = base.SelectorFactory(member.FindMemberByUserID, corporation.Member)
