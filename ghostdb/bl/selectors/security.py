@@ -8,3 +8,7 @@ class TemporaryTokenSelector(base.BaseSelectorSet):
     by_token_utc = base.SelectorFactory(by_token.TemporaryTokenByTokenUtc, security.TemporaryToken)
 
     all_expired = base.SelectorFactory(by_time.TemporaryTokenExpired, security.TemporaryToken)
+    filter_by_expire_date = base.SelectorFactory(
+        by_time.TemporaryTokenFilterByExpireDate,
+        security.TemporaryToken
+    )
