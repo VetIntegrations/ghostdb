@@ -2,7 +2,7 @@ import enum
 import uuid
 
 from sqlalchemy import (
-    Column, Integer, String, Boolean, ForeignKey, JSON, Enum, DateTime
+    Column, Integer, String, Boolean, ForeignKey, JSON, Enum, DateTime, SmallInteger
 )
 from sqlalchemy.orm import relationship
 
@@ -15,6 +15,7 @@ class Corporation(meta.Base):
 
     id = Column(sqltypes.UUID, default=uuid.uuid1, primary_key=True)
     name = Column(String(200), nullable=False, unique=True)
+    maturity_level = Column(SmallInteger, default=0)
 
     created_at = Column(DateTime, server_default=sqltypes.UTCNow())
     updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
