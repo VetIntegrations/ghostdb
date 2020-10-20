@@ -25,10 +25,17 @@ class UpdateMember(base.BaseAction):
 
 class ActivateMember(base.BaseAction):
 
-    def process(self, member: corporation.Member) -> typing.Tuple[corporation.Member, bool]:
+    def process(
+        self,
+        member: corporation.Member,
+        corporation: corporation.Corporation = None
+    ) -> typing.Tuple[corporation.Member, bool]:
         member.is_active = True
         member.date_of_join = datetime.utcnow().replace(tzinfo=pytz.UTC)
-        member.corporation_id = member.invite.extra['corporation']
+        if corporation:
+            member.corporation = corporation
+        else:
+            member.corporation_id = member.invite.extra['corporation']
         member.invite = None
 
         self.db.add(member)
