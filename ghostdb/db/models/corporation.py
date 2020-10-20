@@ -14,7 +14,7 @@ class Corporation(meta.Base):
     __tablename__ = 'corporations'
 
     id = Column(sqltypes.UUID, default=uuid.uuid1, primary_key=True)
-    name = Column(String(200), nullable=False, unique=True)
+    name = Column(String(200), nullable=True)
     maturity_level = Column(SmallInteger, default=0)
 
     created_at = Column(DateTime, server_default=sqltypes.UTCNow())
