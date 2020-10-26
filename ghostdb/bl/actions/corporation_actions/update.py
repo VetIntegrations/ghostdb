@@ -37,6 +37,8 @@ class ActivateMember(base.BaseAction):
         else:
             member.corporation_id = member.invite.extra['corporation']
         member.invite = None
+        member.user.corporation_id = member.corporation_id
+        member.user.date_of_join = member.date_of_join
 
         self.db.add(member)
 

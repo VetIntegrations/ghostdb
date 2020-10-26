@@ -1,6 +1,7 @@
 import pytest
 
 from ghostdb.db.models.corporation import Corporation, Member
+from ghostdb.db.models.user import User
 from ghostdb.db.models.tests.factories import CorporationFactory, UserFactory, TemporaryTokenFactory
 from ghostdb.bl.actions.corporation import CorporationAction
 from ..update import Update, UpdateMember, ActivateMember
@@ -150,11 +151,11 @@ class TestActivateMember:
     @pytest.fixture(autouse=True)
     def setup_corporation(self, dbsession):
         self.corp = CorporationFactory()
-        user = UserFactory()
+        self.user = UserFactory()
         self.member = Member(
             corporation=self.corp,
-            user=user,
-            invite=TemporaryTokenFactory(user=user, extra={'corporation': self.corp.id.hex})
+            user=self.user,
+            invite=TemporaryTokenFactory(user=self.user, extra={'corporation': self.corp.id.hex})
         )
         dbsession.add(self.corp)
         dbsession.add(self.member)
@@ -162,6 +163,7 @@ class TestActivateMember:
     def test_ok(self, dbsession, event_off):
         assert not self.member.is_active
         assert not self.member.date_of_join
+        assert not self.user.date_of_join
         assert self.member.invite
 
         assert dbsession.query(Member).count() == 1
@@ -173,10 +175,15 @@ class TestActivateMember:
         event_off.assert_called_once()
 
         updated_member = dbsession.query(Member)[0]
+        updated_user = dbsession.query(User)[0]
+
         assert updated_member.id == self.member.id
         assert updated_member.is_active
         assert updated_member.invite is None
         assert updated_member.date_of_join
+
+        assert updated_user.id == self.user.id
+        assert updated_user.date_of_join
 
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
@@ -196,6 +203,7 @@ class TestActivateMember:
 
         assert not self.member.is_active
         assert not self.member.date_of_join
+        assert not self.user.date_of_join
         assert self.member.invite
 
         self.member.invite.extra['corporation'] = other_corp.id.hex
@@ -209,8 +217,14 @@ class TestActivateMember:
         event_off.assert_called_once()
 
         updated_member = dbsession.query(Member)[0]
+        updated_user = dbsession.query(User)[0]
+
         assert updated_member.id == self.member.id
         assert updated_member.is_active
         assert updated_member.invite is None
         assert updated_member.date_of_join
         assert updated_member.corporation == other_corp
+
+        assert updated_user.id == self.user.id
+        assert updated_user.date_of_join
+        assert updated_user.corporation_id == other_corp.id
