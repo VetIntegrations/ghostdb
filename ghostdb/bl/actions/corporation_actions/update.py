@@ -32,12 +32,15 @@ class ActivateMember(base.BaseAction):
     ) -> typing.Tuple[corporation.Member, bool]:
         member.is_active = True
         member.date_of_join = datetime.utcnow().replace(tzinfo=pytz.UTC)
+
         if corporation:
             member.corporation = corporation
+            member.user.corporation_id = corporation.id
         else:
             member.corporation_id = member.invite.extra['corporation']
+            member.user.corporation_id = member.corporation_id
+
         member.invite = None
-        member.user.corporation_id = member.corporation_id
         member.user.date_of_join = member.date_of_join
 
         self.db.add(member)
