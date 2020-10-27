@@ -27,4 +27,5 @@ class User(meta.Base):
     created_at = Column(DateTime, server_default=sqltypes.UTCNow())
     updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
-    members = relationship("Member", back_populates="user")
+    corporation = relationship('Corporation')
+    members = relationship('Member', back_populates='user')
