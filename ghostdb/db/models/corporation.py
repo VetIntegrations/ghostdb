@@ -15,7 +15,7 @@ class Corporation(meta.Base):
 
     id = Column(sqltypes.UUID, default=uuid.uuid1, primary_key=True)
     name = Column(String(200), nullable=True)
-    maturity_level = Column(SmallInteger, default=0)
+    maturity_level = Column(SmallInteger, nullable=True)
 
     created_at = Column(DateTime, server_default=sqltypes.UTCNow())
     updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
