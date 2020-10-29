@@ -6,7 +6,7 @@ from ghostdb.db.models import corporation
 from ..utils import base
 
 
-class FindMemberByUserID(base.BaseSelector):
+class FindMembersByUserID(base.BaseSelector):
 
     def process(
         self,
@@ -21,9 +21,7 @@ class FindMemberByUserID(base.BaseSelector):
             )
         )
 
-        member = query.first()
-
-        return (member, member is not None)
+        return query
 
 
 class ByInviteID(base.BaseSelector):
