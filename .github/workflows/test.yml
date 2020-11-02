@@ -31,7 +31,7 @@ jobs:
         run: |
           sudo apt install -y postgresql-client
           psql -h localhost -U vis -c "CREATE EXTENSION IF NOT EXISTS ltree;" vis_test
-        environment:
+        env:
           PGPASSWORD: vis
       - name: Cache dependencies
         uses: actions/cache@v2
