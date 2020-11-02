@@ -5,6 +5,7 @@ from sqlalchemy import (
     Column, Integer, String, Boolean, ForeignKey, JSON, Enum, DateTime, SmallInteger
 )
 from sqlalchemy.orm import relationship
+from sqlalchemy_utils import LtreeType
 
 from .. import meta
 from .. import sqltypes
@@ -37,6 +38,10 @@ class Member(meta.Base):
 
     date_of_join = Column(DateTime(timezone=True))
     is_active = Column(Boolean, default=False)
+    path = Column(LtreeType)
+
+    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
+    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     corporation = relationship("Corporation", back_populates="members")
     user = relationship("User", back_populates="members")

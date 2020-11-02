@@ -7,6 +7,7 @@ setup(
     packages=find_packages(),
     install_requires=(
         'alembic>=1.3.1,<2',
+        'sqlalchemy-utils>=0.36.8,<1',
         # 'google-cloud-pubsub>=1,<2',
         'sentry-sdk',
     ),

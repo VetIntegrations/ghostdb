@@ -5,7 +5,6 @@
 #    pip-compile --no-emit-index-url requirements/dev.in
 #
 --trusted-host pypi.api.vet
---trusted-host localhost
 
 alembic==1.3.2            # via -r requirements/common.in
 attrs==19.3.0             # via pytest
@@ -51,9 +50,10 @@ requests==2.23.0          # via google-api-core
 rsa==4.0                  # via google-auth
 sentry-sdk==0.14.2        # via -r requirements/common.in
 sexpdata==0.0.3           # via epc
-six==1.13.0               # via google-api-core, google-auth, grpcio, packaging, protobuf, python-dateutil
+six==1.13.0               # via google-api-core, google-auth, grpcio, packaging, protobuf, python-dateutil, sqlalchemy-utils
 snowballstemmer==2.0.0    # via pydocstyle
-sqlalchemy==1.3.12        # via -r requirements/common.in, alembic
+sqlalchemy-utils==0.36.8  # via -r requirements/common.in
+sqlalchemy==1.3.12        # via -r requirements/common.in, alembic, sqlalchemy-utils
 text-unidecode==1.3       # via faker
 urllib3==1.25.8           # via requests, sentry-sdk
 wcwidth==0.1.8            # via pytest
