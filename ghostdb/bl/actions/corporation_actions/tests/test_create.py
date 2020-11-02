@@ -61,6 +61,24 @@ class TestCorporationAddMember:
 
         event_off.assert_called_once()
 
+    def test_build_path(self, dbsession, event_off):
+        action = CorporationAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+
+        assert dbsession.query(Member).count() == 0
+
+        member_lvl_0 = Member()
+        member_lvl_1 = Member()
+        member_lvl_2 = Member()
+
+        action.add_member(self.corp, member_lvl_0)
+        action.add_member(self.corp, member_lvl_1, member_lvl_0)
+        action.add_member(self.corp, member_lvl_2, member_lvl_1)
+
+        assert dbsession.query(Member).count() == 3
+        assert member_lvl_0.path is None
+        assert member_lvl_1.path == member_lvl_0.id.hex
+        assert member_lvl_2.path == f'{member_lvl_0.id.hex}.{member_lvl_1.id.hex}'
+
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...

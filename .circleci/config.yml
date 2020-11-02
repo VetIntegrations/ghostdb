@@ -41,6 +41,13 @@ jobs:
           name: Python Version
           command: python -V
       - run:
+          name: "PostgreSQL: configure extensions"
+          command: |
+            sudo apt install -y postgresql-client
+            psql -h localhost -U vis -c "CREATE EXTENSION IF NOT EXISTS ltree;" vis_test
+          environment:
+            PGPASSWORD: vis
+      - run:
           name: Tests
           when: always
           environment:
