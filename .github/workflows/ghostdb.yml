@@ -68,3 +68,26 @@ jobs:
         with:
           path: tests_results/
         if: ${{ always() }}
+
+  build-pkg:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Configure PyPi
+        run: |
+          echo -e "[distutils]" >> ~/.pypirc
+          echo -e "index-servers = vis" >> ~/.pypirc
+          echo -e "[vis]" >> ~/.pypirc
+          echo -e "repository = $VIS_PYPI_URL" >> ~/.pypirc
+          echo -e "username = ghostdb" >> ~/.pypirc
+          echo -e "password = $GHOSTDB_PYPI_PASSWORD" >> ~/.pypirc
+      - name: Build and Upload Package
+        run: |
+          python setup.py egg_info -b dev`date "+%Y%m%d%H%M"` sdist upload -r vis
+        if: ${{ github.ref == 'refs/heads/master' }}
