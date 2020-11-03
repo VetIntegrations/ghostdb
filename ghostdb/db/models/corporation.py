@@ -35,12 +35,12 @@ class Member(meta.Base):
     user_id = Column(sqltypes.UUID, ForeignKey('users.id'))
     corporation_id = Column(sqltypes.UUID, ForeignKey('corporations.id'))
     invite_id = Column(String(96), ForeignKey('temporary_token.token'))
-
-    date_of_join = Column(DateTime(timezone=True))
-    path = Column(LtreeType)
     role = Column(String(100))
     position = Column(String(100))
     responsibilities = Column(Text)
+
+    date_of_join = Column(DateTime(timezone=True))
+    path = Column(LtreeType, default='')
 
     is_temporary = Column(Boolean, default=False)
     is_active = Column(Boolean, default=False)
