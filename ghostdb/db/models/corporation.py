@@ -2,7 +2,7 @@ import enum
 import uuid
 
 from sqlalchemy import (
-    Column, Integer, String, Boolean, ForeignKey, JSON, Enum, DateTime, SmallInteger
+    Column, Integer, String, Boolean, ForeignKey, JSON, Enum, DateTime, SmallInteger, Text
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import LtreeType
@@ -37,8 +37,13 @@ class Member(meta.Base):
     invite_id = Column(String(96), ForeignKey('temporary_token.token'))
 
     date_of_join = Column(DateTime(timezone=True))
-    is_active = Column(Boolean, default=False)
     path = Column(LtreeType)
+    role = Column(String(100))
+    position = Column(String(100))
+    responsibilities = Column(Text)
+
+    is_temporary = Column(Boolean, default=False)
+    is_active = Column(Boolean, default=False)
 
     created_at = Column(DateTime, server_default=sqltypes.UTCNow())
     updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
