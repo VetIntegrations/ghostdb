@@ -20,7 +20,7 @@ class ContactUpdate(base.BaseAction):
         contact: business.BusinessContact,
         _business: business.Business
     ) -> typing.Tuple[business.BusinessContact, bool]:
-        assert contact.business == _business
+        contact.business = _business
 
         self.db.add(contact)
         self.db.commit()

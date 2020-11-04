@@ -20,7 +20,8 @@ class ContactDelete(base.BaseAction):
         _provider: provider.Provider,
         contact: provider.ProviderContact
     ) -> typing.Tuple[provider.ProviderContact, bool]:
-        assert contact.provider == _provider
+        if contact.provider != _provider:
+            raise ValueError(f'Contact should belongs to "{_provider}" provider')
 
         self.db.delete(contact)
         self.db.commit()

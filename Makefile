@@ -6,6 +6,7 @@ test:
 	GHOSTDB_DB_DSN=${GHOSTDB_DB_DSN_FOR_TEST} \
 		python -m pytest  \
 			--pylama \
+			--bandit \
 			--ignore=./ghostdb/alembic --ignore=create_records.py \
 			-s \
 			ghostdb/

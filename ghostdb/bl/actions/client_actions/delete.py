@@ -20,7 +20,7 @@ class ContactDelete(base.BaseAction):
         contact: client.ClientContact,
         _client: client.Client
     ) -> typing.Tuple[client.ClientContact, bool]:
-        assert contact.client == _client
+        contact.client = _client
 
         self.db.delete(contact)
         self.db.commit()
@@ -35,7 +35,8 @@ class AddressDelete(base.BaseAction):
         address: client.ClientAddress,
         _client: client.Client
     ) -> typing.Tuple[client.ClientAddress, bool]:
-        assert address.client == _client
+        if address.client != _client:
+            raise ValueError(f'addres should belongs to "{_client}" client')
 
         self.db.delete(address)
         self.db.commit()

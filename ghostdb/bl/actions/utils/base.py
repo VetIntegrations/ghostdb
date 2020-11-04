@@ -115,7 +115,8 @@ class ActionFactory:
         self.post_processors = post_processors or tuple()
 
     def __get__(self, actionset, _type):
-        assert issubclass(_type, BaseActionSet)
+        if not issubclass(_type, BaseActionSet):
+            raise AttributeError(f'{_type} should be inherited from BaseActionSet')
 
         event = self.event_factory()
         event.set_event_bus(actionset.event_bus)
