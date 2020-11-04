@@ -20,7 +20,7 @@ class ContactUpdate(base.BaseAction):
         contact: client.ClientContact,
         _client: client.Client
     ) -> typing.Tuple[client.ClientContact, bool]:
-        assert contact.client == _client
+        contact.client = _client
 
         self.db.add(contact)
         self.db.commit()
@@ -35,7 +35,7 @@ class AddressUpdate(base.BaseAction):
         address: client.ClientAddress,
         _client: client.Client
     ) -> typing.Tuple[client.ClientAddress, bool]:
-        assert address.client == _client
+        address.client = _client
 
         self.db.add(address)
         self.db.commit()

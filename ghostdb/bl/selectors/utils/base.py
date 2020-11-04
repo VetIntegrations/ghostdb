@@ -39,7 +39,8 @@ class SelectorFactory:
         self.model = model
 
     def __get__(self, selectorset, _type):
-        assert issubclass(_type, BaseSelectorSet)
+        if not issubclass(_type, BaseSelectorSet):
+            raise AttributeError(f'{_type} should be inherited from BaseSelectorSet')
 
         return self.selector_class(
             db=selectorset.db,

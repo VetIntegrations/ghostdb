@@ -20,7 +20,7 @@ class ItemUpdate(base.BaseAction):
         order_item: order.OrderItem,
         _order: order.Order
     ) -> typing.Tuple[order.OrderItem, bool]:
-        assert order_item.order == _order
+        order_item.order = _order
 
         self.db.add(order_item)
         self.db.commit()

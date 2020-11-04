@@ -20,7 +20,8 @@ class ItemDelete(base.BaseAction):
         order_item: order.OrderItem,
         _order: order.Order
     ) -> typing.Tuple[order.OrderItem, bool]:
-        assert order_item.order == _order
+        if order_item.order != _order:
+            raise ValueError(f'OrderItem should belongs to "{_order}" order')
 
         self.db.delete(order_item)
         self.db.commit()

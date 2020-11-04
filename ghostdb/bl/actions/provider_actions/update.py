@@ -20,7 +20,7 @@ class ContactUpdate(base.BaseAction):
         contact: provider.ProviderContact,
         _provider: provider.Provider
     ) -> typing.Tuple[provider.ProviderContact, bool]:
-        assert contact.provider == _provider
+        contact.provider = _provider
 
         self.db.add(contact)
         self.db.commit()
