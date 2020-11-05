@@ -6,9 +6,9 @@ from ghostdb.db.models import security
 from ..utils import base
 
 
-class TemporaryTokenByUserUtc(base.BaseSelector):
+class TemporatyTokenActiveByUser(base.BaseSelector):
 
-    def process(self, user_id: uuid.UUID) -> typing.Tuple[security.TemporaryToken, bool]:
+    def process(self, user_id: uuid.UUID) -> typing.Iterable[security.TemporaryToken]:
         query = (
             self.db.query(security.TemporaryToken)
             .filter(
@@ -16,6 +16,5 @@ class TemporaryTokenByUserUtc(base.BaseSelector):
                 security.TemporaryToken.expires_at > datetime.utcnow()
             )
         )
-        token = query.first()
 
-        return (token, token is not None)
+        return query

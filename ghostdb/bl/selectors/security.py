@@ -1,6 +1,6 @@
 from ghostdb.db.models import security
 from .utils import base
-from .security_selectors import by_token, by_time
+from .security_selectors import by_token, by_time, by_user
 
 
 class TemporaryTokenSelector(base.BaseSelectorSet):
@@ -12,3 +12,4 @@ class TemporaryTokenSelector(base.BaseSelectorSet):
         by_time.TemporaryTokenFilterByExpireDate,
         security.TemporaryToken
     )
+    active_by_user = base.SelectorFactory(by_user.TemporatyTokenActiveByUser, security.TemporaryToken)
