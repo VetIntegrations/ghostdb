@@ -113,6 +113,7 @@ class UserFactory(factory.alchemy.SQLAlchemyModelFactory):
     first_name = factory.Faker('first_name')
     last_name = factory.Faker('last_name')
     email = factory.Faker('email')
+    corporation = factory.SubFactory(CorporationFactory)
 
 
 class MemberFactory(factory.alchemy.SQLAlchemyModelFactory):
