@@ -24,6 +24,8 @@ class User(meta.Base):
     date_of_join = Column(DateTime(timezone=True))
     is_active = Column(Boolean, default=False)  # user that doesn't accept invite to the corporation
 
+    deleted = Column(DateTime)  # null - user isn't deleted, datetime - user's request date for deletion
+
     created_at = Column(DateTime, server_default=sqltypes.UTCNow())
     updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 

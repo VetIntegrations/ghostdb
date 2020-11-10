@@ -52,6 +52,7 @@ jobs:
         run: |
           python -m pytest \
               --pylama \
+              --pylama --bandit \
               --ignore=./ghostdb/alembic \
               --junitxml=tests_results/junit.xml \
               --cov=. --cov-report=xml:tests_artifacts/coverage.xml --cov-report=html:tests_artifacts/coverage/ \

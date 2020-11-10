@@ -3,24 +3,24 @@ import pytest
 
 from ghostdb.db.models.corporation import Member
 from ghostdb.db.models.tests.factories import MemberFactory, CorporationFactory, UserFactory
-from ..member import FindMemberByUserID, ActiveByUserID
+from ..member import FindMembersByUserID, ActiveByUserID
 
 
-class TestFindMemberByUserID:
+class TestFindMembersByUserID:
 
     def test_ok(self, dbsession):
         user = UserFactory()
         corporation = CorporationFactory()
-        member = Member(corporation=corporation, user=user)
+        member_1 = Member(corporation=corporation, user=user)
+        member_2 = Member(corporation=corporation, user=user)
         Member(corporation=corporation, user=UserFactory())
 
-        selector = FindMemberByUserID(dbsession, Member, None)
+        selector = FindMembersByUserID(dbsession, Member, None)
 
-        assert dbsession.query(Member).count() == 2
+        assert dbsession.query(Member).count() == 3
 
-        member_from_db, ok = selector(corporation, user.id)
-        assert ok
-        assert member_from_db == member
+        members_from_db = selector(corporation, user.id)
+        assert members_from_db.all() == [member_1, member_2, ]
 
     def test_selector_class_use_right_selector(self, dbsession, monkeypatch):
         from ghostdb.bl.selectors.corporation import MemberSelector
@@ -33,7 +33,7 @@ class TestFindMemberByUserID:
         def process(self, *args, **kwargs):
             raise Called()
 
-        monkeypatch.setattr(FindMemberByUserID, 'process', process)
+        monkeypatch.setattr(FindMembersByUserID, 'process', process)
 
         with pytest.raises(Called):
             MemberSelector(dbsession).in_corporation_by_user_id(corporation, uuid.uuid1())

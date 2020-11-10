@@ -6,7 +6,7 @@ from random import choice
 from ghostdb.core.event import event
 from ghostdb.db.models import user
 from .utils import base
-from .user_actions import create as create_act, update as update_act
+from .user_actions import create as create_act, update as update_act, delete as delete_act
 
 
 class UserAction(base.BaseActionSet):
@@ -19,6 +19,24 @@ class UserAction(base.BaseActionSet):
     )
     update = base.ActionFactory(
         update_act.UserUpdate,
+        event_factory=base.EventFactory(
+            event_name=event.EVENT_RECORD_UPDATE
+        )
+    )
+    delete = base.ActionFactory(
+        delete_act.UserDelete,
+        event_factory=base.EventFactory(
+            event_name=event.EVENT_RECORD_DELETE
+        )
+    )
+    mark_as_deleted = base.ActionFactory(
+        update_act.MarkAsDeleted,
+        event_factory=base.EventFactory(
+            event_name=event.EVENT_RECORD_UPDATE
+        )
+    )
+    unmark_as_deleted = base.ActionFactory(
+        update_act.UnmarkAsDeleted,
         event_factory=base.EventFactory(
             event_name=event.EVENT_RECORD_UPDATE
         )
