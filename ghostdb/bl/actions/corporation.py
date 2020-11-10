@@ -35,12 +35,22 @@ class CorporationAction(base.BaseActionSet):
     activate_member = base.ActionFactory(
         update_act.ActivateMember,
         event_factory=base.EventFactory(
-            event_name=event.EVENT_RECORD_CREATE
+            event_name=event.EVENT_RECORD_UPDATE
         )
     )
     update_member = base.ActionFactory(
         update_act.UpdateMember,
         event_factory=base.EventFactory(
-            event_name=event.EVENT_RECORD_CREATE
+            event_name=event.EVENT_RECORD_UPDATE
+        )
+    )
+
+
+class OrgChartAction(base.BaseActionSet):
+
+    remove_user = base.ActionFactory(
+        update_act.OrgChartRemoveUser,
+        event_factory=base.EventFactory(
+            event_name=event.EVENT_RECORD_UPDATE
         )
     )
