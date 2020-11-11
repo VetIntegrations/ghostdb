@@ -1,8 +1,8 @@
 """add user deleted
 
-Revision ID: 2504d6ad244b
-Revises: 0a59360ccd58
-Create Date: 2020-11-02 23:36:34.000091
+Revision ID: 008aeed38f44
+Revises: 12bf3a5853dc
+Create Date: 2020-11-11 14:51:56.177063
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '2504d6ad244b'
-down_revision = '0a59360ccd58'
+revision = '008aeed38f44'
+down_revision = '12bf3a5853dc'
 branch_labels = None
 depends_on = None
 
