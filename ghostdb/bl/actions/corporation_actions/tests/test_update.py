@@ -2,9 +2,11 @@ import pytest
 
 from ghostdb.db.models.corporation import Corporation, Member
 from ghostdb.db.models.user import User
-from ghostdb.db.models.tests.factories import CorporationFactory, UserFactory, TemporaryTokenFactory
-from ghostdb.bl.actions.corporation import CorporationAction
-from ..update import Update, UpdateMember, ActivateMember
+from ghostdb.db.models.tests.factories import (
+    CorporationFactory, UserFactory, TemporaryTokenFactory, MemberFactory
+)
+from ghostdb.bl.actions.corporation import CorporationAction, OrgChartAction
+from ..update import Update, UpdateMember, ActivateMember, OrgChartRemoveUser
 
 
 class TestCorporationUpdate:
@@ -157,7 +159,6 @@ class TestActivateMember:
             user=self.user,
             invite=TemporaryTokenFactory(user=self.user, extra={'corporation': self.corp.id.hex})
         )
-        dbsession.add(self.corp)
         dbsession.add(self.member)
 
     def test_ok(self, dbsession, event_off):
@@ -228,3 +229,67 @@ class TestActivateMember:
         assert updated_user.id == self.user.id
         assert updated_user.date_of_join
         assert updated_user.corporation_id == other_corp.id
+
+
+class TestOrgChartRemoveUser:
+
+    @pytest.fixture(autouse=True)
+    def setup_corporation(self, dbsession):
+        self.corp = CorporationFactory()
+        self.user = UserFactory()
+        self.member = MemberFactory(
+            corporation=self.corp,
+            user=self.user
+        )
+
+    def test_remove_from_corp(self, dbsession, event_off):
+        assert dbsession.query(Member).count() == 1
+        assert dbsession.query(Member).filter(Member.user == self.user).count() == 1
+
+        action = OrgChartAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        cnt, ok = action.remove_user(self.user)
+
+        assert dbsession.query(Member).count() == 1
+        assert dbsession.query(Member).filter(Member.user == self.user).count() == 0
+
+    def test_remove_from_exact_corporation(self, dbsession, event_off):
+        new_corp = CorporationFactory()
+        MemberFactory(corporation=new_corp, user=self.user)
+
+        assert dbsession.query(Member).count() == 2
+        assert dbsession.query(Member).filter(Member.user == self.user).count() == 2
+
+        action = OrgChartAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        cnt, ok = action.remove_user(self.user, self.corp)
+
+        assert dbsession.query(Member).count() == 2
+        assert dbsession.query(Member).filter(Member.user == self.user).count() == 1
+        assert dbsession.query(Member).filter(Member.user == self.user, Member.corporation == new_corp).count() == 1
+
+    def test_remove_from_except_exact_member(self, dbsession, event_off):
+        MemberFactory(corporation=CorporationFactory(), user=self.user)
+        new_corp = CorporationFactory()
+        member = MemberFactory(corporation=new_corp, user=self.user)
+
+        assert dbsession.query(Member).count() == 3
+        assert dbsession.query(Member).filter(Member.user == self.user).count() == 3
+
+        action = OrgChartAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        cnt, ok = action.remove_user(self.user, except_members=[member.id.hex])
+
+        assert dbsession.query(Member).count() == 3
+        assert dbsession.query(Member).filter(Member.user == self.user).count() == 1
+        assert dbsession.query(Member).filter(Member.user == self.user, Member.corporation == new_corp).count() == 1
+
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
+        class Called(Exception):
+            ...
+
+        def process(self, *args, **kwargs):
+            raise Called()
+
+        monkeypatch.setattr(OrgChartRemoveUser, 'process', process)
+
+        action = OrgChartAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        with pytest.raises(Called):
+            action.remove_user(self.user)
