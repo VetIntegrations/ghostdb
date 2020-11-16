@@ -21,7 +21,8 @@ class Corporation(meta.Base):
     created_at = Column(DateTime, server_default=sqltypes.UTCNow())
     updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
-    members = relationship("Member", back_populates="corporation")
+    members = relationship('Member', back_populates='corporation', cascade='all, delete')
+    users = relationship('User', back_populates='corporation')
     integrations = relationship('Integration', back_populates='corporation')
 
     def __repr__(self):
