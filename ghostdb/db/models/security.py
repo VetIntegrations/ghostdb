@@ -7,8 +7,10 @@ from .. import sqltypes
 
 
 class TokenKind(enum.Enum):
+    ACCOUNT_DELETION = 'Account deletion'
     EMAIL_VALIDATION = 'Email validation'
     CORPORATION_INVITE = 'Corporation invite'
+    PASSWORD_RECOVERY = 'Password recovery'
 
 
 class TemporaryToken(meta.Base):
