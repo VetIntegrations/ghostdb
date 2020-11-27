@@ -114,6 +114,9 @@ class UserFactory(factory.alchemy.SQLAlchemyModelFactory):
     last_name = factory.Faker('last_name')
     email = factory.Faker('email')
 
+    corporation = factory.SubFactory(CorporationFactory)
+    corporation_id = factory.SelfAttribute('corporation.id', default=None)
+
 
 class MemberFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
