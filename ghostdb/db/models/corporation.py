@@ -41,7 +41,7 @@ class Member(meta.Base):
     responsibilities = Column(Text)
 
     date_of_join = Column(DateTime(timezone=True))
-    path = Column(LtreeType, default='')
+    path = Column(LtreeType)
 
     is_temporary = Column(Boolean, default=False)
     is_active = Column(Boolean, default=False)
