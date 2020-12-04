@@ -14,7 +14,7 @@ class TemporaryTokenAction(base.BaseActionSet):
     update = base.ActionFactory(
         update_act.TemporaryTokenUpdate,
         event_factory=base.EventFactory(
-            event_name=event.EVENT_RECORD_CREATE
+            event_name=event.EVENT_RECORD_UPDATE
         )
     )
     delete = base.ActionFactory(
