@@ -16,13 +16,13 @@ class CorporationAction(base.BaseActionSet):
     update = base.ActionFactory(
         update_act.Update,
         event_factory=base.EventFactory(
-            event_name=event.EVENT_RECORD_CREATE
+            event_name=event.EVENT_RECORD_UPDATE
         )
     )
     delete = base.ActionFactory(
         delete_act.Delete,
         event_factory=base.EventFactory(
-            event_name=event.EVENT_RECORD_CREATE
+            event_name=event.EVENT_RECORD_DELETE
         )
     )
 
