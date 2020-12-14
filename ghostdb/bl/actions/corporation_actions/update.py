@@ -4,7 +4,7 @@ import pytz
 from datetime import datetime
 from sqlalchemy import not_
 
-from ghostdb.db.models import corporation, user
+from ghostdb.db.models import corporation, user as user_model, security
 from ..utils import base
 
 
@@ -30,24 +30,37 @@ class ActivateMember(base.BaseAction):
     def process(
         self,
         member: corporation.Member,
-        _corporation: corporation.Corporation = None
+        invite: security.TemporaryToken = None,
+        user: user_model.User = None
     ) -> typing.Tuple[corporation.Member, bool]:
         member.is_active = True
         member.date_of_join = datetime.utcnow().replace(tzinfo=pytz.UTC)
 
-        if _corporation:
-            member.corporation = _corporation
-            member.user.corporation_id = _corporation.id
+        if invite:
+            ActivateMember.activate_by_invite(member, invite)
         else:
-            member.corporation_id = member.invite.extra['corporation']
-            member.user.corporation_id = member.corporation_id
-
-        member.invite = None
-        member.user.date_of_join = member.date_of_join
+            ActivateMember.activate(member, user)
 
         self.db.add(member)
 
         return (member, True)
+
+    @staticmethod
+    def activate(
+        member: corporation.Member,
+        user: user_model.User
+    ):
+        member.user = user
+
+    @staticmethod
+    def activate_by_invite(
+        member: corporation.Member,
+        invite: security.TemporaryToken
+    ):
+        member.corporation_id = invite.extra['corporation']
+        member.user.corporation_id = member.corporation_id
+        member.invite = None
+        member.user.date_of_join = member.date_of_join
 
 
 class OrgChartRemoveUser(base.BaseAction):
@@ -56,14 +69,14 @@ class OrgChartRemoveUser(base.BaseAction):
 
     def process(
         self,
-        _user: user.User,
+        user: user_model.User,
         _corporation: corporation.Corporation = None,
         except_members: typing.Iterable[uuid.UUID] = None
     ) -> typing.Tuple[None, bool]:
         query = (
             self.db.query(corporation.Member)
             .filter(
-                corporation.Member.user_id == _user.id
+                corporation.Member.user_id == user.id
             )
         )
         if _corporation:

@@ -39,6 +39,7 @@ class TestTemporaryTokenExpired:
 class TestFilterByExpireDate:
 
     def test_filtering(self, dbsession):
+
         token = TemporaryTokenFactory(
             kind=TokenKind.CORPORATION_INVITE,
             expires_at=datetime(2020, 5, 15, 3, 54)
@@ -86,7 +87,7 @@ class TestFilterByExpireDate:
         assert dbsession.query(TemporaryToken).count() == 4
         query = selector(date(2020, 5, 15))
         assert query.count() == 2
-        assert query.all() == [token1, token2]
+        assert query.all() == sorted([token1, token2], key=lambda x: x.token)
 
     def test_selector_class_use_right_selector(self, dbsession, monkeypatch):
         from ghostdb.bl.selectors.security import TemporaryTokenSelector

@@ -150,42 +150,6 @@ class TestUpdateMember:
 
 class TestActivateMember:
 
-    @pytest.fixture(autouse=True)
-    def setup_corporation(self, dbsession):
-        self.corp = CorporationFactory()
-        self.user = UserFactory()
-        self.member = Member(
-            corporation=self.corp,
-            user=self.user,
-            invite=TemporaryTokenFactory(user=self.user, extra={'corporation': self.corp.id.hex})
-        )
-        dbsession.add(self.member)
-
-    def test_ok(self, dbsession, event_off):
-        assert not self.member.is_active
-        assert not self.member.date_of_join
-        assert not self.user.date_of_join
-        assert self.member.invite
-
-        assert dbsession.query(Member).count() == 1
-        action = CorporationAction(dbsession, event_bus=None, customer_name='test-cosolidator')
-        member, ok = action.activate_member(self.member)
-        assert ok
-        assert member == self.member
-        assert dbsession.query(Member).count() == 1
-        event_off.assert_called_once()
-
-        updated_member = dbsession.query(Member)[0]
-        updated_user = dbsession.query(User)[0]
-
-        assert updated_member.id == self.member.id
-        assert updated_member.is_active
-        assert updated_member.invite is None
-        assert updated_member.date_of_join
-
-        assert updated_user.id == self.user.id
-        assert updated_user.date_of_join
-
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
@@ -197,38 +161,61 @@ class TestActivateMember:
 
         action = CorporationAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
-            action.activate_member(self.member)
+            action.activate_member(MemberFactory())
 
-    def test_join_corporation_from_invite(self, dbsession, event_off):
-        other_corp = CorporationFactory()
+    def test_activate(self, dbsession, event_off):
+        user = UserFactory()
+        member = MemberFactory(user=None)
 
-        assert not self.member.is_active
-        assert not self.member.date_of_join
-        assert not self.user.date_of_join
-        assert self.member.invite
-
-        self.member.invite.extra['corporation'] = other_corp.id.hex
+        assert not member.is_active
+        assert not member.date_of_join
+        assert not user.date_of_join
 
         assert dbsession.query(Member).count() == 1
         action = CorporationAction(dbsession, event_bus=None, customer_name='test-cosolidator')
-        member, ok = action.activate_member(self.member)
+        member_db, ok = action.activate_member(member, user=user)
         assert ok
-        assert member == self.member
+        assert dbsession.query(Member).count() == 1
+        event_off.assert_called_once()
+
+        assert member_db.id == member.id
+        assert member_db.is_active
+        assert member_db.date_of_join
+        assert member_db.user == user
+        assert not user.date_of_join
+
+    def test_activate_by_invite(self, dbsession, event_off):
+        corp = CorporationFactory()
+        user = UserFactory(corporation=None)
+
+        invite = TemporaryTokenFactory(user=user, extra={'corporation': corp.id.hex})
+        member = MemberFactory(user=user, corporation=None, invite=invite)
+
+        assert not member.is_active
+        assert not member.date_of_join
+        assert not user.date_of_join
+        assert member.invite
+
+        assert dbsession.query(Member).count() == 1
+        action = CorporationAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        member_db, ok = action.activate_member(member, invite=invite)
+        assert ok
+        assert member_db == member
         assert dbsession.query(Member).count() == 1
         event_off.assert_called_once()
 
         updated_member = dbsession.query(Member)[0]
         updated_user = dbsession.query(User)[0]
 
-        assert updated_member.id == self.member.id
+        assert updated_member.id == member.id
         assert updated_member.is_active
         assert updated_member.invite is None
         assert updated_member.date_of_join
-        assert updated_member.corporation == other_corp
+        assert updated_member.corporation == corp
 
-        assert updated_user.id == self.user.id
+        assert updated_user.id == user.id
         assert updated_user.date_of_join
-        assert updated_user.corporation_id == other_corp.id
+        assert updated_user.corporation == corp
 
 
 class TestOrgChartRemoveUser:
