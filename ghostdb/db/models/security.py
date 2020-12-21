@@ -19,7 +19,7 @@ class TemporaryToken(meta.Base):
     token = Column(String(96), primary_key=True)
     kind = Column(Enum(TokenKind))
     expires_at = Column(DateTime)
-    user_id = Column(sqltypes.UUID, ForeignKey('users.id'), nullable=True)
+    user_id = Column(sqltypes.UUID, ForeignKey('users.id', ondelete="CASCADE"), nullable=True)
     extra = Column(JSON, nullable=True)
 
     created_at = Column(DateTime, server_default=sqltypes.UTCNow())
