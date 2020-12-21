@@ -11,3 +11,11 @@ class Delete(base.BaseAction):
         self.db.commit()
 
         return (corp, True)
+
+
+class DeleteMember(base.BaseAction):
+
+    def process(self, member: corporation.Member) -> typing.Tuple[corporation.Member, bool]:
+        self.db.delete(member)
+
+        return (member, True)

@@ -22,7 +22,7 @@ class CorporationAction(base.BaseActionSet):
     delete = base.ActionFactory(
         delete_act.Delete,
         event_factory=base.EventFactory(
-            event_name=event.EVENT_RECORD_CREATE
+            event_name=event.EVENT_RECORD_DELETE
         )
     )
 
@@ -42,6 +42,12 @@ class CorporationAction(base.BaseActionSet):
         update_act.UpdateMember,
         event_factory=base.EventFactory(
             event_name=event.EVENT_RECORD_UPDATE
+        )
+    )
+    delete_member = base.ActionFactory(
+        delete_act.DeleteMember,
+        event_factory=base.EventFactory(
+            event_name=event.EVENT_RECORD_DELETE
         )
     )
 
