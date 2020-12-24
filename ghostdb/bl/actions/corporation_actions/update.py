@@ -3,6 +3,7 @@ import uuid
 import pytz
 from datetime import datetime
 from sqlalchemy import not_
+from sqlalchemy_utils.primitives import Ltree
 
 from ghostdb.db.models import corporation, user as user_model, security
 from ..utils import base
@@ -96,3 +97,40 @@ class OrgChartRemoveUser(base.BaseAction):
         )
 
         return (cnt, True)
+
+
+class OrgChartMoveMember(base.BaseAction):
+    """Move member to new position"""
+
+    def process(
+        self,
+        member: corporation.Member,
+        new_parent: corporation.Member
+    ) -> typing.Tuple[None, bool]:
+        sql = '''
+        UPDATE "{table_name}"
+        SET
+          "{column_name}" = (:new_parent_path)::ltree
+            || subpath("{table_name}"."{column_name}", nlevel(:old_parent_path) - 1)
+        WHERE
+          "{column_name}" <@ :old_parent_path
+        '''
+
+        new_path = new_parent.path + Ltree(new_parent.id.hex)
+
+        self.db.execute(
+            sql.format(
+                table_name=corporation.Member.__tablename__,
+                column_name=corporation.Member.path._query_clause_element().name,
+            ),
+            {
+                'new_parent_path': new_path.path,
+                'old_parent_path': (member.path + Ltree(member.id.hex)).path,
+            }
+        )
+
+        member.path = new_path
+
+        self.db.add(member)
+
+        return (member, True)
