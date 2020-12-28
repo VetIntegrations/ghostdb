@@ -60,3 +60,10 @@ class OrgChartAction(base.BaseActionSet):
             event_name=event.EVENT_RECORD_UPDATE
         )
     )
+
+    move_member = base.ActionFactory(
+        update_act.OrgChartMoveMember,
+        event_factory=base.EventFactory(
+            event_name=event.EVENT_RECORD_UPDATE
+        )
+    )

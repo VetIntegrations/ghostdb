@@ -1,4 +1,6 @@
 import pytest
+from uuid import UUID
+from sqlalchemy_utils.primitives import Ltree
 
 from ghostdb.db.models.corporation import Corporation, Member
 from ghostdb.db.models.user import User
@@ -6,7 +8,9 @@ from ghostdb.db.models.tests.factories import (
     CorporationFactory, UserFactory, TemporaryTokenFactory, MemberFactory
 )
 from ghostdb.bl.actions.corporation import CorporationAction, OrgChartAction
-from ..update import Update, UpdateMember, ActivateMember, OrgChartRemoveUser
+from ..update import (
+    Update, UpdateMember, ActivateMember, OrgChartRemoveUser, OrgChartMoveMember
+)
 
 
 class TestCorporationUpdate:
@@ -280,3 +284,76 @@ class TestOrgChartRemoveUser:
         action = OrgChartAction(dbsession, event_bus=None, customer_name='test-cosolidator')
         with pytest.raises(Called):
             action.remove_user(self.user)
+
+
+class TestOrgChartMoveMember:
+
+    @pytest.fixture(autouse=True)
+    def setup_orgchart(self, dbsession):
+        self.corporation = CorporationFactory()
+        self.ceo = MemberFactory(role='ceo', corporation=self.corporation)
+        self.hr_manager = MemberFactory(
+            id=UUID('45cfc2c2-45d3-11eb-8157-f40f2436dd91'),
+            role='hr manager', path=Ltree(self.ceo.id.hex), corporation=self.corporation
+        )
+        self.accounting = MemberFactory(
+            id=UUID('4651374e-45d3-11eb-8157-f40f2436dd91'),
+            role='accounting', path=Ltree(self.ceo.id.hex), corporation=self.corporation
+        )
+
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
+        class Called(Exception):
+            ...
+
+        def process(self, *args, **kwargs):
+            raise Called()
+
+        monkeypatch.setattr(OrgChartMoveMember, 'process', process)
+
+        action = OrgChartAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        with pytest.raises(Called):
+            action.move_member(self.accounting, parent=self.hr_manager)
+
+    def test_move_single_member_to_new_parent(self, dbsession, event_off):
+        member = MemberFactory(
+            role='worker',
+            path=Ltree(self.ceo.id.hex + '.' + self.hr_manager.id.hex),
+            corporation=self.corporation
+        )
+
+        action = OrgChartAction(dbsession, event_bus=None, customer_name='test-consolidator')
+        old_path = member.path
+        member, ok = action.move_member(member, new_parent=self.accounting)
+
+        assert member.path != old_path
+        assert member.path == Ltree(self.ceo.id.hex) + Ltree(self.accounting.id.hex)
+
+    def test_move_member_with_subordinates_to_new_parent(self, dbsession, event_off):
+        member = MemberFactory(
+            role='manager',
+            path=Ltree(self.ceo.id.hex),
+            corporation=self.corporation
+        )
+        subordinate1 = MemberFactory(
+            role='worker 1',
+            path=member.path + Ltree(member.id.hex),
+            corporation=self.corporation
+        )
+        subordinate12 = MemberFactory(
+            role='worker 1.2',
+            path=subordinate1.path + Ltree(subordinate1.id.hex),
+            corporation=self.corporation
+        )
+
+        dbsession.commit()
+
+        action = OrgChartAction(dbsession, event_bus=None, customer_name='test-consolidator')
+        old_path = member.path
+        member, ok = action.move_member(member, new_parent=self.accounting)
+
+        new_parent_path = Ltree(self.ceo.id.hex) + Ltree(self.accounting.id.hex)
+        assert member.path != old_path
+        assert member.path == new_parent_path
+
+        assert subordinate1.path == new_parent_path + Ltree(member.id.hex)
+        assert subordinate12.path == new_parent_path + Ltree(member.id.hex) + Ltree(subordinate1.id.hex)
