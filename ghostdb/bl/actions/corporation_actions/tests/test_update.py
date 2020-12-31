@@ -86,7 +86,8 @@ class TestUpdateMember:
         self.corp = Corporation(name='Test Corporation')
         self.member = Member(
             corporation=self.corp,
-            user=UserFactory()
+            user=UserFactory(),
+            role='CEO'
         )
         dbsession.add(self.corp)
         dbsession.add(self.member)
@@ -124,7 +125,8 @@ class TestUpdateMember:
     def test_update_right_record(self, dbsession, event_off):
         other_member = Member(
             corporation=self.corp,
-            user=UserFactory()
+            user=UserFactory(),
+            role='IT'
         )
         dbsession.add(other_member)
 
@@ -169,7 +171,7 @@ class TestActivateMember:
 
     def test_activate(self, dbsession, event_off):
         user = UserFactory()
-        member = MemberFactory(user=None)
+        member = MemberFactory(user=None, role='CEO')
 
         assert not member.is_active
         assert not member.date_of_join
@@ -193,7 +195,7 @@ class TestActivateMember:
         user = UserFactory(corporation=None)
 
         invite = TemporaryTokenFactory(user=user, extra={'corporation': corp.id.hex})
-        member = MemberFactory(user=user, corporation=None, invite=invite)
+        member = MemberFactory(user=user, corporation=None, role='CEO', invite=invite)
 
         assert not member.is_active
         assert not member.date_of_join
@@ -230,7 +232,8 @@ class TestOrgChartRemoveUser:
         self.user = UserFactory()
         self.member = MemberFactory(
             corporation=self.corp,
-            user=self.user
+            user=self.user,
+            role='CEO'
         )
 
     def test_remove_from_corp(self, dbsession, event_off):
@@ -245,7 +248,7 @@ class TestOrgChartRemoveUser:
 
     def test_remove_from_exact_corporation(self, dbsession, event_off):
         new_corp = CorporationFactory()
-        MemberFactory(corporation=new_corp, user=self.user)
+        MemberFactory(corporation=new_corp, user=self.user, role='IT')
 
         assert dbsession.query(Member).count() == 2
         assert dbsession.query(Member).filter(Member.user == self.user).count() == 2
@@ -258,9 +261,9 @@ class TestOrgChartRemoveUser:
         assert dbsession.query(Member).filter(Member.user == self.user, Member.corporation == new_corp).count() == 1
 
     def test_remove_from_except_exact_member(self, dbsession, event_off):
-        MemberFactory(corporation=CorporationFactory(), user=self.user)
+        MemberFactory(corporation=CorporationFactory(), user=self.user, role='HR')
         new_corp = CorporationFactory()
-        member = MemberFactory(corporation=new_corp, user=self.user)
+        member = MemberFactory(corporation=new_corp, user=self.user, role='IT')
 
         assert dbsession.query(Member).count() == 3
         assert dbsession.query(Member).filter(Member.user == self.user).count() == 3

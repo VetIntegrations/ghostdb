@@ -55,7 +55,8 @@ class TestMemberDelete:
     def setup_corporation(self, dbsession):
         self.member = MemberFactory(
             corporation=CorporationFactory(),
-            user=UserFactory()
+            user=UserFactory(),
+            role='CEO'
         )
 
     def test_ok(self, dbsession, event_off):
@@ -82,7 +83,8 @@ class TestMemberDelete:
     def test_delete_right_record(self, dbsession, event_off):
         member = MemberFactory(
             corporation=CorporationFactory(),
-            user=UserFactory()
+            user=UserFactory(),
+            role='IT'
         )
 
         assert dbsession.query(Member).count() == 2

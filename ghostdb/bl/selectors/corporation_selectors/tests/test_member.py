@@ -11,9 +11,9 @@ class TestFindMembersByUserID:
     def test_ok(self, dbsession):
         user = UserFactory()
         corporation = CorporationFactory()
-        member_1 = Member(corporation=corporation, user=user)
-        member_2 = Member(corporation=corporation, user=user)
-        Member(corporation=corporation, user=UserFactory())
+        member_1 = Member(corporation=corporation, user=user, role='CEO')
+        member_2 = Member(corporation=corporation, user=user, role='IT')
+        Member(corporation=corporation, user=UserFactory(), role='HR')
 
         selector = FindMembersByUserID(dbsession, Member, None)
 
@@ -43,7 +43,7 @@ class TestActiveByUserID:
 
     def test_ok(self, dbsession):
         user = UserFactory()
-        member = MemberFactory(user=user, is_active=True)
+        member = MemberFactory(user=user, is_active=True, role='CEO')
 
         selector = ActiveByUserID(dbsession, Member, None)
 
@@ -55,7 +55,7 @@ class TestActiveByUserID:
 
     def test_only_active(self, dbsession):
         user = UserFactory()
-        MemberFactory(user=user, is_active=False)
+        MemberFactory(user=user, is_active=False, role='CEO')
 
         selector = ActiveByUserID(dbsession, Member, None)
 
