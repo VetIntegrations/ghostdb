@@ -1,7 +1,7 @@
 import pytest
 
 from ghostdb.db.models.corporation import Corporation, Member
-from ghostdb.db.models.tests.factories import UserFactory
+from ghostdb.db.models.tests.factories import UserFactory, MemberFactory, CorporationFactory
 from ghostdb.bl.actions.corporation import CorporationAction
 from ..create import Create, AddMember
 
@@ -38,7 +38,7 @@ class TestCorporationAddMember:
 
     @pytest.fixture(autouse=True)
     def setup_corp(self, dbsession):
-        self.corp = Corporation(name='Test Corp 1')
+        self.corp = CorporationFactory(name='Test Corp 1')
         dbsession.add(self.corp)
         dbsession.commit()
 
@@ -52,7 +52,7 @@ class TestCorporationAddMember:
         action = CorporationAction(dbsession, event_bus=None, customer_name='test-cosolidator')
 
         assert dbsession.query(Member).count() == 0
-        member = Member(user=self.user)
+        member = MemberFactory(user=self.user, role='CEO')
         new_member, ok = action.add_member(self.corp, member)
         assert ok
         assert new_member == member
@@ -66,9 +66,9 @@ class TestCorporationAddMember:
 
         assert dbsession.query(Member).count() == 0
 
-        member_lvl_0 = Member()
-        member_lvl_1 = Member()
-        member_lvl_2 = Member()
+        member_lvl_0 = MemberFactory(role='CEO')
+        member_lvl_1 = MemberFactory(role='HR')
+        member_lvl_2 = MemberFactory(role='worker')
 
         action.add_member(self.corp, member_lvl_0)
         action.add_member(self.corp, member_lvl_1, member_lvl_0)
