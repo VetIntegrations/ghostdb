@@ -41,6 +41,7 @@ class Member(meta.Base):
 
     date_of_join = Column(DateTime(timezone=True))
     path = Column(LtreeType)
+    ordering = Column(Integer, default=0)
 
     is_temporary = Column(Boolean, default=False)
     is_active = Column(Boolean, default=False)
