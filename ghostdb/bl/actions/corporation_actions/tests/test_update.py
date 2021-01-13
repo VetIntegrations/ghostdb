@@ -1,5 +1,6 @@
 import pytest
 from uuid import UUID
+from unittest.mock import Mock
 from sqlalchemy_utils.primitives import Ltree
 
 from ghostdb.db.models.corporation import Corporation, Member
@@ -317,7 +318,10 @@ class TestOrgChartMoveMember:
         with pytest.raises(Called):
             action.move_member(self.accounting, parent=self.hr_manager)
 
-    def test_move_single_member_to_new_parent(self, dbsession, event_off):
+    def test_move_single_member_to_new_parent(self, dbsession, event_off, monkeypatch):
+        mock_reorder = Mock()
+        monkeypatch.setattr(OrgChartMoveMember, '_reorder', mock_reorder)
+
         member = MemberFactory(
             role='worker',
             path=Ltree(self.ceo.id.hex + '.' + self.hr_manager.id.hex),
@@ -326,10 +330,11 @@ class TestOrgChartMoveMember:
 
         action = OrgChartAction(dbsession, event_bus=None, customer_name='test-consolidator')
         old_path = member.path
-        member, ok = action.move_member(member, new_parent=self.accounting)
+        member, ok = action.move_member(member, self.accounting, None, None)
 
         assert member.path != old_path
         assert member.path == Ltree(self.ceo.id.hex) + Ltree(self.accounting.id.hex)
+        mock_reorder.assert_called_once_with(member, self.accounting, None, None)
 
     def test_move_member_with_subordinates_to_new_parent(self, dbsession, event_off):
         member = MemberFactory(
