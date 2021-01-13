@@ -105,7 +105,9 @@ class OrgChartMoveMember(base.BaseAction):
     def process(
         self,
         member: corporation.Member,
-        new_parent: corporation.Member
+        new_parent: corporation.Member,
+        left_neighbor: corporation.Member = None,
+        right_neighbor: corporation.Member = None
     ) -> typing.Tuple[None, bool]:
         sql = '''
         UPDATE "{table_name}"
@@ -116,7 +118,10 @@ class OrgChartMoveMember(base.BaseAction):
           "{column_name}" <@ :old_parent_path
         '''
 
-        new_path = new_parent.path + Ltree(new_parent.id.hex)
+        if new_parent.path:
+            new_path = new_parent.path + Ltree(new_parent.id.hex)
+        else:
+            new_path = Ltree(new_parent.id.hex)
 
         self.db.execute(
             sql.format(
@@ -130,7 +135,101 @@ class OrgChartMoveMember(base.BaseAction):
         )
 
         member.path = new_path
+        self._reorder(member, new_parent, left_neighbor, right_neighbor)
 
         self.db.add(member)
 
         return (member, True)
+
+    def _reorder(
+        self,
+        member: corporation.Member,
+        new_parent: corporation.Member = None,
+        left_neighbor: corporation.Member = None,
+        right_neighbor: corporation.Member = None
+    ):
+        if left_neighbor and right_neighbor:
+            self._reorder_by_both_neighbors(member, left_neighbor, right_neighbor)
+        elif left_neighbor:
+            self._reorder_by_left_neighbor(member, left_neighbor)
+        elif right_neighbor:
+            self._reorder_by_right_neighbor(member, right_neighbor)
+        elif new_parent:
+            self._reorder_member_set_most_left(member)
+
+    def _reorder_by_both_neighbors(
+        self,
+        member: corporation.Member,
+        left_neighbor: corporation.Member = None,
+        right_neighbor: corporation.Member = None
+    ):
+        def calc_position(start_ordering, left_neighbor, right_neighbor):
+            return (
+                min_ordering
+                + abs((right_neighbor.ordering - left_neighbor.ordering) // 2)
+            )
+
+        min_ordering = min(right_neighbor.ordering, left_neighbor.ordering)
+        position = calc_position(min_ordering, left_neighbor, right_neighbor)
+        if position != right_neighbor.ordering and position != left_neighbor.ordering:
+            member.ordering = position
+        else:
+            self._reorder__shift_right(left_neighbor, right_neighbor.ordering)
+            member.ordering = calc_position(min_ordering, left_neighbor, right_neighbor)
+
+    def _reorder_by_left_neighbor(
+        self,
+        member: corporation.Member,
+        left_neighbor: corporation.Member = None
+    ):
+        right_neighbor = (
+            self.db.query(corporation.Member)
+            .filter(
+                corporation.Member.path == left_neighbor.path,
+                corporation.Member.ordering > left_neighbor.ordering,
+                corporation.Member.id != member.id
+            )
+            .order_by(corporation.Member.ordering.asc())
+            .first()
+        )
+        if right_neighbor:
+            self._reorder_by_both_neighbors(member, left_neighbor, right_neighbor)
+        else:
+            member.ordering = left_neighbor.ordering + 100
+
+    def _reorder_by_right_neighbor(
+        self,
+        member: corporation.Member,
+        right_neighbor: corporation.Member = None
+    ):
+        left_neighbor = (
+            self.db.query(corporation.Member)
+            .filter(
+                corporation.Member.path == right_neighbor.path,
+                corporation.Member.ordering < right_neighbor.ordering,
+                corporation.Member.id != member.id
+            )
+            .order_by(corporation.Member.ordering.desc())
+            .first()
+        )
+        if left_neighbor:
+            self._reorder_by_both_neighbors(member, left_neighbor, right_neighbor)
+        else:
+            self._reorder_member_set_most_left(member)
+
+    def _reorder_member_set_most_left(self, member: corporation.Member):
+        self._reorder__shift_right(member, 0)
+        member.ordering = 0
+
+    def _reorder__shift_right(self, member: corporation.Member, min_ordering: int):
+        (
+            self.db.query(corporation.Member)
+            .filter(
+                corporation.Member.id != member.id,
+                corporation.Member.path == member.path,
+                corporation.Member.ordering >= min_ordering
+            )
+            .update({
+                corporation.Member.ordering: corporation.Member.ordering + 100,
+            })
+        )
