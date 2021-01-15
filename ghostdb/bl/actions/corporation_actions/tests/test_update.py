@@ -12,6 +12,7 @@ from ghostdb.bl.actions.corporation import CorporationAction, OrgChartAction
 from ..update import (
     Update, UpdateMember, ActivateMember, OrgChartRemoveUser, OrgChartMoveMember
 )
+from ..ordering import MemberOrdering
 
 
 class TestCorporationUpdate:
@@ -320,7 +321,7 @@ class TestOrgChartMoveMember:
 
     def test_move_single_member_to_new_parent(self, dbsession, event_off, monkeypatch):
         mock_reorder = Mock()
-        monkeypatch.setattr(OrgChartMoveMember, '_reorder', mock_reorder)
+        monkeypatch.setattr(MemberOrdering, 'reorder', mock_reorder)
 
         member = MemberFactory(
             role='worker',

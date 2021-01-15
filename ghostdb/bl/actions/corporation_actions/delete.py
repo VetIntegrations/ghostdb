@@ -3,6 +3,7 @@ import typing
 from ghostdb.db.models import corporation
 from sqlalchemy_utils.primitives import Ltree
 from ..utils import base
+from .ordering import MemberOrdering
 
 
 class Delete(base.BaseAction):
@@ -21,6 +22,9 @@ class DeleteMember(base.BaseAction):
         # if member.path is None that it's a root
         # else we must rebuild path for subordinates
         if member.path:
+            MemberOrdering(self.db).reorder_member_substitute_by_subordinates(member)
+            self.db.commit()
+
             sql = '''
                 UPDATE "{table_name}"
                 SET

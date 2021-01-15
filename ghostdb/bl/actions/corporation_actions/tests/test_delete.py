@@ -134,3 +134,58 @@ class TestMemberDelete:
         # check that subordinate1 and subordinate12 have new parent
         assert subordinate1.path == Ltree(ceo.id.hex)
         assert subordinate12.path == Ltree(ceo.id.hex) + Ltree(subordinate1.id.hex)
+
+    def test_reorder_subordinates(self, dbsession, event_off):
+        corporation = CorporationFactory()
+        ceo = MemberFactory(
+            role='ceo',
+            corporation=corporation
+        )
+
+        manager1 = MemberFactory(
+            role='manager1',
+            path=Ltree(ceo.id.hex),
+            corporation=corporation,
+            ordering=100
+        )
+        manager2 = MemberFactory(
+            role='manager2',
+            path=Ltree(ceo.id.hex),
+            corporation=corporation,
+            ordering=200
+        )
+        manager3 = MemberFactory(
+            role='manager3',
+            path=Ltree(ceo.id.hex),
+            corporation=corporation,
+            ordering=300
+        )
+        subordinate1 = MemberFactory(
+            role='worker 1',
+            path=manager2.path + Ltree(manager2.id.hex),
+            corporation=corporation,
+            ordering=10
+        )
+        subordinate2 = MemberFactory(
+            role='worker 2',
+            path=manager2.path + Ltree(manager2.id.hex),
+            corporation=corporation,
+            ordering=20
+        )
+        subordinate3 = MemberFactory(
+            role='worker 3',
+            path=manager2.path + Ltree(manager2.id.hex),
+            corporation=corporation,
+            ordering=20
+        )
+
+        dbsession.commit()
+
+        action = CorporationAction(dbsession, event_bus=None, customer_name='test-consolidator')
+        action.delete_member(manager2)
+
+        assert manager1.ordering == 100
+        assert subordinate1.ordering == 200
+        assert subordinate2.ordering == 300
+        assert subordinate3.ordering == 400
+        assert manager3.ordering == 500
