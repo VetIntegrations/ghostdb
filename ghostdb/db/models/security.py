@@ -19,6 +19,7 @@ class TemporaryToken(meta.Base):
     token = Column(String(96), primary_key=True)
     kind = Column(Enum(TokenKind))
     expires_at = Column(DateTime)
+    corporation_id = Column(sqltypes.UUID, ForeignKey('corporations.id', ondelete="CASCADE"), nullable=True)
     user_id = Column(sqltypes.UUID, ForeignKey('users.id', ondelete="CASCADE"), nullable=True)
     extra = Column(JSON, nullable=True)
 
@@ -26,3 +27,4 @@ class TemporaryToken(meta.Base):
     updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
 
     user = relationship("user.User")
+    corporation = relationship('Corporation')
