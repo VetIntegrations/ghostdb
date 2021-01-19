@@ -9,7 +9,7 @@ test:
 			--bandit \
 			--ignore=./ghostdb/alembic --ignore=create_records.py \
 			-s \
-			ghostdb/
+			ghostdb/${TEST}
 
 
 deps-compile:

@@ -1,8 +1,9 @@
 import typing
 import uuid
 from sqlalchemy import func
+from sqlalchemy.orm.util import aliased
 
-from ghostdb.db.models import corporation
+from ghostdb.db.models import corporation, security
 from ..utils import base
 
 
@@ -56,6 +57,26 @@ class ActiveByUserID(base.BaseSelector):
         member = query.first()
 
         return (member, member is not None)
+
+
+class WithInviteForEmails(base.BaseSelector):
+
+    def process(
+        self,
+        _corporation: corporation.Corporation,
+        emails: typing.Iterable[str]
+    ) -> typing.Tuple[typing.Iterable[corporation.Member], bool]:
+        TempToken = aliased(security.TemporaryToken)
+        query = (
+            self.db.query(corporation.Member)
+            .join(TempToken)
+            .filter(
+                corporation.Member.corporation == _corporation,
+                TempToken.extra['email'].astext.in_(emails)
+            )
+        )
+
+        return (query, True)
 
 
 class OrgChart(base.BaseSelector):
