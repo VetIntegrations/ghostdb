@@ -8,12 +8,25 @@ from . import base
 
 class ByID(base.BaseSelector):
 
-    def process(self, pk: uuid.UUID) -> typing.Tuple[typing.Any, bool]:
+    def process(
+        self,
+        pk: typing.Union[typing.Iterable[uuid.UUID], uuid.UUID]
+    ) -> typing.Tuple[typing.Any, bool]:
+        if isinstance(pk, (list, tuple, set)):
+            return self._process_many_items(pk)
+        else:
+            return self._process_one_item(pk)
+
+    def _process_many_items(self, pks: typing.Iterable[uuid.UUID]) -> typing.Tuple[typing.Any, bool]:
         query = (
             self.db.query(self.model)
-            .filter(self.model.id == pk)
+            .filter(self.model.id.in_(pks))
         )
 
+        return (query, True)
+
+    def _process_one_item(self, pk: uuid.UUID) -> typing.Tuple[typing.Any, bool]:
+        query, _ = self._process_many_items([pk])
         obj = query.first()
 
         return (obj, obj is not None)
