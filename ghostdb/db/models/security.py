@@ -1,5 +1,6 @@
 import enum
-from sqlalchemy import Column, ForeignKey, String, DateTime, JSON, Enum
+from sqlalchemy import Column, ForeignKey, String, DateTime, Enum
+from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.orm import relationship
 
 from .. import meta

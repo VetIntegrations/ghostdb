@@ -59,7 +59,7 @@ class ActivateMember(base.BaseAction):
         member: corporation.Member,
         invite: security.TemporaryToken
     ):
-        member.corporation_id = invite.extra['corporation']
+        member.corporation_id = uuid.UUID(invite.extra['corporation'])
         member.user.corporation_id = member.corporation_id
         member.invite = None
         member.user.date_of_join = member.date_of_join

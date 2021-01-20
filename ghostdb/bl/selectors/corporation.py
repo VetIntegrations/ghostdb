@@ -15,5 +15,6 @@ class MemberSelector(base.BaseSelectorSet):
     by_invite_id = base.SelectorFactory(member.ByInviteID, corporation.Member)
     active_by_user_id = base.SelectorFactory(member.ActiveByUserID, corporation.Member)
     in_corporation_by_user_id = base.SelectorFactory(member.FindMembersByUserID, corporation.Member)
+    with_invite_for_emails = base.SelectorFactory(member.WithInviteForEmails, corporation.Member)
 
     orgchart = base.SelectorFactory(member.OrgChart, corporation.Member)
