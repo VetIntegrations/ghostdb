@@ -6,6 +6,7 @@ from sqlalchemy import not_
 from sqlalchemy_utils.primitives import Ltree
 
 from ghostdb.db.models import corporation, user as user_model, security
+from ghostdb.bl.selectors.corporation import MemberSelector
 from ..utils import base
 from .ordering import MemberOrdering
 
@@ -141,3 +142,15 @@ class OrgChartMoveMember(base.BaseAction):
         self.db.add(member)
 
         return (member, True)
+
+
+class RemoveUserFromMembers(base.BaseAction):
+
+    def process(
+        self,
+        user: user_model.User,
+    ):
+        qs = MemberSelector(self.db).in_corporation_by_user_id(user.corporation, user.id)
+        members = qs.update({corporation.Member.user_id: None})
+
+        return (members, True)
