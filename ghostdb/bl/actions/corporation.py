@@ -44,6 +44,12 @@ class CorporationAction(base.BaseActionSet):
             event_name=event.EVENT_RECORD_UPDATE
         )
     )
+    remove_user_from_members = base.ActionFactory(
+        update_act.RemoveUserFromMembers,
+        event_factory=base.EventFactory(
+            event_name=event.EVENT_RECORD_UPDATE
+        )
+    )
     delete_member = base.ActionFactory(
         delete_act.DeleteMember,
         event_factory=base.EventFactory(

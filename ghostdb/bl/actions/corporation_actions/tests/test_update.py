@@ -10,7 +10,7 @@ from ghostdb.db.models.tests.factories import (
 )
 from ghostdb.bl.actions.corporation import CorporationAction, OrgChartAction
 from ..update import (
-    Update, UpdateMember, ActivateMember, OrgChartRemoveUser, OrgChartMoveMember
+    Update, UpdateMember, ActivateMember, OrgChartRemoveUser, OrgChartMoveMember, RemoveUserFromMembers
 )
 from ..ordering import MemberOrdering
 
@@ -366,3 +366,36 @@ class TestOrgChartMoveMember:
 
         assert subordinate1.path == new_parent_path + Ltree(member.id.hex)
         assert subordinate12.path == new_parent_path + Ltree(member.id.hex) + Ltree(subordinate1.id.hex)
+
+
+class TestRemoveUserFromMembers:
+    def test_action_class_use_right_action(self, dbsession, monkeypatch):
+        class Called(Exception):
+            ...
+
+        def process(self, *args, **kwargs):
+            raise Called()
+
+        monkeypatch.setattr(RemoveUserFromMembers, 'process', process)
+
+        action = CorporationAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        with pytest.raises(Called):
+            action.remove_user_from_members(UserFactory())
+
+    def test_ok(self, dbsession, monkeypatch, event_off):
+        corp = CorporationFactory()
+        user_1 = UserFactory(corporation=corp)
+        user_2 = UserFactory(corporation=corp)
+
+        member_1 = MemberFactory(corporation=corp, user=user_1, role='CEO')
+        member_2 = MemberFactory(corporation=corp, user=user_2, role='IT')
+        member_3 = MemberFactory(corporation=corp, user=user_2, role='CTO')
+
+        action = CorporationAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+        _, ok = action.remove_user_from_members(user_2)
+
+        assert ok
+
+        assert member_1.user
+        assert not member_2.user
+        assert not member_3.user
