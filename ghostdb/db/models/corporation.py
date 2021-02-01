@@ -1,8 +1,7 @@
-import enum
 import uuid
 
 from sqlalchemy import (
-    Column, Integer, String, Boolean, ForeignKey, JSON, Enum, DateTime, SmallInteger, Text
+    Column, Integer, String, Boolean, ForeignKey, DateTime, SmallInteger, Text
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import LtreeType
@@ -23,7 +22,6 @@ class Corporation(meta.Base):
 
     members = relationship('Member', back_populates='corporation', cascade='all, delete')
     users = relationship('User', back_populates='corporation')
-    integrations = relationship('Integration', back_populates='corporation')
 
     def __repr__(self):
         return '<Corporation id={} name={}>'.format(self.id, self.name)
@@ -52,30 +50,3 @@ class Member(meta.Base):
     corporation = relationship("Corporation", back_populates="members")
     user = relationship("User", back_populates="members")
     invite = relationship("TemporaryToken")
-
-
-class IntegrationModules(enum.Enum):
-    vetsuccess = 'VetSuccess'
-
-
-class Integration(meta.Base):
-    __tablename__ = 'corporation_integrations'
-
-    id = Column(Integer, primary_key=True)
-    corporation_id = Column(sqltypes.UUID, ForeignKey('corporations.id'), nullable=False)
-    name = Column(String(100), nullable=False)
-    module = Column(Enum(IntegrationModules), nullable=False)
-    auth_credentials = Column(JSON)
-    is_enable = Column(Boolean, default=False)
-
-    created_at = Column(DateTime, server_default=sqltypes.UTCNow())
-    updated_at = Column(DateTime, onupdate=sqltypes.UTCNow())
-
-    corporation = relationship("Corporation", back_populates="integrations")
-
-    def __repr__(self):
-        return '<Integration id={} corporation={} name={}>'.format(
-            self.id,
-            self.corporation.name,
-            self.name
-        )
