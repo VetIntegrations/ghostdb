@@ -2,6 +2,7 @@ import typing
 from sqlalchemy_utils import Ltree
 
 from ghostdb.db.models import corporation
+from .ordering import MemberOrdering
 from ..utils import base
 
 
@@ -31,5 +32,7 @@ class AddMember(base.BaseAction):
                 member.path = parent.path + Ltree(parent.id.hex)
 
         self.db.add(member)
+        if parent:
+            MemberOrdering(self.db).reorder(member, parent)
 
         return (member, True)
