@@ -79,6 +79,24 @@ class TestCorporationAddMember:
         assert member_lvl_1.path == member_lvl_0.id.hex
         assert member_lvl_2.path == f'{member_lvl_0.id.hex}.{member_lvl_1.id.hex}'
 
+    def test_reorder(self, dbsession, event_off):
+        action = CorporationAction(dbsession, event_bus=None, customer_name='test-cosolidator')
+
+        assert dbsession.query(Member).count() == 0
+
+        member_lvl_0 = MemberFactory(role='CEO', ordering=0)
+        member_lvl_1 = MemberFactory(role='HR', ordering=10)
+        member_lvl_1_1 = MemberFactory(role='worker', ordering=20)
+
+        action.add_member(self.corp, member_lvl_0)
+        action.add_member(self.corp, member_lvl_1, member_lvl_0)
+        action.add_member(self.corp, member_lvl_1_1, member_lvl_0)
+
+        assert dbsession.query(Member).count() == 3
+        assert member_lvl_0.ordering == 0
+        assert member_lvl_1.ordering == 100
+        assert member_lvl_1_1.ordering == 0
+
     def test_action_class_use_right_action(self, dbsession, monkeypatch):
         class Called(Exception):
             ...
