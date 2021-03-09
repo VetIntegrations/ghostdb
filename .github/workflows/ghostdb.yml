@@ -112,8 +112,8 @@ jobs:
             workflow-id: 3339771
           - repo: 'datagrinder'
             workflow-id: 5913839
-          # - repo: 'kpigrinder'
-          #   workflow-id:
+          - repo: 'kpigrinder'
+            workflow-id: 6417602
 
     steps:
       - name: Trigger tests on related repositories
